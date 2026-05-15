@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WC26 Sweep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:#1a6b3c;--green-light:#2d9e5f;--green-dark:#0f3d22;--green-mid:#155232;
+  --gold:#f0b429;--gold-light:#ffd97d;
+  --cream:#faf8f3;--white:#ffffff;
+  --grey-100:#f4f2ed;--grey-200:#e8e4db;--grey-300:#ccc8be;--grey-500:#888070;--grey-700:#4a4640;
+  --dark:#1a1814;--red:#c0392b;--blue:#1a56db;
+  --radius:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ── HEADER ── */
+header{background:var(--green-dark);position:sticky;top:0;z-index:100;border-bottom:3px solid var(--gold)}
+.header-inner{max-width:960px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none}
+.header-inner::-webkit-scrollbar{display:none}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);letter-spacing:.06em;padding:11px 16px 11px 0;border-right:1px solid rgba(255,255,255,.15);margin-right:4px;white-space:nowrap;flex-shrink:0}
+.logo span{color:var(--white)}
+nav{display:flex;gap:0}
+nav button{font-size:12px;font-weight:500;color:rgba(255,255,255,.6);background:none;border:none;border-bottom:3px solid transparent;padding:15px 13px 12px;white-space:nowrap;letter-spacing:.02em;transition:color .15s,border-color .15s}
+nav button:hover{color:var(--white)}
+nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* ── LOADING ── */
+#loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
+.spinner{width:34px;height:34px;border:3px solid var(--grey-200);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading p{font-size:13px;color:var(--grey-500)}
+
+/* ── PAGES ── */
+.page{display:none;width:100%}
+.page.active{display:block}
+.inner{max-width:960px;margin:0 auto;padding:20px 16px 60px}
+/* Ensure stats/prize never leak outside leaderboard page */
+#page-leaderboard .stats-row,
+#page-leaderboard .prize-box{display:grid;margin-bottom:16px}
+#page-leaderboard .prize-box{display:flex}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.stat-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:12px 14px;text-align:center}
+.stat-card .val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--green);letter-spacing:.03em;line-height:1}
+.stat-card .lbl{font-size:10px;color:var(--grey-500);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
+
+/* ── PRIZE BOX ── */
+.prize-box{background:var(--green-dark);border-radius:12px;padding:18px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.pot-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:4px}
+.pot-amount{font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--white);letter-spacing:.04em;line-height:1}
+.prize-splits{display:flex;gap:8px;flex-wrap:wrap}
+.prize-split{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 14px;text-align:center;min-width:80px}
+.prize-split .pos{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:2px}
+.prize-split .winner-name{font-size:11px;color:rgba(255,255,255,.7);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
+.prize-split .prize-amt{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--white);letter-spacing:.04em}
+.prize-split.last-place{border-color:rgba(240,180,41,.3);background:rgba(240,180,41,.06)}
+
+/* ── SEARCH ── */
+.search-bar{width:100%;padding:9px 14px;border:1px solid var(--grey-200);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--white);color:var(--dark);margin-bottom:12px;outline:none;transition:border-color .15s}
+.search-bar:focus{border-color:var(--green)}
+
+/* ── LEADERBOARD ── */
+.lb-wrap{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;overflow:hidden}
+.lb-head{display:grid;grid-template-columns:44px 1fr 52px;gap:8px;padding:8px 16px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--grey-500);background:var(--grey-100);border-bottom:1px solid var(--grey-200)}
+.lb-row{border-bottom:1px solid var(--grey-100);cursor:pointer}
+.lb-row:last-child{border-bottom:none}
+.lb-row-main{display:grid;grid-template-columns:44px 1fr 52px;align-items:center;gap:8px;padding:10px 16px;transition:background .1s}
+.lb-row:hover .lb-row-main{background:#f9f7f2}
+.lb-row.open .lb-row-main{background:#f4f2eb}
+.rank-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;background:var(--grey-100);color:var(--grey-700);flex-shrink:0}
+.rank-badge.r1{background:var(--gold);color:#5a3800}
+.rank-badge.r2{background:#d4d0c8;color:#3a3830}
+.rank-badge.r3{background:#e8a07a;color:#5a2800}
+.rank-badge.rl{background:#fde8e8;color:var(--red)}
+.entry-name{font-weight:600;font-size:13px}
+.entry-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+.team-tag{font-size:10px;font-weight:600;padding:2px 5px;border-radius:3px;background:var(--grey-100);color:var(--grey-700);font-family:'DM Mono',monospace}
+.pts-col{text-align:right;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);letter-spacing:.04em;display:flex;align-items:center;justify-content:flex-end;gap:5px}
+.chevron{font-size:11px;color:var(--grey-300);transition:transform .2s}
+.lb-row.open .chevron{transform:rotate(180deg)}
+.lb-expand{display:none;padding:10px 16px 14px;background:#f4f2eb;border-top:1px solid var(--grey-200);grid-template-columns:1fr 1fr;gap:8px}
+.lb-row.open .lb-expand{display:grid}
+.expand-slot{background:var(--white);border:1px solid var(--grey-200);border-radius:8px;padding:10px 12px}
+.slot-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px}
+.slot-team{font-weight:600;font-size:12px}
+.slot-pts{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green);letter-spacing:.04em}
+.slot-player{font-size:11px;color:var(--grey-500);margin-bottom:3px}
+.slot-breakdown{font-size:10px;color:var(--grey-500);display:flex;gap:8px;font-family:'DM Mono',monospace}
+
+/* ── SECTION HEAD ── */
+.section-head{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--green-dark);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--gold);display:flex;align-items:baseline;gap:10px}
+.section-head span{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--grey-500);letter-spacing:0}
+
+/* ── GROUP TABLES ── */
+.groups-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.group-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);overflow:hidden}
+.group-title{background:var(--green-dark);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.08em;padding:8px 14px}
+.group-table{width:100%;border-collapse:collapse;font-size:12px}
+.group-table th{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--grey-500);padding:6px 8px;border-bottom:1px solid var(--grey-200);text-align:center;background:var(--grey-100)}
+.group-table th:first-child{text-align:left;padding-left:12px}
+.group-table td{padding:7px 8px;text-align:center;border-bottom:1px solid var(--grey-100)}
+.group-table td:first-child{text-align:left;padding-left:12px;font-weight:600}
+.group-table tr:last-child td{border-bottom:none}
+.group-table tr.qualified td:first-child{border-left:3px solid var(--green)}
+.pts-cell{font-weight:700;color:var(--green-dark)}
+
+/* ── KNOCKOUT ── */
+.knockout-note{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:20px;text-align:center;color:var(--grey-500);font-size:13px;margin-top:14px}
+
+/* ── FIXTURES ── */
+.fix-group{margin-bottom:18px}
+.fix-group-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--grey-500);padding:6px 14px;background:var(--grey-100);border-radius:6px 6px 0 0;border:1px solid var(--grey-200);border-bottom:none}
+.fix-list{background:var(--white);border:1px solid var(--grey-200);border-radius:0 0 var(--radius) var(--radius);overflow:hidden}
+.fix-row{display:grid;grid-template-columns:1fr 68px 1fr 90px;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--grey-100);font-size:12px}
+.fix-row:last-child{border-bottom:none}
+.fix-home{text-align:right;font-weight:600}
+.fix-away{font-weight:600}
+.fix-score{text-align:center;font-family:'DM Mono',monospace;font-weight:500;font-size:14px;background:var(--grey-100);border-radius:6px;padding:3px 8px}
+.fix-score.live-score{background:#fde8e8;color:var(--red)}
+.fix-right{text-align:right}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.04em}
+.pill-live{background:#fde8e8;color:var(--red)}
+.pill-done{background:#dcfce7;color:#166534}
+.pill-upcoming{background:var(--grey-100);color:var(--grey-500)}
+.live-pulse{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── GOAL LOG ── */
+.goal-list{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;overflow:hidden}
+.goal-row{display:grid;grid-template-columns:54px 1fr 1fr 60px;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--grey-100);font-size:12px}
+.goal-row:last-child{border-bottom:none}
+.goal-row.shootout{opacity:.45}
+.goal-min{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);letter-spacing:.04em;line-height:1}
+.goal-min small{font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-500);display:block}
+.goal-team{font-weight:600}
+.goal-player{font-size:11px;color:var(--grey-500);margin-top:2px}
+.goal-match{font-size:11px;color:var(--grey-500)}
+.goal-pts{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--green);letter-spacing:.04em;text-align:right}
+.goal-pts small{font-family:'DM Sans',sans-serif;font-size:10px;color:var(--grey-500);display:block;line-height:1.2}
+.shootout-badge{font-size:9px;background:#fef9c3;color:#92400e;padding:1px 5px;border-radius:3px;font-weight:600;margin-left:5px}
+
+/* ── SQUAD PAGE ── */
+.squad-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--grey-200);border-radius:var(--radius);overflow:hidden;background:var(--white)}
+.squad-item{}
+.squad-item-head{display:flex;align-items:center;gap:0;padding:0;cursor:pointer;border-bottom:1px solid var(--grey-100);transition:background .1s;user-select:none}
+.squad-item:last-child .squad-item-head{border-bottom:none}
+.squad-item.open .squad-item-head{border-bottom:1px solid var(--grey-200);background:#f9f7f2}
+.squad-item-head:hover{background:#f9f7f2}
+.squad-num-big{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--green);letter-spacing:.04em;line-height:1;width:64px;text-align:center;padding:10px 0;flex-shrink:0;border-right:1px solid var(--grey-100)}
+.squad-flag{font-size:28px;padding:0 12px;flex-shrink:0}
+.squad-info{flex:1;padding:10px 0}
+.squad-country{font-weight:600;font-size:14px;line-height:1.2}
+.squad-meta{font-size:11px;color:var(--grey-500);font-family:'DM Mono',monospace;margin-top:2px}
+.squad-chevron{font-size:13px;color:var(--grey-300);padding:0 16px;transition:transform .2s;flex-shrink:0}
+.squad-item.open .squad-chevron{transform:rotate(180deg)}
+.squad-players{display:none;border-top:1px solid var(--grey-100)}
+.squad-item.open .squad-players{display:block}
+.squad-player-row{display:grid;grid-template-columns:44px 1fr 36px;align-items:center;gap:8px;padding:6px 16px;border-bottom:1px solid var(--grey-100);font-size:12px}
+.squad-player-row:last-child{border-bottom:none}
+.squad-shirt{font-family:'DM Mono',monospace;font-weight:500;color:var(--grey-500);font-size:12px;text-align:center}
+.squad-pname{font-size:12px}
+.squad-pos{font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;text-align:center}
+.pos-G{background:#dbeafe;color:#1e40af}
+.pos-D{background:#dcfce7;color:#166534}
+.pos-M{background:#fef9c3;color:#92400e}
+.pos-F{background:#fde8e8;color:#9f1239}
+.tbd{color:var(--grey-300);font-style:italic}
+
+/* ── HOW TO PLAY ── */
+.how-wrap{max-width:680px}
+.how-intro{background:var(--green-dark);color:var(--white);border-radius:12px;padding:24px 28px;margin-bottom:20px}
+.how-intro h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.06em;color:var(--gold);margin-bottom:6px}
+.how-intro p{font-size:14px;color:rgba(255,255,255,.8);line-height:1.6}
+.how-intro .price-tag{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);letter-spacing:.04em}
+.how-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.how-step{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:16px 18px;display:flex;gap:16px;align-items:flex-start}
+.step-num{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold);letter-spacing:.04em;line-height:1;flex-shrink:0;width:32px}
+.step-body h3{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--green-dark)}
+.step-body p{font-size:13px;color:var(--grey-700);line-height:1.6}
+.step-body p strong{color:var(--dark)}
+.rules-box{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:18px 20px}
+.rules-box h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em;color:var(--green-dark);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--gold)}
+.rule{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--grey-100);font-size:13px;line-height:1.55;color:var(--grey-700)}
+.rule:last-child{border-bottom:none}
+.rule-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.mult-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
+.mult-table th{background:var(--grey-100);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--grey-500);padding:6px 10px;text-align:left}
+.mult-table td{padding:7px 10px;border-bottom:1px solid var(--grey-100)}
+.mult-table tr:last-child td{border-bottom:none}
+.mult-badge{display:inline-block;font-weight:700;padding:1px 7px;border-radius:4px;font-size:12px}
+
+/* ── EMPTY / ERROR ── */
+.empty{padding:40px;text-align:center;color:var(--grey-500);font-size:13px}
+.error-banner{background:#fde8e8;border:1px solid #fca5a5;border-radius:8px;padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:14px}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);border-top:1px solid var(--grey-200)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .lb-expand{grid-template-columns:1fr}
+  .prize-box{flex-direction:column;align-items:flex-start}
+  .fix-row{grid-template-columns:1fr 54px 1fr 70px;font-size:11px;padding:8px 10px}
+  .goal-row{grid-template-columns:44px 1fr 1fr 48px}
+  .groups-grid{grid-template-columns:1fr}
+  .squad-grid{grid-template-columns:1fr}
+  nav button{padding:15px 10px 12px;font-size:11px}
+  .how-step{flex-direction:column;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">WC<span>26</span></div>
+    <nav>
+      <button class="active" onclick="showPage('leaderboard',this)">Leaderboard</button>
+      <button onclick="showPage('groups',this)">Groups</button>
+      <button onclick="showPage('fixtures',this)">Fixtures</button>
+      <button onclick="showPage('goallog',this)">Goal Log</button>
+      <button onclick="showPage('squads',this)">Squads</button>
+      <button onclick="showPage('howtoplay',this)">How to Play</button>
+    </nav>
+  </div>
+</header>
+
+<div id="loading"><div class="spinner"></div><p>Loading sweepstake data…</p></div>
+<div id="error-global" style="display:none;max-width:960px;margin:20px auto;padding:0 16px"></div>
+
+<!-- LEADERBOARD -->
+<div id="page-leaderboard" class="page">
+  <div class="inner">
+    <div class="stats-row">
+      <div class="stat-card"><div class="val" id="st-entries">—</div><div class="lbl">Entries</div></div>
+      <div class="stat-card"><div class="val" id="st-goals">—</div><div class="lbl">Goals</div></div>
+      <div class="stat-card"><div class="val" id="st-pot">—</div><div class="lbl">Prize Pot</div></div>
+      <div class="stat-card"><div class="val" id="st-live">—</div><div class="lbl">Live Now</div></div>
+    </div>
+    <div class="prize-box">
+      <div><div class="pot-label">Total Prize Pot</div><div class="pot-amount" id="pot-amount">£0</div></div>
+      <div class="prize-splits" id="prize-splits"></div>
+    </div>
+    <input class="search-bar" type="text" placeholder="Search entries…" oninput="filterLeaderboard(this.value)">
+    <div class="lb-wrap">
+      <div class="lb-head"><div>Pos</div><div>Entry</div><div style="text-align:right">Pts</div></div>
+      <div id="lb-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- GROUPS -->
+<div id="page-groups" class="page">
+  <div class="inner">
+    <div class="section-head">Group Stage <span id="groups-subtitle"></span></div>
+    <div class="groups-grid" id="groups-body"></div>
+    <div class="knockout-note" id="knockout-note" style="display:none">
+      🏆 Knockout stage fixtures will appear here once the group stage is complete.
+    </div>
+  </div>
+</div>
+
+<!-- FIXTURES -->
+<div id="page-fixtures" class="page">
+  <div class="inner">
+    <div class="section-head">Fixtures <span id="fix-subtitle"></span></div>
+    <div id="fix-body"></div>
+  </div>
+</div>
+
+<!-- GOAL LOG -->
+<div id="page-goallog" class="page">
+  <div class="inner">
+    <div class="section-head">Goal Log <span id="goal-subtitle"></span></div>
+    <div class="goal-list" id="goal-body"></div>
+  </div>
+</div>
+
+<!-- SQUADS -->
+<div id="page-squads" class="page">
+  <div class="inner">
+    <div class="section-head">Squads <span>All 48 teams — tap to expand</span></div>
+    <div class="squad-list" id="squad-body"></div>
+  </div>
+</div>
+
+<!-- HOW TO PLAY -->
+<div id="page-howtoplay" class="page">
+  <div class="inner">
+    <div class="how-wrap">
+      <div class="how-intro">
+        <h2>How to Play</h2>
+        <p>To enter the sweepstake see <strong style="color:var(--gold)">Dean Tatchell</strong>. Entries cost <span class="price-tag" id="entry-price">£5</span> each. You can buy multiple entries to increase your chances.</p>
+      </div>
+
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>Draw your 4 teams</h3>
+            <p>Randomly draw <strong>4 numbered items</strong> from the bag, one at a time, without replacement. Each number corresponds to one of the 48 World Cup teams listed in group stage order. <strong>No duplicate teams</strong> — if you draw one you already have, put it back and draw again.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Draw your 4 players</h3>
+            <p>For each of your 4 teams, draw <strong>1 numbered item</strong> from the bag — this is your player's shirt number for that team. Put the item back before drawing for the next team. <strong>The order matters</strong> — the first number you drew is the player for your first team, and so on.</p>
+            <p style="margin-top:6px">If the shirt number drawn doesn't exist in that team's squad, <strong>go down to the nearest valid shirt number</strong>.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Check your picks</h3>
+            <p>Use the <strong>Squads</strong> page to verify your teams and players. Confirm the shirt number maps to the right player and their position — position determines your scoring multiplier, so it's worth knowing.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rules-box">
+        <h3>Rules &amp; Scoring</h3>
+        <div class="rule"><span class="rule-icon">🏆</span><span>The entry with the <strong>most points</strong> at the end of the tournament wins. Prize pot payouts depend on the number of entries — check the leaderboard for current prize positions and amounts.</span></div>
+        <div class="rule"><span class="rule-icon">⚽</span><span>Points are scored when your <strong>team scores a goal</strong> or your <strong>player scores a goal</strong>. If your team is knocked out, no more points can be scored for that slot.</span></div>
+        <div class="rule"><span class="rule-icon">+1</span><span>Each goal scored by <strong>your team</strong> adds <strong>1 point</strong> to your total.</span></div>
+        <div class="rule"><span class="rule-icon">✖</span><span>Each goal scored by <strong>your player</strong> adds points based on their <strong>position multiplier</strong>:
+          <table class="mult-table">
+            <thead><tr><th>Position</th><th>Multiplier</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>Forward</td><td><span class="mult-badge" style="background:#fde8e8;color:#9f1239">×1</span></td><td>1 goal = 1 point</td></tr>
+              <tr><td>Midfielder</td><td><span class="mult-badge" style="background:#fef9c3;color:#92400e">×2</span></td><td>1 goal = 2 points</td></tr>
+              <tr><td>Defender</td><td><span class="mult-badge" style="background:#dcfce7;color:#166534">×4</span></td><td>1 goal = 4 points</td></tr>
+              <tr><td>Goalkeeper</td><td><span class="mult-badge" style="background:#dbeafe;color:#1e40af">×6</span></td><td>1 goal = 6 points</td></tr>
+            </tbody>
+          </table>
+        </span></div>
+        <div class="rule"><span class="rule-icon">🚫</span><span>Goals scored in a <strong>penalty shootout do not count</strong>. Only goals scored during normal time and extra time are awarded points.</span></div>
+        <div class="rule"><span class="rule-icon">💰</span><span>Payout positions depend on the prize pot size. Check the <strong>Leaderboard</strong> page to see current prize positions and how much each pays out.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>WC26 Sweep · Updates every 60s · <span id="last-updated"></span></footer>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const SHEET_ID = '1mfRVjcf4AQdTZUxkRxHSkcxLwWM5mjP_ZmJmulk3uag'
+const GIDS = {
+  teams:   0,
+  players: 99924963,
+  misc:    2102016458,
+  games:   1623682605,
+  goals:   496720377,
+  entries: 1323320153,  // Form_Responses tab
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let D = { teams:{}, players:{}, misc:{}, games:[], goals:[], entries:[] }
+let scored = []
+
+// ── CSV FETCH ─────────────────────────────────────────────────────────────────
+function csvUrl(gid) {
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/)
+  if (lines.length < 2) return []
+  const headers = splitCSVLine(lines[0])
+  return lines.slice(1).map(line => {
+    const vals = splitCSVLine(line)
+    const obj = {}
+    headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim() })
+    return obj
+  })
+}
+
+function splitCSVLine(line) {
+  const vals = []
+  let cur = '', inQ = false
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i]
+    if (c === '"') { inQ = !inQ }
+    else if (c === ',' && !inQ) { vals.push(cur); cur = '' }
+    else cur += c
+  }
+  vals.push(cur)
+  return vals.map(v => v.replace(/^"|"$/g, '').trim())
+}
+
+async function fetchSheet(gid) {
+  const res = await fetch(csvUrl(gid))
+  if (!res.ok) throw new Error(`Sheet fetch failed gid=${gid} status=${res.status}`)
+  return parseCSV(await res.text())
+}
+
+// ── LOAD ALL ──────────────────────────────────────────────────────────────────
+async function loadAll() {
+  try {
+    const [teams, players, misc, games, goals, entries] = await Promise.all([
+      fetchSheet(GIDS.teams), fetchSheet(GIDS.players), fetchSheet(GIDS.misc),
+      fetchSheet(GIDS.games), fetchSheet(GIDS.goals),  fetchSheet(GIDS.entries),
+    ])
+
+    // Teams
+    D.teams = {}
+    teams.forEach(r => {
+      const n = parseInt(r['Team Number'])
+      if (n) D.teams[n] = { name: r['Team Name']||'', code: r['Fifa Code']||'', group: r['Group']||'' }
+    })
+
+    // Misc
+    const mv = {}
+    misc.forEach(r => { if (r['Name'] && r['Value']) mv[r['Name'].trim()] = r['Value'].trim() })
+    D.misc = {
+      price:  parseFloat(mv['Price']) || 5,
+      F: parseFloat(mv['F']) || 1,
+      M: parseFloat(mv['M']) || 2,
+      D: parseFloat(mv['D']) || 4,
+      G: parseFloat(mv['G']) || 6,
+      split1: parseFloat(mv['1st']) || 100,
+      split2: parseFloat(mv['2nd']) || 0,
+      split3: parseFloat(mv['3rd']) || 0,
+      splitL: parseFloat(mv['Last']) || 0,
+    }
+
+    // Players
+    D.players = {}
+    players.forEach(r => {
+      const tn = parseInt(r['Team Number'])
+      const pn = parseInt(r['Player Number'])
+      if (!tn || !pn) return
+      const pos = (r['Position']||'').trim()
+      const mult = { G: D.misc.G, D: D.misc.D, M: D.misc.M, F: D.misc.F }[pos] || 1
+      D.players[`${tn}-${pn}`] = {
+        name: r['Player Name']||'',
+        shortName: r['Short Name']||r['Player Name']||'',
+        pos, mult
+      }
+    })
+
+    // Games
+    D.games = games.filter(r => r['Match Number']).map(r => ({
+      matchNum: parseInt(r['Match Number'])||0,
+      home: parseInt(r['Home Team'])||0,
+      away: parseInt(r['Away Team'])||0,
+      dateTime: r['Date Time']||'',
+      label: r['Match Lable']||r['Match Label']||r['label']||'',
+      status: (r['Status']||'').toLowerCase(),
+    }))
+
+    // Goals — skip all-zero placeholder rows
+    D.goals = goals.filter(r => {
+      const tn = parseInt(r['Team Number'])
+      const pn = parseInt(r['Player Number'])
+      const mn = parseInt(r['Match Number'])
+      return tn > 0 || pn > 0 || mn > 0
+    }).map(r => ({
+      matchNum: parseInt(r['Match Number'])||0,
+      teamNum:  parseInt(r['Team Number'])||0,
+      playerNum:parseInt(r['Player Number'])||0,
+      minute:   r['Minute']||'',
+      isShootout:(r['Shootout']||'').toUpperCase()==='Y',
+    }))
+
+    // Entries from form responses
+    // Form columns: Timestamp, Entry Name, TEAM #1, TEAM #2, TEAM #3, TEAM #4, T1 PLAYER #, T2 PLAYER #, T3 PLAYER #, T4 PLAYER #, Paid?
+    D.entries = entries.filter(r => {
+      const name = r['Entry Name']||''
+      return name && name !== 'Place Holder' && name !== '0'
+    }).map(r => ({
+      name: r['Entry Name']||'',
+      teams: [
+        parseInt(r['TEAM #1'])||0, parseInt(r['TEAM #2'])||0,
+        parseInt(r['TEAM #3'])||0, parseInt(r['TEAM #4'])||0,
+      ],
+      players: [
+        parseInt(r['T1 PLAYER #'])||0, parseInt(r['T2 PLAYER #'])||0,
+        parseInt(r['T3 PLAYER #'])||0, parseInt(r['T4 PLAYER #'])||0,
+      ],
+      paid: (r['Paid?']||r['Paid']||'').toUpperCase()==='Y',
+    }))
+
+    calcScores()
+    renderAll()
+
+    document.getElementById('loading').style.display = 'none'
+    document.getElementById('page-leaderboard').classList.add('active')
+    document.getElementById('last-updated').textContent = 'Last updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
+  } catch(e) {
+    document.getElementById('loading').style.display = 'none'
+    document.getElementById('error-global').style.display = 'block'
+    document.getElementById('error-global').innerHTML = `<div class="error-banner">Could not load data: ${e.message}. Please refresh the page.</div>`
+    console.error(e)
+  }
+}
+
+// ── SCORING ───────────────────────────────────────────────────────────────────
+function calcScores() {
+  const sg = D.goals.filter(g => !g.isShootout)
+  scored = D.entries.map(entry => {
+    const slots = [0,1,2,3].map(i => {
+      const tn = entry.teams[i], pn = entry.players[i]
+      const pl = D.players[`${tn}-${pn}`] || {}
+      const mult = pl.mult || 1
+      const tg = sg.filter(g => g.teamNum === tn).length
+      const pg = sg.filter(g => g.teamNum === tn && g.playerNum === pn).length
+      return { tn, pn, mult, tg, pg, pts: tg + pg * mult, pl }
+    })
+    return { entry, slots, total: slots.reduce((s,x) => s + x.pts, 0) }
+  }).sort((a,b) => b.total - a.total)
+}
+
+// ── MATCH SCORES FROM GOAL LOG ────────────────────────────────────────────────
+function getMatchScore(matchNum) {
+  const sg = D.goals.filter(g => !g.isShootout && g.matchNum === matchNum)
+  const game = D.games.find(g => g.matchNum === matchNum)
+  if (!game) return { h: null, a: null }
+  const h = sg.filter(g => g.teamNum === game.home).length
+  const a = sg.filter(g => g.teamNum === game.away).length
+  return { h, a }
+}
+
+// ── GROUP STANDINGS ───────────────────────────────────────────────────────────
+function calcGroupStandings() {
+  const groups = {}
+  // Build group map from teams
+  Object.entries(D.teams).forEach(([num, t]) => {
+    const g = t.group
+    if (!g) return
+    if (!groups[g]) groups[g] = {}
+    groups[g][parseInt(num)] = { name: t.name, code: t.code, mp:0, w:0, d:0, l:0, gf:0, ga:0, gd:0, pts:0 }
+  })
+
+  // Process completed/live games to get scores from goal log
+  D.games.forEach(game => {
+    const score = getMatchScore(game.matchNum)
+    if (score.h === null) return
+    const now = new Date()
+    const dt = game.dateTime ? new Date(game.dateTime) : null
+    const isPast = dt && dt < now
+    if (!isPast && game.status !== 'live' && game.status !== 'completed') return
+
+    const ht = D.teams[game.home]
+    const at = D.teams[game.away]
+    if (!ht || !at) return
+    const hg = ht.group, ag = at.group
+    if (hg !== ag) return // knockout game
+
+    if (!groups[hg] || !groups[hg][game.home] || !groups[hg][game.away]) return
+    const h = groups[hg][game.home], a = groups[hg][game.away]
+
+    h.mp++; a.mp++
+    h.gf += score.h; h.ga += score.a
+    a.gf += score.a; a.ga += score.h
+    h.gd = h.gf - h.ga; a.gd = a.gf - a.ga
+
+    if (score.h > score.a) { h.w++; h.pts+=3; a.l++ }
+    else if (score.h < score.a) { a.w++; a.pts+=3; h.l++ }
+    else { h.d++; a.d++; h.pts++; a.pts++ }
+  })
+
+  // Sort each group
+  Object.values(groups).forEach(grp => {
+    const teams = Object.values(grp)
+    teams.sort((a,b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf)
+    grp._sorted = teams
+  })
+
+  return groups
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderLeaderboard()
+  renderGroups()
+  renderFixtures()
+  renderGoalLog()
+  renderSquads()
+  renderHowToPlay()
+}
+
+// ── LEADERBOARD ───────────────────────────────────────────────────────────────
+function renderLeaderboard(filter='') {
+  const paid = D.entries.filter(e => e.paid)
+  const pot = Math.round(paid.length * D.misc.price)
+  const sg = D.goals.filter(g => !g.isShootout)
+  const live = D.games.filter(g => g.status === 'live').length
+
+  document.getElementById('st-entries').textContent = D.entries.length
+  document.getElementById('st-goals').textContent = sg.length
+  document.getElementById('st-pot').textContent = '£'+pot
+  document.getElementById('st-live').textContent = live
+  document.getElementById('pot-amount').textContent = '£'+pot
+
+  const { split1, split2, split3, splitL } = D.misc
+  const positions = [
+    { label:'1st', pct:split1, idx:0, cls:'' },
+    { label:'2nd', pct:split2, idx:1, cls:'' },
+    { label:'3rd', pct:split3, idx:2, cls:'' },
+    { label:'Last', pct:splitL, idx:-1, cls:'last-place' },
+  ]
+  let splitsHTML = ''
+  positions.forEach(p => {
+    if (!p.pct) return
+    const winner = p.idx >= 0 ? scored[p.idx] : scored[scored.length-1]
+    const amt = Math.round(pot * p.pct / 100)
+    splitsHTML += `<div class="prize-split ${p.cls}">
+      <div class="pos">${p.label}</div>
+      <div class="winner-name">${winner ? winner.entry.name : 'TBD'}</div>
+      <div class="prize-amt">£${amt}</div>
+    </div>`
+  })
+  document.getElementById('prize-splits').innerHTML = splitsHTML
+
+  const q = filter.toLowerCase()
+  const filtered = scored.filter(s => s.entry.name.toLowerCase().includes(q))
+  const lastId = scored.length > 0 ? scored[scored.length-1].entry.name : null
+
+  let html = ''
+  filtered.forEach(s => {
+    const rank = scored.indexOf(s) + 1
+    const isLast = s.entry.name === lastId && rank === scored.length
+    const rCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':isLast?'rl':''
+    const rankLabel = isLast && rank > 3 ? '↓' : rank
+
+    const tags = s.slots.map(slot => {
+      const t = D.teams[slot.tn]
+      return t ? `<span class="team-tag">${t.code||t.name.substring(0,3).toUpperCase()}</span>` : ''
+    }).join('')
+
+    const expandSlots = s.slots.map(slot => {
+      const t = D.teams[slot.tn]
+      const tName = t ? t.name : `Team ${slot.tn}`
+      const pName = slot.pl.shortName || slot.pl.name || `Player #${slot.pn}`
+      const posLabel = {6:'GK ×6',4:'DEF ×4',2:'MID ×2',1:'FWD ×1'}[slot.mult]||`×${slot.mult}`
+      return `<div class="expand-slot">
+        <div class="slot-head"><span class="slot-team">${tName}</span><span class="slot-pts">${slot.pts}</span></div>
+        <div class="slot-player">${pName} · ${posLabel}</div>
+        <div class="slot-breakdown"><span>Team: +${slot.tg}</span><span>Player: ${slot.pg}×${slot.mult}=+${slot.pg*slot.mult}</span></div>
+      </div>`
+    }).join('')
+
+    html += `<div class="lb-row" onclick="this.classList.toggle('open')">
+      <div class="lb-row-main">
+        <div><div class="rank-badge ${rCls}">${rankLabel}</div></div>
+        <div><div class="entry-name">${s.entry.name}</div><div class="entry-tags">${tags}</div></div>
+        <div class="pts-col">${s.total}<span class="chevron">▼</span></div>
+      </div>
+      <div class="lb-expand">${expandSlots}</div>
+    </div>`
+  })
+  document.getElementById('lb-body').innerHTML = html || '<div class="empty">No entries yet</div>'
+}
+
+function filterLeaderboard(val) { renderLeaderboard(val) }
+
+// ── GROUPS ────────────────────────────────────────────────────────────────────
+function renderGroups() {
+  const groups = calcGroupStandings()
+  const groupNames = Object.keys(groups).sort()
+
+  if (!groupNames.length) {
+    document.getElementById('groups-body').innerHTML = '<div class="empty" style="grid-column:1/-1">Group data not available yet</div>'
+    return
+  }
+
+  document.getElementById('groups-subtitle').textContent = `${groupNames.length} groups`
+
+  let html = ''
+  groupNames.forEach(gName => {
+    const grp = groups[gName]
+    const teams = grp._sorted || Object.values(grp).filter(t => t.name)
+    html += `<div class="group-card">
+      <div class="group-title">Group ${gName}</div>
+      <table class="group-table">
+        <thead><tr><th>Team</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
+        <tbody>`
+    teams.forEach((t, i) => {
+      const qualified = i < 2 ? 'qualified' : ''
+      html += `<tr class="${qualified}">
+        <td>${t.name}</td>
+        <td>${t.mp}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
+        <td>${t.gf}</td><td>${t.ga}</td>
+        <td>${t.gd > 0 ? '+'+t.gd : t.gd}</td>
+        <td class="pts-cell">${t.pts}</td>
+      </tr>`
+    })
+    html += '</tbody></table></div>'
+  })
+  document.getElementById('groups-body').innerHTML = html
+}
+
+// ── FIXTURES ──────────────────────────────────────────────────────────────────
+function renderFixtures() {
+  const now = new Date()
+  const withStatus = D.games.map(g => {
+    const dt = g.dateTime ? new Date(g.dateTime) : null
+    let status = g.status
+    if (!status) {
+      status = !dt ? 'upcoming' : dt > now ? 'upcoming' : 'completed'
+    }
+    const score = getMatchScore(g.matchNum)
+    return { ...g, dt, status, score }
+  })
+
+  document.getElementById('fix-subtitle').textContent = `${withStatus.length} matches`
+
+  const grps = [
+    { key:'live',      label:'Live Now',  items: withStatus.filter(g => g.status==='live') },
+    { key:'completed', label:'Completed', items: withStatus.filter(g => g.status==='completed').reverse() },
+    { key:'upcoming',  label:'Upcoming',  items: withStatus.filter(g => g.status==='upcoming') },
+  ]
+
+  let html = ''
+  grps.forEach(grp => {
+    if (!grp.items.length) return
+    html += `<div class="fix-group"><div class="fix-group-label">${grp.label}</div><div class="fix-list">`
+    grp.items.forEach(g => {
+      const home = D.teams[g.home], away = D.teams[g.away]
+      const hName = home ? home.name : `Team ${g.home}`
+      const aName = away ? away.name : `Team ${g.away}`
+      const hasGoals = g.score.h !== null
+
+      let scoreEl = ''
+      if (grp.key === 'live') {
+        scoreEl = `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
+      } else if (grp.key === 'completed' && hasGoals) {
+        scoreEl = `<div class="fix-score">${g.score.h} – ${g.score.a}</div>`
+      } else {
+        scoreEl = `<div class="fix-score" style="font-size:11px;color:#bbb">vs</div>`
+      }
+
+      let statusEl = ''
+      if (grp.key === 'live') {
+        statusEl = `<div class="fix-right"><span class="pill pill-live"><span class="live-pulse"></span>Live</span></div>`
+      } else if (grp.key === 'completed') {
+        statusEl = `<div class="fix-right"><span class="pill pill-done">FT</span></div>`
+      } else {
+        const ts = g.dt ? g.dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+g.dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : g.dateTime
+        statusEl = `<div class="fix-right" style="font-size:11px;color:var(--grey-500)">${ts}<br><span style="font-size:10px;color:#bbb">${g.label}</span></div>`
+      }
+
+      html += `<div class="fix-row"><div class="fix-home">${hName}</div>${scoreEl}<div class="fix-away">${aName}</div>${statusEl}</div>`
+    })
+    html += '</div></div>'
+  })
+  document.getElementById('fix-body').innerHTML = html || '<div class="empty">No fixtures loaded</div>'
+}
+
+// ── GOAL LOG ──────────────────────────────────────────────────────────────────
+function renderGoalLog() {
+  const goals = [...D.goals].reverse()
+  const sc = goals.filter(g => !g.isShootout)
+  document.getElementById('goal-subtitle').textContent = `${sc.length} goal${sc.length!==1?'s':''} scored`
+
+  if (!goals.length) {
+    document.getElementById('goal-body').innerHTML = '<div class="empty">No goals logged yet</div>'
+    return
+  }
+
+  let html = ''
+  goals.forEach(g => {
+    const team = D.teams[g.teamNum]
+    const player = D.players[`${g.teamNum}-${g.playerNum}`]
+    const game = D.games.find(gm => gm.matchNum === g.matchNum)
+    const tName = team ? team.name : `Team ${g.teamNum}`
+    const pName = player ? (player.shortName||player.name) : `Player #${g.playerNum}`
+    const posLabel = player ? ({G:'GK ×'+D.misc.G,D:'DEF ×'+D.misc.D,M:'MID ×'+D.misc.M,F:'FWD ×'+D.misc.F}[player.pos]||'') : ''
+    const matchLabel = game ? (() => {
+      const h = D.teams[game.home], a = D.teams[game.away]
+      return `${h?h.name:'?'} vs ${a?a.name:'?'}`
+    })() : `Match ${g.matchNum}`
+
+    const mult = (player && !g.isShootout) ? player.mult : 0
+    const pts = 1 + mult
+
+    html += `<div class="goal-row${g.isShootout?' shootout':''}">
+      <div><div class="goal-min">${g.minute||'—'}<small>min</small></div></div>
+      <div>
+        <div class="goal-team">${tName}${g.isShootout?'<span class="shootout-badge">SHOOTOUT</span>':''}</div>
+        <div class="goal-player">${pName}${posLabel?' · '+posLabel:''}</div>
+      </div>
+      <div class="goal-match">${matchLabel}</div>
+      <div class="goal-pts">${g.isShootout?'<span style="font-size:11px;color:#aaa">No pts</span>':`+${pts}<small>pts to holders</small>`}</div>
+    </div>`
+  })
+  document.getElementById('goal-body').innerHTML = html
+}
+
+// ── SQUADS ────────────────────────────────────────────────────────────────────
+const FLAG_MAP = {
+  1:'🇲🇽',2:'🇿🇦',3:'🇰🇷',4:'🇨🇿',5:'🇨🇦',6:'🇹🇩',7:'🇧🇷',8:'🇨🇲',
+  9:'🇺🇸',10:'🇸🇻',11:'🇨🇮',12:'🇩🇪',13:'🇯🇵',14:'🇷🇸',15:'🇦🇷',16:'🇨🇱',
+  17:'🇪🇨',18:'🇺🇾',19:'🇦🇺',20:'🇨🇳',21:'🇪🇸',22:'🇲🇦',23:'🇵🇹',24:'🇨🇷',
+  25:'🇫🇷',26:'🇹🇿',27:'🇸🇳',28:'🇧🇫',29:'🇳🇱',30:'🇵🇱',31:'🇧🇪',32:'🇺🇦',
+  33:'🇬🇧',34:'🇸🇰',35:'🇦🇱',36:'🇹🇷',37:'🇨🇭',38:'🇭🇺',39:'🇬🇧',40:'🇩🇿',
+  41:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',42:'🇳🇿',43:'🇵🇸',44:'🇭🇳',45:'🇮🇶',46:'🇴🇲',47:'🇿🇲',48:'🇰🇿',
+}
+
+function getFlag(teamNum, teamName) {
+  // Use emoji flags based on FIFA code where possible
+  const code = D.teams[teamNum]?.code || ''
+  const flagMap = {
+    'MEX':'🇲🇽','RSA':'🇿🇦','KOR':'🇰🇷','CZE':'🇨🇿','CAN':'🇨🇦','CHA':'🇹🇩',
+    'BRA':'🇧🇷','CMR':'🇨🇲','USA':'🇺🇸','SLV':'🇸🇻','CIV':'🇨🇮','GER':'🇩🇪',
+    'JPN':'🇯🇵','SRB':'🇷🇸','ARG':'🇦🇷','CHI':'🇨🇱','ECU':'🇪🇨','URU':'🇺🇾',
+    'AUS':'🇦🇺','CHN':'🇨🇳','ESP':'🇪🇸','MAR':'🇲🇦','POR':'🇵🇹','CRC':'🇨🇷',
+    'FRA':'🇫🇷','TAN':'🇹🇿','SEN':'🇸🇳','BFA':'🇧🇫','NED':'🇳🇱','POL':'🇵🇱',
+    'BEL':'🇧🇪','UKR':'🇺🇦','SCO':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','SVK':'🇸🇰','ALB':'🇦🇱','TUR':'🇹🇷',
+    'SUI':'🇨🇭','HUN':'🇭🇺','ENG':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','NZL':'🇳🇿','ALG':'🇩🇿','PAL':'🇵🇸',
+    'HON':'🇭🇳','IRQ':'🇮🇶','OMA':'🇴🇲','ZAM':'🇿🇲','KAZ':'🇰🇿','PAN':'🇵🇦',
+    'WAL':'🏴󠁧󠁢󠁷󠁬󠁳󠁿','NOR':'🇳🇴','COL':'🇨🇴','PER':'🇵🇪','VEN':'🇻🇪','BOL':'🇧🇴',
+    'PAR':'🇵🇾','SWE':'🇸🇪','DEN':'🇩🇰','AUT':'🇦🇹','GRE':'🇬🇷','CRO':'🇭🇷',
+    'IRN':'🇮🇷','MLI':'🇲🇱','COD':'🇨🇩','NGA':'🇳🇬','GHA':'🇬🇭','EGY':'🇪🇬',
+    'TUN':'🇹🇳','IVC':'🇨🇮','BEN':'🇧🇯','KEN':'🇰🇪',
+  }
+  return flagMap[code] || '🏳️'
+}
+
+function renderSquads() {
+  const teamNums = Object.keys(D.teams).map(Number).sort((a,b)=>a-b)
+  let html = ''
+
+  teamNums.forEach(tn => {
+    const team = D.teams[tn]
+    if (!team) return
+
+    const flag = getFlag(tn, team.name)
+    const playerEntries = Object.entries(D.players)
+      .filter(([k]) => parseInt(k.split('-')[0]) === tn)
+      .sort((a,b) => parseInt(a[0].split('-')[1]) - parseInt(b[0].split('-')[1]))
+
+    let rows = ''
+    playerEntries.forEach(([k, p]) => {
+      const pn = parseInt(k.split('-')[1])
+      const name = p.name || ''
+      const isTbd = !name
+      const posClr = {G:'pos-G',D:'pos-D',M:'pos-M',F:'pos-F'}[p.pos] || ''
+      rows += `<div class="squad-player-row">
+        <div class="squad-shirt">${pn}</div>
+        <div class="squad-pname${isTbd?' tbd':''}">${isTbd?'TBD':name}</div>
+        <div class="squad-pos ${posClr}">${p.pos||'—'}</div>
+      </div>`
+    })
+
+    if (!rows) {
+      rows = `<div class="squad-player-row"><div class="squad-shirt"></div><div class="squad-pname tbd" style="grid-column:2/-1">Squad not yet confirmed</div></div>`
+    }
+
+    const playerCount = playerEntries.length
+    html += `<div class="squad-item" id="squad-${tn}">
+      <div class="squad-item-head" onclick="toggleSquad(${tn})">
+        <div class="squad-num-big">${tn}</div>
+        <div class="squad-flag">${flag}</div>
+        <div class="squad-info">
+          <div class="squad-country">${team.name}</div>
+          <div class="squad-meta">${team.code} · Group ${team.group}${playerCount ? ' · '+playerCount+' players' : ''}</div>
+        </div>
+        <div class="squad-chevron">▼</div>
+      </div>
+      <div class="squad-players">${rows}</div>
+    </div>`
+  })
+
+  document.getElementById('squad-body').innerHTML = html || '<div class="empty">No team data yet</div>'
+}
+
+function toggleSquad(tn) {
+  const el = document.getElementById('squad-'+tn)
+  if (!el) return
+  el.classList.toggle('open')
+}
+
+// ── HOW TO PLAY ───────────────────────────────────────────────────────────────
+function renderHowToPlay() {
+  const price = D.misc.price
+  document.getElementById('entry-price').textContent = `£${price % 1 === 0 ? price : price.toFixed(2)}`
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'))
+  document.getElementById('page-'+id).classList.add('active')
+  btn.classList.add('active')
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadAll()
+setInterval(loadAll, 60000)
+</script>
+</body>
+</html>
