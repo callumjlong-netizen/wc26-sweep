@@ -45,7 +45,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 #page-leaderboard .prize-box{display:flex;margin-bottom:18px}
  
 /* ── STAT CARDS ── */
-.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
 .stat-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:12px 10px;text-align:center}
 .stat-card .val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--green);letter-spacing:.03em;line-height:1}
 .stat-card .lbl{font-size:10px;color:var(--grey-500);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
@@ -214,8 +214,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
  
 /* ── RESPONSIVE ── */
 @media(max-width:640px){
-  .stats-row{grid-template-columns:repeat(3,1fr)}
-  .stats-row .stat-card:nth-child(4),.stats-row .stat-card:nth-child(5){grid-column:span 1}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
   .lb-expand{grid-template-columns:1fr}
   .prize-box{flex-direction:column;align-items:flex-start}
   .fix-row{grid-template-columns:1fr 54px 1fr 70px;font-size:11px;padding:8px 10px}
@@ -254,7 +253,6 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
       <div class="stat-card"><div class="val" id="st-teams">—</div><div class="lbl">Teams</div></div>
       <div class="stat-card"><div class="val" id="st-players">—</div><div class="lbl">Players</div></div>
       <div class="stat-card"><div class="val" id="st-matches">—</div><div class="lbl">Matches</div></div>
-      <div class="stat-card"><div class="val" id="st-goals">—</div><div class="lbl">Goals</div></div>
     </div>
     <div class="prize-box">
       <div><div class="pot-label">Total Prize Pot</div><div class="pot-amount" id="pot-amount">£0</div></div>
@@ -316,14 +314,14 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
           <div class="step-num">1</div>
           <div class="step-body">
             <h3>Draw 4 teams</h3>
-            <p>Draw 4 numbers at random. Each number corresponds to one of the 48 World Cup teams listed in group stage order. <strong>No duplicate numbers</strong>.</p>
+            <p>Draw <strong>4 numbers</strong> at random from the bag. Each number corresponds to one of the 48 World Cup teams listed in group stage order. <strong>No duplicate numbers</strong>.</p>
           </div>
         </div>
         <div class="how-step">
           <div class="step-num">2</div>
           <div class="step-body">
             <h3>Draw 4 players</h3>
-            <p>Draw 4 numbers at random. Each number corresponds to a squad player's shirt number. <strong>Max 26 redraw if above)</strong>.</p>
+            <p>Draw <strong>4 numbers</strong> at random. Each number corresponds to a squad player's shirt number <strong>(max 26 — redraw if above)</strong>.</p>
             <p style="margin-top:6px">The first number drawn is the player for your first team, the second for your second team, and so on. <strong>No duplicate numbers</strong>.</p>
             <p style="margin-top:6px">If the number drawn is not an available shirt number for that team's squad, <strong>the next lowest available number will be chosen</strong>.</p>
           </div>
@@ -612,16 +610,13 @@ function showPage(id, btn) {
 }
  
 function renderLeaderboard(filter='') {
-  const paid = D.entries.filter(e => e.paid)
-  const pot = Math.round(paid.length * D.misc.price)
+  const pot = Math.round(D.entries.length * D.misc.price)
   const sg = D.goals.filter(g => !g.isShootout)
-  const completedMatches = D.games.filter(g => g.status === 'completed' || g.status === 'live').length
  
   document.getElementById('st-entries').textContent = D.entries.length
   document.getElementById('st-teams').textContent = Object.keys(D.teams).length
   document.getElementById('st-players').textContent = Object.keys(D.players).length
-  document.getElementById('st-matches').textContent = completedMatches
-  document.getElementById('st-goals').textContent = sg.length
+  document.getElementById('st-matches').textContent = 104
   document.getElementById('pot-amount').textContent = '£'+pot
  
   const { split1, split2, split3, splitL } = D.misc
@@ -657,13 +652,13 @@ function renderLeaderboard(filter='') {
  
     const tags = s.slots.map(slot => {
       const t = D.teams[slot.tn]
-      return t ? `<span class="team-tag">${t.code||t.name.substring(0,3).toUpperCase()}</span>` : ''
+      return t ? `<span class="team-tag">#${slot.tn} ${t.code||t.name.substring(0,3).toUpperCase()}</span>` : ''
     }).join('')
  
     const expandSlots = s.slots.map(slot => {
       const t = D.teams[slot.tn]
       const tName = t ? t.name : `Team ${slot.tn}`
-      const pName = slot.pl.shortName || slot.pl.name || `Player #${slot.pn}`
+      const pName = (slot.pl.shortName || slot.pl.name) ? `#${slot.pn} ${slot.pl.shortName || slot.pl.name}` : `#${slot.pn}`
       const posLabel = {6:'GK ×6',4:'DEF ×4',2:'MID ×2',1:'FWD ×1'}[slot.mult]||`×${slot.mult}`
       return `<div class="expand-slot">
         <div class="slot-head"><span class="slot-team">${tName}</span><span class="slot-pts">${slot.pts}</span></div>
@@ -798,38 +793,58 @@ function renderFixtures() {
  
   document.getElementById('fix-subtitle').textContent = `${withStatus.length} matches`
  
-  const grps = [
-    { key:'live',      label:'Live Now',  items: withStatus.filter(g => g.status==='live') },
-    { key:'completed', label:'Completed', items: withStatus.filter(g => g.status==='completed').reverse() },
-    { key:'upcoming',  label:'Upcoming',  items: withStatus.filter(g => g.status==='upcoming') },
-  ]
+  // Group by calendar date (YYYY-MM-DD key, using the game's datetime)
+  const byDate = {}
+  const dateOrder = []
+  withStatus.forEach(g => {
+    const key = g.dt
+      ? g.dt.toISOString().slice(0, 10)
+      : 'unknown'
+    if (!byDate[key]) { byDate[key] = []; dateOrder.push(key) }
+    byDate[key].push(g)
+  })
+  // Remove duplicate keys (insertion order preserved)
+  const uniqueDates = [...new Set(dateOrder)]
+ 
+  function ordinal(n) {
+    const s = ['th','st','nd','rd'], v = n % 100
+    return n + (s[(v-20)%10] || s[v] || s[0])
+  }
+  function dateHeading(key) {
+    if (key === 'unknown') return 'Date TBC'
+    const d = new Date(key + 'T12:00:00Z') // noon UTC avoids DST shifts
+    const day  = d.toLocaleDateString('en-GB', { weekday:'long',  timeZone:'UTC' })
+    const date = d.toLocaleDateString('en-GB', { day:'numeric', month:'long', timeZone:'UTC' })
+    const [num, ...rest] = date.split(' ')
+    return `${day} ${ordinal(parseInt(num))} ${rest.join(' ')}`
+  }
  
   let html = ''
-  grps.forEach(grp => {
-    if (!grp.items.length) return
-    html += `<div class="fix-group"><div class="fix-group-label">${grp.label}</div><div class="fix-list">`
-    grp.items.forEach(g => {
+  uniqueDates.forEach(key => {
+    const items = byDate[key]
+    html += `<div class="fix-group"><div class="fix-group-label">${dateHeading(key)}</div><div class="fix-list">`
+    items.forEach(g => {
       const home = D.teams[g.home], away = D.teams[g.away]
       const hName = home ? home.name : `Team ${g.home}`
       const aName = away ? away.name : `Team ${g.away}`
  
       let scoreEl = ''
-      if (grp.key === 'live') {
+      if (g.status === 'live') {
         scoreEl = `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
-      } else if (grp.key === 'completed' && g.score.h !== null) {
+      } else if (g.status === 'completed' && g.score.h !== null) {
         scoreEl = `<div class="fix-score">${g.score.h} – ${g.score.a}</div>`
       } else {
         scoreEl = `<div class="fix-score" style="font-size:11px;color:#bbb">vs</div>`
       }
  
       let statusEl = ''
-      if (grp.key === 'live') {
+      if (g.status === 'live') {
         statusEl = `<div class="fix-right"><span class="pill pill-live"><span class="live-pulse"></span>Live</span></div>`
-      } else if (grp.key === 'completed') {
+      } else if (g.status === 'completed') {
         statusEl = `<div class="fix-right"><span class="pill pill-done">FT</span></div>`
       } else {
-        const ts = g.dt ? g.dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+g.dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : g.dateTime
-        statusEl = `<div class="fix-right" style="font-size:11px;color:var(--grey-500)">${ts}<br><span style="font-size:10px;color:#bbb">${g.label}</span></div>`
+        const timeStr = g.dt ? g.dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : ''
+        statusEl = `<div class="fix-right" style="font-size:11px;color:var(--grey-500)">${timeStr}<br><span style="font-size:10px;color:#bbb">${g.label}</span></div>`
       }
  
       html += `<div class="fix-row"><div class="fix-home">${hName}</div>${scoreEl}<div class="fix-away">${aName}</div>${statusEl}</div>`
