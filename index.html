@@ -41,14 +41,12 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .page{display:none;width:100%}
 .page.active{display:block}
 .inner{max-width:960px;margin:0 auto;padding:20px 16px 60px}
-/* Ensure stats/prize never leak outside leaderboard page */
-#page-leaderboard .stats-row,
-#page-leaderboard .prize-box{display:grid;margin-bottom:16px}
-#page-leaderboard .prize-box{display:flex}
+#page-leaderboard .stats-row{display:grid;margin-bottom:16px}
+#page-leaderboard .prize-box{display:flex;margin-bottom:18px}
  
 /* ── STAT CARDS ── */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
-.stat-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:12px 14px;text-align:center}
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+.stat-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:12px 10px;text-align:center}
 .stat-card .val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--green);letter-spacing:.03em;line-height:1}
 .stat-card .lbl{font-size:10px;color:var(--grey-500);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
  
@@ -100,7 +98,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .section-head span{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--grey-500);letter-spacing:0}
  
 /* ── GROUP TABLES ── */
-.groups-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.groups-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px}
 .group-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);overflow:hidden}
 .group-title{background:var(--green-dark);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.08em;padding:8px 14px}
 .group-table{width:100%;border-collapse:collapse;font-size:12px}
@@ -113,7 +111,18 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .pts-cell{font-weight:700;color:var(--green-dark)}
  
 /* ── KNOCKOUT ── */
-.knockout-note{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:20px;text-align:center;color:var(--grey-500);font-size:13px;margin-top:14px}
+.knockout-section{margin-top:8px}
+.knockout-round{margin-bottom:16px}
+.knockout-round-title{background:var(--green-dark);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.08em;padding:7px 14px;border-radius:var(--radius) var(--radius) 0 0}
+.knockout-list{background:var(--white);border:1px solid var(--grey-200);border-radius:0 0 var(--radius) var(--radius);overflow:hidden}
+.knockout-row{display:grid;grid-template-columns:1fr 68px 1fr 80px;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--grey-100);font-size:13px}
+.knockout-row:last-child{border-bottom:none}
+.ko-home{text-align:right;font-weight:600}
+.ko-away{font-weight:600}
+.ko-score{text-align:center;font-family:'DM Mono',monospace;font-weight:500;font-size:14px;background:var(--grey-100);border-radius:6px;padding:3px 8px}
+.ko-score.live-score{background:#fde8e8;color:var(--red)}
+.ko-right{text-align:right;font-size:11px;color:var(--grey-500)}
+.knockout-pending{padding:20px;text-align:center;color:var(--grey-500);font-size:13px;font-style:italic}
  
 /* ── FIXTURES ── */
 .fix-group{margin-bottom:18px}
@@ -205,13 +214,14 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
  
 /* ── RESPONSIVE ── */
 @media(max-width:640px){
-  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .stats-row{grid-template-columns:repeat(3,1fr)}
+  .stats-row .stat-card:nth-child(4),.stats-row .stat-card:nth-child(5){grid-column:span 1}
   .lb-expand{grid-template-columns:1fr}
   .prize-box{flex-direction:column;align-items:flex-start}
   .fix-row{grid-template-columns:1fr 54px 1fr 70px;font-size:11px;padding:8px 10px}
   .goal-row{grid-template-columns:44px 1fr 1fr 48px}
   .groups-grid{grid-template-columns:1fr}
-  .squad-grid{grid-template-columns:1fr}
+  .knockout-row{grid-template-columns:1fr 54px 1fr 70px;font-size:11px}
   nav button{padding:15px 10px 12px;font-size:11px}
   .how-step{flex-direction:column;gap:8px}
 }
@@ -221,7 +231,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
  
 <header>
   <div class="header-inner">
-    <div class="logo"><span style="color:white">STEEL</span>WC<span>26</span></div>
+    <div class="logo"><span style="color:white">STEEL</span> WC<span>26</span></div>
     <nav>
       <button class="active" onclick="showPage('leaderboard',this)">Leaderboard</button>
       <button onclick="showPage('groups',this)">Groups</button>
@@ -241,9 +251,10 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
   <div class="inner">
     <div class="stats-row">
       <div class="stat-card"><div class="val" id="st-entries">—</div><div class="lbl">Entries</div></div>
+      <div class="stat-card"><div class="val" id="st-teams">—</div><div class="lbl">Teams</div></div>
+      <div class="stat-card"><div class="val" id="st-players">—</div><div class="lbl">Players</div></div>
+      <div class="stat-card"><div class="val" id="st-matches">—</div><div class="lbl">Matches</div></div>
       <div class="stat-card"><div class="val" id="st-goals">—</div><div class="lbl">Goals</div></div>
-      <div class="stat-card"><div class="val" id="st-pot">—</div><div class="lbl">Prize Pot</div></div>
-      <div class="stat-card"><div class="val" id="st-live">—</div><div class="lbl">Live Now</div></div>
     </div>
     <div class="prize-box">
       <div><div class="pot-label">Total Prize Pot</div><div class="pot-amount" id="pot-amount">£0</div></div>
@@ -262,9 +273,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
   <div class="inner">
     <div class="section-head">Group Stage <span id="groups-subtitle"></span></div>
     <div class="groups-grid" id="groups-body"></div>
-    <div class="knockout-note" id="knockout-note" style="display:none">
-      🏆 Knockout stage fixtures will appear here once the group stage is complete.
-    </div>
+    <div class="knockout-section" id="knockout-section"></div>
   </div>
 </div>
  
@@ -298,7 +307,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
     <div class="how-wrap">
       <div class="how-intro">
         <h2>How to Play</h2>
-        <p>To enter the sweepstake see <strong style="color:var(--gold)">Dean Tatchell</strong> or <strong style="color:var(--gold)">Curt Newton</strong>. Entries cost <span class="price-tag" id="entry-price">£5</span> each.</p>
+        <p>To enter see <strong style="color:var(--gold)">Dean Tatchell</strong> or <strong style="color:var(--gold)">Curt Newton</strong>, entries cost <span class="price-tag" id="entry-price">£5</span> each.</p>
         <p>You can buy multiple entries to increase your chances.</p>
       </div>
  
@@ -307,16 +316,16 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
           <div class="step-num">1</div>
           <div class="step-body">
             <h3>Draw 4 teams</h3>
-            <p>Draw <strong>4 numbers </strong> from the bag at random. Each number corresponds to one of the 48 World Cup teams listed in group stage order. <strong>No duplicate numbers</strong>.</p>
+            <p>Draw 4 numbers at random. Each number corresponds to one of the 48 World Cup teams listed in group stage order. <strong>No duplicate numbers</strong>.</p>
           </div>
         </div>
         <div class="how-step">
           <div class="step-num">2</div>
           <div class="step-body">
             <h3>Draw 4 players</h3>
-              <p>Draw <strong>4 numbers</strong> from the bag at random. Each number corresponds to a squad player number <strong>MAX 26 redraw if above</strong>.</p>
-              <p style="margin-top:6px">The first number drawn is the player for your first team, the second for your second team, and so on. <strong>No duplicate numbers</strong>.</p>
-              <p style="margin-top:6px">If the number drawn is not an available player number for that team's squad, <strong>the next lowest available player number will be chosen</strong>.</p>
+            <p>Draw 4 numbers at random. Each number corresponds to a squad player's shirt number. <strong>Max 26 redraw if above)</strong>.</p>
+            <p style="margin-top:6px">The first number drawn is the player for your first team, the second for your second team, and so on. <strong>No duplicate numbers</strong>.</p>
+            <p style="margin-top:6px">If the number drawn is not an available shirt number for that team's squad, <strong>the next lowest available number will be chosen</strong>.</p>
           </div>
         </div>
         <div class="how-step">
@@ -330,7 +339,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
  
       <div class="rules-box">
         <h3>Rules &amp; Scoring</h3>
-        <div class="rule"><span class="rule-icon">🏆</span><span>At the end of the tournament the prize pot will be split between the entries in the <strong>1st, 2nd, 3rd, and last</strong> position as a percentage of the total prize pot. <strong>60%, 25%, 10%, and 5% respectively</strong> - Check the leaderboard for the current positions and prize amounts.</span></div>
+        <div class="rule"><span class="rule-icon">🏆</span><span>At the end of the tournament the prize pot will be split between the entries in <strong>1st, 2nd, 3rd, and last</strong> position — <strong>60%, 25%, 10%, and 5%</strong> of the total pot. Check the leaderboard for current positions and prize amounts.</span></div>
         <div class="rule"><span class="rule-icon">⚽</span><span>Points are scored when your <strong>team scores a goal</strong> or your <strong>player scores a goal</strong>.</span></div>
         <div class="rule"><span class="rule-icon">+1</span><span>Each goal scored by <strong>your team</strong> adds <strong>1 point</strong> to your total.</span></div>
         <div class="rule"><span class="rule-icon">+X</span><span>Each goal scored by <strong>your player</strong> adds points based on their <strong>position multiplier</strong>:
@@ -345,16 +354,15 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
           </table>
         </span></div>
         <div class="rule"><span class="rule-icon">🚫</span><span>Goals scored in a <strong>penalty shootout do not count</strong>. Only goals scored during normal time and extra time are awarded points.</span></div>
-        <div class="rule"><span class="rule-icon">🚫</span><span>Player positions are determined by each country's official FIFA squad list submission confirmed on the 2nd June.</span></div>
+        <div class="rule"><span class="rule-icon">📋</span><span>Player positions are determined by each country's official FIFA squad list submission confirmed on the <strong>2nd June</strong>.</span></div>
       </div>
     </div>
   </div>
 </div>
  
-<footer>WC26 Sweep · Updates every 5 mins · <span id="last-updated"></span></footer>
+<footer>STEEL WC26 Sweep · Updates every 5 mins · <span id="last-updated"></span></footer>
  
 <script>
-// ── CONFIG ────────────────────────────────────────────────────────────────────
 const SHEET_ID = '1mfRVjcf4AQdTZUxkRxHSkcxLwWM5mjP_ZmJmulk3uag'
 const GIDS = {
   teams:   0,
@@ -362,16 +370,29 @@ const GIDS = {
   misc:    2102016458,
   games:   1623682605,
   goals:   496720377,
-  entries: 1323320153,  // Form_Responses tab
+  entries: 1323320153,
 }
  
-// ── STATE ─────────────────────────────────────────────────────────────────────
 let D = { teams:{}, players:{}, misc:{}, games:[], goals:[], entries:[] }
 let scored = []
 let currentPage = 'leaderboard'
 let appReady = false
  
-// ── CSV FETCH ─────────────────────────────────────────────────────────────────
+// Keywords that identify knockout round games by their Match Label
+const KNOCKOUT_ROUNDS = [
+  { key:'final',         label:'Final' },
+  { key:'third',         label:'Third Place Play-off' },
+  { key:'semi',          label:'Semi Finals' },
+  { key:'quarter',       label:'Quarter Finals' },
+  { key:'round of 16',   label:'Round of 16' },
+  { key:'round of 32',   label:'Round of 32' },
+]
+ 
+function isKnockoutLabel(label) {
+  const l = (label||'').toLowerCase()
+  return KNOCKOUT_ROUNDS.some(r => l.includes(r.key))
+}
+ 
 function csvUrl(gid) {
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`
 }
@@ -407,7 +428,6 @@ async function fetchSheet(gid) {
   return parseCSV(await res.text())
 }
  
-// ── LOAD ALL ──────────────────────────────────────────────────────────────────
 async function loadAll() {
   try {
     const [teams, players, misc, games, goals, entries] = await Promise.all([
@@ -415,14 +435,12 @@ async function loadAll() {
       fetchSheet(GIDS.games), fetchSheet(GIDS.goals),  fetchSheet(GIDS.entries),
     ])
  
-    // Teams
     D.teams = {}
     teams.forEach(r => {
       const n = parseInt(r['Team Number'])
       if (n) D.teams[n] = { name: r['Team Name']||'', code: r['Fifa Code']||'', group: r['Group']||'' }
     })
  
-    // Misc
     const mv = {}
     misc.forEach(r => { if (r['Name'] && r['Value']) mv[r['Name'].trim()] = r['Value'].trim() })
     D.misc = {
@@ -437,7 +455,6 @@ async function loadAll() {
       splitL: parseFloat(mv['Last']) || 0,
     }
  
-    // Players
     D.players = {}
     players.forEach(r => {
       const tn = parseInt(r['Team Number'])
@@ -452,7 +469,6 @@ async function loadAll() {
       }
     })
  
-    // Games
     D.games = games.filter(r => r['Match Number']).map(r => ({
       matchNum: parseInt(r['Match Number'])||0,
       home: parseInt(r['Home Team'])||0,
@@ -462,7 +478,6 @@ async function loadAll() {
       status: (r['Status']||'').toLowerCase(),
     }))
  
-    // Goals — skip all-zero placeholder rows
     D.goals = goals.filter(r => {
       const tn = parseInt(r['Team Number'])
       const pn = parseInt(r['Player Number'])
@@ -476,8 +491,6 @@ async function loadAll() {
       isShootout:(r['Shootout']||'').toUpperCase()==='Y',
     }))
  
-    // Entries from form responses
-    // Form columns: Timestamp, Entry Name, TEAM #1, TEAM #2, TEAM #3, TEAM #4, T1 PLAYER #, T2 PLAYER #, T3 PLAYER #, T4 PLAYER #, Paid?
     D.entries = entries.filter(r => {
       const name = r['Entry Name']||''
       return name && name !== 'Place Holder' && name !== '0'
@@ -496,7 +509,6 @@ async function loadAll() {
  
     calcScores()
  
-    // First load only — show leaderboard and unhide app
     if (!appReady) {
       appReady = true
       document.getElementById('loading').style.display = 'none'
@@ -504,7 +516,6 @@ async function loadAll() {
       currentPage = 'leaderboard'
     }
  
-    // Only re-render the page currently being viewed — never hijack the active page
     renderPage(currentPage)
     document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
   } catch(e) {
@@ -515,7 +526,6 @@ async function loadAll() {
   }
 }
  
-// ── SCORING ───────────────────────────────────────────────────────────────────
 function calcScores() {
   const sg = D.goals.filter(g => !g.isShootout)
   scored = D.entries.map(entry => {
@@ -531,20 +541,18 @@ function calcScores() {
   }).sort((a,b) => b.total - a.total)
 }
  
-// ── MATCH SCORES FROM GOAL LOG ────────────────────────────────────────────────
 function getMatchScore(matchNum) {
   const sg = D.goals.filter(g => !g.isShootout && g.matchNum === matchNum)
   const game = D.games.find(g => g.matchNum === matchNum)
   if (!game) return { h: null, a: null }
-  const h = sg.filter(g => g.teamNum === game.home).length
-  const a = sg.filter(g => g.teamNum === game.away).length
-  return { h, a }
+  return {
+    h: sg.filter(g => g.teamNum === game.home).length,
+    a: sg.filter(g => g.teamNum === game.away).length,
+  }
 }
  
-// ── GROUP STANDINGS ───────────────────────────────────────────────────────────
 function calcGroupStandings() {
   const groups = {}
-  // Build group map from teams
   Object.entries(D.teams).forEach(([num, t]) => {
     const g = t.group
     if (!g) return
@@ -552,22 +560,20 @@ function calcGroupStandings() {
     groups[g][parseInt(num)] = { name: t.name, code: t.code, mp:0, w:0, d:0, l:0, gf:0, ga:0, gd:0, pts:0 }
   })
  
-  // Process completed/live games to get scores from goal log
-  D.games.forEach(game => {
+  const now = new Date()
+  D.games.filter(game => !isKnockoutLabel(game.label)).forEach(game => {
     const score = getMatchScore(game.matchNum)
     if (score.h === null) return
-    const now = new Date()
     const dt = game.dateTime ? new Date(game.dateTime) : null
     const isPast = dt && dt < now
     if (!isPast && game.status !== 'live' && game.status !== 'completed') return
  
-    const ht = D.teams[game.home]
-    const at = D.teams[game.away]
+    const ht = D.teams[game.home], at = D.teams[game.away]
     if (!ht || !at) return
     const hg = ht.group, ag = at.group
-    if (hg !== ag) return // knockout game
+    if (hg !== ag) return
  
-    if (!groups[hg] || !groups[hg][game.home] || !groups[hg][game.away]) return
+    if (!groups[hg]?.[game.home] || !groups[hg]?.[game.away]) return
     const h = groups[hg][game.home], a = groups[hg][game.away]
  
     h.mp++; a.mp++
@@ -575,32 +581,27 @@ function calcGroupStandings() {
     a.gf += score.a; a.ga += score.h
     h.gd = h.gf - h.ga; a.gd = a.gf - a.ga
  
-    if (score.h > score.a) { h.w++; h.pts+=3; a.l++ }
+    if (score.h > score.a)      { h.w++; h.pts+=3; a.l++ }
     else if (score.h < score.a) { a.w++; a.pts+=3; h.l++ }
-    else { h.d++; a.d++; h.pts++; a.pts++ }
+    else                        { h.d++; a.d++; h.pts++; a.pts++ }
   })
  
-  // Sort each group
   Object.values(groups).forEach(grp => {
-    const teams = Object.values(grp)
-    teams.sort((a,b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf)
-    grp._sorted = teams
+    grp._sorted = Object.values(grp).filter(t=>t.name).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf)
   })
  
   return groups
 }
  
-// ── RENDER SINGLE PAGE ────────────────────────────────────────────────────────
 function renderPage(page) {
   if (page === 'leaderboard') renderLeaderboard()
-  else if (page === 'groups')  renderGroups()
+  else if (page === 'groups')   renderGroups()
   else if (page === 'fixtures') renderFixtures()
-  else if (page === 'goallog') renderGoalLog()
-  else if (page === 'squads')  renderSquads()
+  else if (page === 'goallog')  renderGoalLog()
+  else if (page === 'squads')   renderSquads()
   else if (page === 'howtoplay') renderHowToPlay()
 }
  
-// ── NAV ───────────────────────────────────────────────────────────────────────
 function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'))
@@ -610,17 +611,17 @@ function showPage(id, btn) {
   renderPage(id)
 }
  
-// ── LEADERBOARD ───────────────────────────────────────────────────────────────
 function renderLeaderboard(filter='') {
   const paid = D.entries.filter(e => e.paid)
   const pot = Math.round(paid.length * D.misc.price)
   const sg = D.goals.filter(g => !g.isShootout)
-  const live = D.games.filter(g => g.status === 'live').length
+  const completedMatches = D.games.filter(g => g.status === 'completed' || g.status === 'live').length
  
   document.getElementById('st-entries').textContent = D.entries.length
+  document.getElementById('st-teams').textContent = Object.keys(D.teams).length
+  document.getElementById('st-players').textContent = Object.keys(D.players).length
+  document.getElementById('st-matches').textContent = completedMatches
   document.getElementById('st-goals').textContent = sg.length
-  document.getElementById('st-pot').textContent = '£'+pot
-  document.getElementById('st-live').textContent = live
   document.getElementById('pot-amount').textContent = '£'+pot
  
   const { split1, split2, split3, splitL } = D.misc
@@ -645,12 +646,12 @@ function renderLeaderboard(filter='') {
  
   const q = filter.toLowerCase()
   const filtered = scored.filter(s => s.entry.name.toLowerCase().includes(q))
-  const lastId = scored.length > 0 ? scored[scored.length-1].entry.name : null
+  const lastEntry = scored.length > 0 ? scored[scored.length-1] : null
  
   let html = ''
   filtered.forEach(s => {
     const rank = scored.indexOf(s) + 1
-    const isLast = s.entry.name === lastId && rank === scored.length
+    const isLast = lastEntry && s.entry.name === lastEntry.entry.name && rank === scored.length
     const rCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':isLast?'rl':''
     const rankLabel = isLast && rank > 3 ? '↓' : rank
  
@@ -685,53 +686,114 @@ function renderLeaderboard(filter='') {
  
 function filterLeaderboard(val) { renderLeaderboard(val) }
  
-// ── GROUPS ────────────────────────────────────────────────────────────────────
 function renderGroups() {
   const groups = calcGroupStandings()
   const groupNames = Object.keys(groups).sort()
  
+  // Group tables
   if (!groupNames.length) {
     document.getElementById('groups-body').innerHTML = '<div class="empty" style="grid-column:1/-1">Group data not available yet</div>'
+  } else {
+    document.getElementById('groups-subtitle').textContent = `${groupNames.length} groups`
+    let html = ''
+    groupNames.forEach(gName => {
+      const teams = groups[gName]._sorted || []
+      html += `<div class="group-card">
+        <div class="group-title">Group ${gName}</div>
+        <table class="group-table">
+          <thead><tr><th>Team</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
+          <tbody>`
+      teams.forEach((t, i) => {
+        html += `<tr class="${i < 2 ? 'qualified' : ''}">
+          <td>${t.name}</td>
+          <td>${t.mp}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
+          <td>${t.gf}</td><td>${t.ga}</td>
+          <td>${t.gd > 0 ? '+'+t.gd : t.gd}</td>
+          <td class="pts-cell">${t.pts}</td>
+        </tr>`
+      })
+      html += '</tbody></table></div>'
+    })
+    document.getElementById('groups-body').innerHTML = html
+  }
+ 
+  // Knockout section — games whose label contains a knockout round keyword
+  const now = new Date()
+  const knockoutGames = D.games.filter(g => isKnockoutLabel(g.label))
+ 
+  if (!knockoutGames.length) {
+    document.getElementById('knockout-section').innerHTML = ''
     return
   }
  
-  document.getElementById('groups-subtitle').textContent = `${groupNames.length} groups`
+  // Group knockout games by round label
+  const rounds = {}
+  KNOCKOUT_ROUNDS.forEach(r => { rounds[r.label] = [] })
  
-  let html = ''
-  groupNames.forEach(gName => {
-    const grp = groups[gName]
-    const teams = grp._sorted || Object.values(grp).filter(t => t.name)
-    html += `<div class="group-card">
-      <div class="group-title">Group ${gName}</div>
-      <table class="group-table">
-        <thead><tr><th>Team</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
-        <tbody>`
-    teams.forEach((t, i) => {
-      const qualified = i < 2 ? 'qualified' : ''
-      html += `<tr class="${qualified}">
-        <td>${t.name}</td>
-        <td>${t.mp}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
-        <td>${t.gf}</td><td>${t.ga}</td>
-        <td>${t.gd > 0 ? '+'+t.gd : t.gd}</td>
-        <td class="pts-cell">${t.pts}</td>
-      </tr>`
-    })
-    html += '</tbody></table></div>'
+  knockoutGames.forEach(game => {
+    const lbl = (game.label||'').toLowerCase()
+    const round = KNOCKOUT_ROUNDS.find(r => lbl.includes(r.key))
+    if (round) rounds[round.label].push(game)
   })
-  document.getElementById('groups-body').innerHTML = html
+ 
+  let koHTML = `<div class="section-head" style="margin-top:8px">Knockout Stage</div>`
+ 
+  KNOCKOUT_ROUNDS.forEach(r => {
+    const games = rounds[r.label]
+    if (!games.length) return
+ 
+    koHTML += `<div class="knockout-round">
+      <div class="knockout-round-title">${r.label}</div>
+      <div class="knockout-list">`
+ 
+    games.forEach(game => {
+      const home = D.teams[game.home], away = D.teams[game.away]
+      const hName = home ? home.name : `Team ${game.home}`
+      const aName = away ? away.name : `Team ${game.away}`
+      const score = getMatchScore(game.matchNum)
+      const dt = game.dateTime ? new Date(game.dateTime) : null
+      const isPast = dt && dt < now
+ 
+      let scoreEl = ''
+      if (game.status === 'live') {
+        scoreEl = `<div class="ko-score live-score">${score.h??0} – ${score.a??0}</div>`
+      } else if ((game.status === 'completed' || isPast) && score.h !== null) {
+        scoreEl = `<div class="ko-score">${score.h} – ${score.a}</div>`
+      } else {
+        scoreEl = `<div class="ko-score" style="font-size:11px;color:#bbb">vs</div>`
+      }
+ 
+      let rightEl = ''
+      if (game.status === 'live') {
+        rightEl = `<div class="ko-right"><span class="pill pill-live"><span class="live-pulse"></span>Live</span></div>`
+      } else if (game.status === 'completed' || isPast) {
+        rightEl = `<div class="ko-right"><span class="pill pill-done">FT</span></div>`
+      } else {
+        const ts = dt ? dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : game.dateTime
+        rightEl = `<div class="ko-right">${ts}</div>`
+      }
+ 
+      koHTML += `<div class="knockout-row">
+        <div class="ko-home">${hName}</div>
+        ${scoreEl}
+        <div class="ko-away">${aName}</div>
+        ${rightEl}
+      </div>`
+    })
+ 
+    koHTML += '</div></div>'
+  })
+ 
+  document.getElementById('knockout-section').innerHTML = koHTML
 }
  
-// ── FIXTURES ──────────────────────────────────────────────────────────────────
 function renderFixtures() {
   const now = new Date()
   const withStatus = D.games.map(g => {
     const dt = g.dateTime ? new Date(g.dateTime) : null
     let status = g.status
-    if (!status) {
-      status = !dt ? 'upcoming' : dt > now ? 'upcoming' : 'completed'
-    }
-    const score = getMatchScore(g.matchNum)
-    return { ...g, dt, status, score }
+    if (!status) status = !dt ? 'upcoming' : dt > now ? 'upcoming' : 'completed'
+    return { ...g, dt, status, score: getMatchScore(g.matchNum) }
   })
  
   document.getElementById('fix-subtitle').textContent = `${withStatus.length} matches`
@@ -750,12 +812,11 @@ function renderFixtures() {
       const home = D.teams[g.home], away = D.teams[g.away]
       const hName = home ? home.name : `Team ${g.home}`
       const aName = away ? away.name : `Team ${g.away}`
-      const hasGoals = g.score.h !== null
  
       let scoreEl = ''
       if (grp.key === 'live') {
         scoreEl = `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
-      } else if (grp.key === 'completed' && hasGoals) {
+      } else if (grp.key === 'completed' && g.score.h !== null) {
         scoreEl = `<div class="fix-score">${g.score.h} – ${g.score.a}</div>`
       } else {
         scoreEl = `<div class="fix-score" style="font-size:11px;color:#bbb">vs</div>`
@@ -778,7 +839,6 @@ function renderFixtures() {
   document.getElementById('fix-body').innerHTML = html || '<div class="empty">No fixtures loaded</div>'
 }
  
-// ── GOAL LOG ──────────────────────────────────────────────────────────────────
 function renderGoalLog() {
   const goals = [...D.goals].reverse()
   const sc = goals.filter(g => !g.isShootout)
@@ -801,7 +861,6 @@ function renderGoalLog() {
       const h = D.teams[game.home], a = D.teams[game.away]
       return `${h?h.name:'?'} vs ${a?a.name:'?'}`
     })() : `Match ${g.matchNum}`
- 
     const mult = (player && !g.isShootout) ? player.mult : 0
     const pts = 1 + mult
  
@@ -818,7 +877,6 @@ function renderGoalLog() {
   document.getElementById('goal-body').innerHTML = html
 }
  
-// ── SQUADS ────────────────────────────────────────────────────────────────────
 function renderSquads() {
   const teamNums = Object.keys(D.teams).map(Number).sort((a,b)=>a-b)
   let html = ''
@@ -835,26 +893,22 @@ function renderSquads() {
     playerEntries.forEach(([k, p]) => {
       const pn = parseInt(k.split('-')[1])
       const name = p.name || ''
-      const isTbd = !name
       const posClr = {G:'pos-G',D:'pos-D',M:'pos-M',F:'pos-F'}[p.pos] || ''
       rows += `<div class="squad-player-row">
         <div class="squad-shirt">${pn}</div>
-        <div class="squad-pname${isTbd?' tbd':''}">${isTbd?'TBD':name}</div>
+        <div class="squad-pname${!name?' tbd':''}">${name||'TBD'}</div>
         <div class="squad-pos ${posClr}">${p.pos||'—'}</div>
       </div>`
     })
  
-    if (!rows) {
-      rows = `<div class="squad-player-row"><div class="squad-shirt"></div><div class="squad-pname tbd" style="grid-column:2/-1">Squad not yet confirmed</div></div>`
-    }
+    if (!rows) rows = `<div class="squad-player-row"><div class="squad-shirt"></div><div class="squad-pname tbd" style="grid-column:2/-1">Squad not yet confirmed</div></div>`
  
-    const playerCount = playerEntries.length
     html += `<div class="squad-item" id="squad-${tn}">
       <div class="squad-item-head" onclick="toggleSquad(${tn})">
         <div class="squad-num-big">${tn}</div>
         <div class="squad-info">
           <div class="squad-country">${team.name}</div>
-          <div class="squad-meta">${team.code} · Group ${team.group}${playerCount ? ' · '+playerCount+' players' : ''}</div>
+          <div class="squad-meta">${team.code} · Group ${team.group}${playerEntries.length ? ' · '+playerEntries.length+' players' : ''}</div>
         </div>
         <div class="squad-chevron">▼</div>
       </div>
@@ -867,19 +921,16 @@ function renderSquads() {
  
 function toggleSquad(tn) {
   const el = document.getElementById('squad-'+tn)
-  if (!el) return
-  el.classList.toggle('open')
+  if (el) el.classList.toggle('open')
 }
  
-// ── HOW TO PLAY ───────────────────────────────────────────────────────────────
 function renderHowToPlay() {
   const price = D.misc.price
   document.getElementById('entry-price').textContent = `£${price % 1 === 0 ? price : price.toFixed(2)}`
 }
  
-// ── INIT ──────────────────────────────────────────────────────────────────────
 loadAll()
-setInterval(loadAll, 60000)
+setInterval(loadAll, 300000)
 </script>
 </body>
 </html>
