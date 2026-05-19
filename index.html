@@ -211,16 +211,12 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
  
 /* ── HOW TO PLAY ── */
 .how-wrap{max-width:680px}
-.how-intro{background:var(--green-dark);color:var(--white);border-radius:12px;padding:24px 28px;margin-bottom:20px}
-.how-intro h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.06em;color:var(--gold);margin-bottom:6px}
-.how-intro p{font-size:14px;color:rgba(255,255,255,.8);line-height:1.6}
-.how-intro .price-tag{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);letter-spacing:.04em}
-.how-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
-.how-step{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:16px 18px;display:flex;gap:16px;align-items:flex-start}
-.step-num{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold);letter-spacing:.04em;line-height:1;flex-shrink:0;width:32px}
-.step-body h3{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--green-dark)}
-.step-body p{font-size:13px;color:var(--grey-700);line-height:1.6}
-.step-body p strong{color:var(--dark)}
+.entry-card{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.entry-card-head{background:var(--green-dark);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.entry-card-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:.06em}
+.entry-card-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
+.entry-price-badge{background:var(--gold);color:var(--dark);font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.04em;padding:4px 14px;border-radius:8px;flex-shrink:0}
+.entry-card-body{padding:18px 18px 20px}
 .rules-box{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:18px 20px}
 .rules-box h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em;color:var(--green-dark);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--gold)}
 .rule{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--grey-100);font-size:13px;line-height:1.55;color:var(--grey-700)}
@@ -330,32 +326,36 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
 <div id="page-howtoplay" class="page">
   <div class="inner">
     <div class="how-wrap">
-      <div class="how-intro">
-        <h2>How to Play</h2>
-        <p>To enter see <strong style="color:var(--gold)">Dean Tatchell</strong> or <strong style="color:var(--gold)">Curt Newton</strong>, entries cost <span class="price-tag" id="entry-price">£5</span> each.</p>
-        <p>You can buy multiple entries to increase your chances.</p>
-      </div>
+      <div class="section-head">How to Play <span>Entry generator &amp; rules</span></div>
  
-      <div class="how-steps">
-        <!-- ENTRY GENERATOR -->
-        <div class="gen-section-label">Teams</div>
-        <div class="gen-grid">
-          <div class="gen-slot" id="gts-0"><div class="gen-slot-label">Team 1</div><div class="gen-slot-num" id="gtn-0">—</div><div class="gen-slot-name" id="gtname-0">&nbsp;</div></div>
-          <div class="gen-slot" id="gts-1"><div class="gen-slot-label">Team 2</div><div class="gen-slot-num" id="gtn-1">—</div><div class="gen-slot-name" id="gtname-1">&nbsp;</div></div>
-          <div class="gen-slot" id="gts-2"><div class="gen-slot-label">Team 3</div><div class="gen-slot-num" id="gtn-2">—</div><div class="gen-slot-name" id="gtname-2">&nbsp;</div></div>
-          <div class="gen-slot" id="gts-3"><div class="gen-slot-label">Team 4</div><div class="gen-slot-num" id="gtn-3">—</div><div class="gen-slot-name" id="gtname-3">&nbsp;</div></div>
+      <div class="entry-card">
+        <div class="entry-card-head">
+          <div>
+            <div class="entry-card-title">Entry Generator</div>
+            <div class="entry-card-sub">See Dean Tatchell or Curt Newton to enter</div>
+          </div>
+          <div class="entry-price-badge" id="entry-price">£5</div>
         </div>
-        <div class="gen-divider"></div>
-        <div class="gen-section-label">Players</div>
-        <div class="gen-grid">
-          <div class="gen-slot" id="gps-0"><div class="gen-slot-label">T1 Player</div><div class="gen-slot-num" id="gpn-0">—</div><div class="gen-slot-name" id="gpname-0">&nbsp;</div></div>
-          <div class="gen-slot" id="gps-1"><div class="gen-slot-label">T2 Player</div><div class="gen-slot-num" id="gpn-1">—</div><div class="gen-slot-name" id="gpname-1">&nbsp;</div></div>
-          <div class="gen-slot" id="gps-2"><div class="gen-slot-label">T3 Player</div><div class="gen-slot-num" id="gpn-2">—</div><div class="gen-slot-name" id="gpname-2">&nbsp;</div></div>
-          <div class="gen-slot" id="gps-3"><div class="gen-slot-label">T4 Player</div><div class="gen-slot-num" id="gpn-3">—</div><div class="gen-slot-name" id="gpname-3">&nbsp;</div></div>
-        </div>
-        <div class="gen-status" id="gen-status"></div>
-        <div id="gen-actions">
-          <button class="gen-roll-btn" id="gen-roll-btn" onclick="genStartDraw()">⚄ Draw Entry</button>
+        <div class="entry-card-body">
+          <div class="gen-section-label">Teams</div>
+          <div class="gen-grid">
+            <div class="gen-slot" id="gts-0"><div class="gen-slot-label">Team 1</div><div class="gen-slot-num" id="gtn-0">—</div><div class="gen-slot-name" id="gtname-0">&nbsp;</div></div>
+            <div class="gen-slot" id="gts-1"><div class="gen-slot-label">Team 2</div><div class="gen-slot-num" id="gtn-1">—</div><div class="gen-slot-name" id="gtname-1">&nbsp;</div></div>
+            <div class="gen-slot" id="gts-2"><div class="gen-slot-label">Team 3</div><div class="gen-slot-num" id="gtn-2">—</div><div class="gen-slot-name" id="gtname-2">&nbsp;</div></div>
+            <div class="gen-slot" id="gts-3"><div class="gen-slot-label">Team 4</div><div class="gen-slot-num" id="gtn-3">—</div><div class="gen-slot-name" id="gtname-3">&nbsp;</div></div>
+          </div>
+          <div class="gen-divider"></div>
+          <div class="gen-section-label">Players</div>
+          <div class="gen-grid">
+            <div class="gen-slot" id="gps-0"><div class="gen-slot-label">T1 Player</div><div class="gen-slot-num" id="gpn-0">—</div><div class="gen-slot-name" id="gpname-0">&nbsp;</div></div>
+            <div class="gen-slot" id="gps-1"><div class="gen-slot-label">T2 Player</div><div class="gen-slot-num" id="gpn-1">—</div><div class="gen-slot-name" id="gpname-1">&nbsp;</div></div>
+            <div class="gen-slot" id="gps-2"><div class="gen-slot-label">T3 Player</div><div class="gen-slot-num" id="gpn-2">—</div><div class="gen-slot-name" id="gpname-2">&nbsp;</div></div>
+            <div class="gen-slot" id="gps-3"><div class="gen-slot-label">T4 Player</div><div class="gen-slot-num" id="gpn-3">—</div><div class="gen-slot-name" id="gpname-3">&nbsp;</div></div>
+          </div>
+          <div class="gen-status" id="gen-status"></div>
+          <div id="gen-actions">
+            <button class="gen-roll-btn" id="gen-roll-btn" onclick="genStartDraw()">⚄ Draw Entry</button>
+          </div>
         </div>
       </div>
  
@@ -973,7 +973,8 @@ function toggleSquad(tn) {
  
 function renderHowToPlay() {
   const price = D.misc.price
-  document.getElementById('entry-price').textContent = `£${price % 1 === 0 ? price : price.toFixed(2)}`
+  const priceStr = '£' + (price % 1 === 0 ? price : price.toFixed(2))
+  document.getElementById('entry-price').textContent = priceStr
 }
  
  
