@@ -80,7 +80,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .rank-badge.rl{background:#fde8e8;color:var(--red)}
 .entry-name{font-weight:600;font-size:13px}
 .entry-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
-.team-tag{font-size:10px;font-weight:600;padding:2px 5px;border-radius:3px;background:var(--grey-100);color:var(--grey-700);font-family:'DM Mono',monospace}
+.team-tag{font-size:10px;font-weight:600;padding:2px 5px;border-radius:3px;background:#dcfce7;color:#166534;font-family:'DM Mono',monospace}
 .pts-col{text-align:right;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);letter-spacing:.04em;display:flex;align-items:center;justify-content:flex-end;gap:5px}
 .chevron{font-size:11px;color:var(--grey-300);transition:transform .2s}
 .lb-row.open .chevron{transform:rotate(180deg)}
@@ -332,8 +332,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
         <div class="entry-card-head">
           <div>
             <div class="entry-card-title">Entry Generator</div>
-            <div class="entry-card-sub">See <strong style="color:var(--gold)">Dean Tatchell</Strong> or <strong style="color:var(--gold)">Curt Newton</Strong> to enter.</div>
-            <div class="entry-card-sub">You can have multiple entries to increase your chances.</div>
+            <div class="entry-card-sub">See Dean Tatchell or Curt Newton to enter</div>
           </div>
           <div class="entry-price-badge" id="entry-price">£5</div>
         </div>
@@ -485,9 +484,11 @@ async function loadAll() {
       if (!tn || !pn) return
       const pos = (r['Position']||'').trim()
       const mult = { G: D.misc.G, D: D.misc.D, M: D.misc.M, F: D.misc.F }[pos] || 1
+      const cleanName  = (r['Player Name']||'').replace(/^#.+/, '').trim()
+      const cleanShort = (r['Short Name'] ||'').replace(/^#.+/, '').trim()
       D.players[`${tn}-${pn}`] = {
-        name: r['Player Name']||'',
-        shortName: r['Short Name']||r['Player Name']||'',
+        name: cleanName,
+        shortName: cleanShort || cleanName,
         pos, mult
       }
     })
@@ -589,7 +590,8 @@ function calcGroupStandings() {
     if (score.h === null) return
     const dt = game.dateTime ? new Date(game.dateTime) : null
     const isPast = dt && dt < now
-    if (!isPast && game.status !== 'live' && game.status !== 'completed') return
+    const hasGoals = (score.h && score.h > 0) || (score.a && score.a > 0)
+    if (!isPast && !hasGoals && game.status !== 'live' && game.status !== 'completed') return
  
     const ht = D.teams[game.home], at = D.teams[game.away]
     if (!ht || !at) return
@@ -691,7 +693,8 @@ function renderLeaderboard(filter='') {
     const expandSlots = s.slots.map(slot => {
       const t = D.teams[slot.tn]
       const tName = t ? t.name : `Team ${slot.tn}`
-      const pName = (slot.pl.shortName || slot.pl.name) ? `#${slot.pn} ${slot.pl.shortName || slot.pl.name}` : `#${slot.pn}`
+      const _pLabel = slot.pl.shortName || slot.pl.name || ''
+      const pName = _pLabel ? `#${slot.pn} ${_pLabel}` : `#${slot.pn} TBC`
       const posLabel = {6:'GK ×6',4:'DEF ×4',2:'MID ×2',1:'FWD ×1'}[slot.mult]||`×${slot.mult}`
       return `<div class="expand-slot">
         <div class="slot-head"><span class="slot-team">${tName}</span><span class="slot-pts">${slot.pts}</span></div>
@@ -864,7 +867,7 @@ function renderFixtures() {
       let scoreEl = ''
       if (g.status === 'live') {
         scoreEl = `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
-      } else if (g.status === 'completed' && g.score.h !== null) {
+      } else if ((g.status === 'completed' || g.score.h > 0 || g.score.a > 0) && g.score.h !== null) {
         scoreEl = `<div class="fix-score">${g.score.h} – ${g.score.a}</div>`
       } else {
         scoreEl = `<div class="fix-score" style="font-size:11px;color:#bbb">vs</div>`
