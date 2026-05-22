@@ -1224,27 +1224,33 @@ function genLandSurvivors(type, winners) {
     holdEl.appendChild(hc)
   })
  
-  // Wait for the hold area height transition to finish (300ms) before flying
-  // so cells land in the right place and no layout jump mid-animation
+  // Wait for hold area transition to finish before flying
   setTimeout(() => {
     sorted.forEach((n, i) => {
       setTimeout(() => genFlyCell(type, n), i * 160)
     })
  
-    // Once all cells have landed, swap grid for overlay cleanly
+    // Mid-flight: start fading + shrinking the grid gradually so it's gone by landing
+    const numGrid = document.getElementById('gen-'+type+'-grid')
+    if(numGrid){
+      const gridH = numGrid.offsetHeight
+      numGrid.style.height = gridH + 'px'
+      numGrid.style.overflow = 'hidden'
+      // Let the explicit height be measured, then transition to 0 over the flight duration
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const flyDur = sorted.length * 160 + 380
+        numGrid.style.transition = `height ${flyDur}ms ease, opacity ${flyDur * 0.6}ms ease`
+        numGrid.style.height = '0'
+        numGrid.style.opacity = '0'
+      }))
+    }
+ 
+    // Once fully landed, activate overlay (grid is already gone by now)
     const allDone = sorted.length * 160 + 420
     setTimeout(() => {
-      const numGrid = document.getElementById('gen-'+type+'-grid')
-      if(numGrid){
-        numGrid.style.transition = 'opacity .2s ease'
-        numGrid.style.opacity = '0'
-        setTimeout(() => {
-          numGrid.style.visibility='hidden'; numGrid.style.height='0'; numGrid.style.overflow='hidden'
-          numGrid.style.opacity = ''
-          const gw2 = document.getElementById('gen-'+type+'-gw')
-          if(gw2) gw2.classList.add('overlay-active')
-        }, 220)
-      }
+      if(numGrid){ numGrid.style.visibility='hidden'; numGrid.style.transition=''; numGrid.style.opacity='' }
+      const gw2 = document.getElementById('gen-'+type+'-gw')
+      if(gw2) gw2.classList.add('overlay-active')
     }, allDone)
   }, 320)
 }
