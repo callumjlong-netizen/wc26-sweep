@@ -1226,31 +1226,23 @@ function genLandSurvivors(type, winners) {
  
   // Wait for hold area transition to finish before flying
   setTimeout(() => {
+    // Lock the grid-wrap to its current rendered height before anything changes
+    // so the layout stays completely stable during the entire flight
+    const gw = document.getElementById('gen-'+type+'-gw')
+    if(gw) gw.style.height = gw.offsetHeight + 'px'
+ 
     sorted.forEach((n, i) => {
       setTimeout(() => genFlyCell(type, n), i * 160)
     })
  
-    // Mid-flight: start fading + shrinking the grid gradually so it's gone by landing
-    const numGrid = document.getElementById('gen-'+type+'-grid')
-    if(numGrid){
-      const gridH = numGrid.offsetHeight
-      numGrid.style.height = gridH + 'px'
-      numGrid.style.overflow = 'hidden'
-      // Let the explicit height be measured, then transition to 0 over the flight duration
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        const flyDur = sorted.length * 160 + 380
-        numGrid.style.transition = `height ${flyDur}ms ease, opacity ${flyDur * 0.6}ms ease`
-        numGrid.style.height = '0'
-        numGrid.style.opacity = '0'
-      }))
-    }
- 
-    // Once fully landed, activate overlay (grid is already gone by now)
+    // Once all landed: fade grid out, then switch to overlay (wrap is already locked so no jump)
     const allDone = sorted.length * 160 + 420
     setTimeout(() => {
-      if(numGrid){ numGrid.style.visibility='hidden'; numGrid.style.transition=''; numGrid.style.opacity='' }
-      const gw2 = document.getElementById('gen-'+type+'-gw')
-      if(gw2) gw2.classList.add('overlay-active')
+      const numGrid = document.getElementById('gen-'+type+'-grid')
+      if(numGrid){ numGrid.style.visibility='hidden' }
+      if(gw) gw.classList.add('overlay-active')
+      // Release the locked height now that overlay-active sets min-height
+      if(gw) gw.style.height = ''
     }, allDone)
   }, 320)
 }
