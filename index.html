@@ -81,6 +81,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .entry-name{font-weight:600;font-size:13px}
 .entry-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
 .team-tag{font-size:10px;font-weight:600;padding:2px 5px;border-radius:3px;background:#f4f2ed;color:#4a4640;border:1px solid #1a6b3c;font-family:'DM Mono',monospace}
+.team-tag.top-rank{color:#b8860b ;border-color:#f0c040 ;background:#fffbee}
 .pts-col{text-align:right;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);letter-spacing:.04em;display:flex;align-items:center;justify-content:flex-end;gap:5px}
 .chevron{font-size:11px;color:var(--grey-300);transition:transform .2s}
 .lb-row.open .chevron{transform:rotate(180deg)}
@@ -763,7 +764,7 @@ function renderLeaderboard(filter='') {
  
     const tags = s.slots.map(slot => {
       const t = D.teams[slot.tn]
-      return t ? `<span class="team-tag">${slot.tn} ${t.code||t.name.substring(0,3).toUpperCase()}</span>` : ''
+      return t ? `<span class="team-tag${t.rank<=10?' top-rank':''}">${slot.tn} ${t.code||t.name.substring(0,3).toUpperCase()}</span>` : ''
     }).join('')
  
     const expandSlots = s.slots.map(slot => {
