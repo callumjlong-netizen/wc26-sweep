@@ -214,6 +214,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .gen-ov-card.revealed .gen-ov-name{background:transparent;color:var(--green)}
  
 /* number cells */
+.gen-num-cell{color:#b8860b;border-color:#f0c040;background:#fffbee}
 .gen-num-cell{
   width:42px;height:42px;border-radius:7px;
   display:flex;align-items:center;justify-content:center;
@@ -535,7 +536,7 @@ async function loadAll() {
     D.teams = {}
     teams.forEach(r => {
       const n = parseInt(r['Team Number'])
-      if (n) D.teams[n] = { name: r['Team Name']||'', code: r['Fifa Code']||'', group: r['Group']||'' }
+      if (n) D.teams[n] = { name: r['Team Name']||'', code: r['Fifa Code']||'', group: r['Group']||'', rank: parseInt(r['World Ranking'])||999 }
     })
  
     const mv = {}
@@ -1099,6 +1100,7 @@ function genBuildGrid(type) {
   pool.forEach(n => {
     const el = document.createElement('div')
     el.className='gen-num-cell'; el.id='gen-'+type+'-cell-'+n; el.textContent=n
+    if(type==='team' && D.teams[n] && D.teams[n].rank <= 10) el.classList.add('top-rank')
     grid.appendChild(el)
   })
   document.getElementById('gen-'+type+'-count').textContent = pool.length+' remaining'
