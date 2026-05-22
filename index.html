@@ -8,11 +8,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --green:#1a6b3c;--green-light:#2d9e5f;--green-dark:#0f3d22;--green-mid:#155232;
+  --green:#1a6b3c;--green-light:#2d9e5f;--green-dark:#0f3d22;
   --gold:#f0b429;--gold-light:#ffd97d;
   --cream:#faf8f3;--white:#ffffff;
   --grey-100:#f4f2ed;--grey-200:#e8e4db;--grey-300:#ccc8be;--grey-500:#888070;--grey-700:#4a4640;
-  --dark:#1a1814;--red:#c0392b;--blue:#1a56db;
+  --dark:#1a1814;--red:#c0392b;
   --radius:10px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -123,7 +123,6 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .ko-score{text-align:center;font-family:'DM Mono',monospace;font-weight:500;font-size:14px;background:var(--grey-100);border-radius:6px;padding:3px 8px}
 .ko-score.live-score{background:#fde8e8;color:var(--red)}
 .ko-right{text-align:right;font-size:11px;color:var(--grey-500)}
-.knockout-pending{padding:20px;text-align:center;color:var(--grey-500);font-size:13px;font-style:italic}
  
 /* ── FIXTURES ── */
 .fix-group{margin-bottom:18px}
@@ -139,7 +138,6 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.04em}
 .pill-live{background:#fde8e8;color:var(--red)}
 .pill-done{background:#dcfce7;color:#166534}
-.pill-upcoming{background:var(--grey-100);color:var(--grey-500)}
 .live-pulse{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
  
@@ -243,11 +241,9 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
   display:flex;align-items:center;justify-content:center;
   font-family:'Bebas Neue',sans-serif;font-size:22px;
   background:#f0faf4;color:var(--green-dark);border:2px solid var(--green);
-  opacity:0;transform:translateY(-8px) scale(0.8);
-  transition:opacity .3s ease, transform .3s cubic-bezier(0.34,1.4,0.64,1);
-  flex-shrink:0;position:relative;z-index:10;
+  opacity:0;flex-shrink:0;position:relative;z-index:10;
+  transition:opacity .2s ease, transform .2s ease;
 }
-.gen-hold-cell.landed{opacity:1;transform:translateY(0) scale(1)}
 .gen-hold-cell.scanning{
   background:var(--gold);color:var(--dark);border-color:var(--gold-light);
   transform:scale(1.18);
@@ -308,7 +304,6 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
   .groups-grid{grid-template-columns:1fr}
   .knockout-row{grid-template-columns:1fr 54px 1fr 70px;font-size:11px}
   nav button{padding:15px 10px 12px;font-size:11px}
-  .how-step{flex-direction:column;gap:8px}
 }
 </style>
 </head>
@@ -715,8 +710,6 @@ function showPage(id, btn) {
  
 function renderLeaderboard(filter='') {
   const pot = Math.round(D.entries.length * D.misc.price)
-  const sg = D.goals.filter(g => !g.isShootout)
- 
   document.getElementById('st-entries').textContent = D.entries.length
   document.getElementById('st-teams').textContent = Object.keys(D.teams).length
   document.getElementById('st-players').textContent = Object.keys(D.players).length
@@ -747,46 +740,29 @@ function renderLeaderboard(filter='') {
   const lastMembers = scored.filter(s => s.total === lastTotal)
   const lastMembersSet = new Set(lastMembers)
  
-  // Prize splits — pool payout slots consumed by each joint group, show total pot being split
-  const prizePcts = [split1, split2, split3]
-  function calcJointPrize(targetTruePos) {
-    const members = scored.filter(s => posMap.get(s) === targetTruePos)
-    if (!members.length) return { names: 'TBD', totalAmt: 0, isJoint: false, count: 1 }
-    const firstSeq = scored.indexOf(members[0])
-    const slots = members.map((_, i) => firstSeq + i).filter(i => i < prizePcts.length)
-    const totalPct = slots.reduce((sum, i) => sum + (prizePcts[i] || 0), 0)
-    const totalAmt = totalPct ? Math.round(pot * totalPct / 100) : 0
-    const names = members.length > 1
-      ? members.map(s => s.entry.name.split(' ')[0]).join(' / ')
-      : members[0].entry.name
-    return { names, totalAmt, isJoint: members.length > 1, count: members.length }
-  }
- 
-  const lastTotalAmt = Math.round(pot * (splitL||0) / 100)
-  const lastIsJoint = lastMembers.length > 1
-  const lastNames = lastIsJoint
-    ? lastMembers.map(s => s.entry.name.split(' ')[0]).join(' / ')
-    : (lastMembers[0] ? lastMembers[0].entry.name : 'TBD')
- 
   let splitsHTML = ''
   positions.forEach(p => {
     if (!p.pct) return
     let displayName, totalAmt
     if (!scoringStarted) {
-      // No goals yet — show sequential winner and full individual payout
       const winner = p.idx >= 0 ? scored[p.idx] : scored[scored.length-1]
       displayName = winner ? winner.entry.name : 'TBD'
       totalAmt = Math.round(pot * p.pct / 100)
     } else {
-      // Scoring started — use joint logic
-      let isJoint
       if (p.idx === -1) {
-        displayName = lastIsJoint ? 'Pot Split' : lastNames
-        totalAmt = lastTotalAmt; isJoint = lastIsJoint
+        const lastIsJoint = lastMembers.length > 1
+        displayName = lastIsJoint ? 'Pot Split' : (lastMembers[0] ? lastMembers[0].entry.name : 'TBD')
+        totalAmt = Math.round(pot * splitL / 100)
       } else {
-        const sp = calcJointPrize(p.idx + 1)
-        displayName = sp.isJoint ? 'Pot Split' : sp.names
-        totalAmt = sp.totalAmt; isJoint = sp.isJoint
+        const members = scored.filter(s => posMap.get(s) === p.idx + 1)
+        if (!members.length) { displayName = 'TBD'; totalAmt = 0 }
+        else {
+          const firstSeq = scored.indexOf(members[0])
+          const pcts = [split1, split2, split3]
+          const totalPct = members.map((_, i) => pcts[firstSeq + i] || 0).reduce((a,b)=>a+b,0)
+          displayName = members.length > 1 ? 'Pot Split' : members[0].entry.name
+          totalAmt = Math.round(pot * totalPct / 100)
+        }
       }
     }
     splitsHTML += `<div class="prize-split ${p.cls}">
@@ -1239,19 +1215,92 @@ function genLandSurvivors(type, winners) {
   holdEl.classList.add('active')
   holdEl.innerHTML = ''
   const sorted = [...winners].sort((a,b)=>a-b)
-  sorted.forEach((n,i) => {
-    const cel = document.getElementById('gen-'+type+'-cell-'+n)
-    if(cel) cel.classList.add('gone-final')
+ 
+  // Pre-create invisible hold cells
+  sorted.forEach(n => {
     const hc = document.createElement('div')
     hc.className='gen-hold-cell'; hc.id='gen-'+type+'-hc-'+n; hc.textContent=n
+    hc.style.opacity='0'
     holdEl.appendChild(hc)
-    setTimeout(()=>hc.classList.add('landed'), i*70)
   })
-  // Hide the number grid and lock wrap height so overlay cards have room
-  const numGrid = document.getElementById('gen-'+type+'-grid')
-  if(numGrid){ numGrid.style.visibility = 'hidden'; numGrid.style.height = '0'; numGrid.style.overflow = 'hidden' }
-  const gw2 = document.getElementById('gen-'+type+'-gw')
-  if(gw2) gw2.classList.add('overlay-active')
+ 
+  // Wait two frames: first for active class to apply height, second for layout to settle
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    sorted.forEach((n, i) => {
+      setTimeout(() => genFlyCell(type, n), i * 160)
+    })
+ 
+    // After all flights done, hide grid and activate overlay
+    const allDone = sorted.length * 160 + 420
+    setTimeout(() => {
+      const numGrid = document.getElementById('gen-'+type+'-grid')
+      if(numGrid){ numGrid.style.visibility='hidden'; numGrid.style.height='0'; numGrid.style.overflow='hidden' }
+      const gw2 = document.getElementById('gen-'+type+'-gw')
+      if(gw2) gw2.classList.add('overlay-active')
+    }, allDone)
+  }))
+}
+ 
+function genFlyCell(type, n) {
+  const src = document.getElementById('gen-'+type+'-cell-'+n)
+  const dst = document.getElementById('gen-'+type+'-hc-'+n)
+  if(!src || !dst) return
+ 
+  const srcR = src.getBoundingClientRect()
+  const dstR = dst.getBoundingClientRect()
+ 
+  // Hide source cell
+  src.style.opacity = '0'
+ 
+  // Create flying clone
+  const fly = document.createElement('div')
+  fly.style.cssText = `
+    position:fixed;z-index:9999;pointer-events:none;
+    width:42px;height:42px;border-radius:7px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Bebas Neue',sans-serif;font-size:19px;
+    background:var(--grey-100);color:var(--grey-700);border:1px solid var(--grey-200);
+    left:${srcR.left}px;top:${srcR.top}px;
+  `
+  fly.textContent = n
+  document.body.appendChild(fly)
+ 
+  const startX = srcR.left, startY = srcR.top
+  const endX = dstR.left + (dstR.width - 42) / 2
+  const endY = dstR.top  + (dstR.height - 42) / 2
+  const dur = 380
+  const t0 = performance.now()
+ 
+  function ease(t){ return t < .5 ? 2*t*t : -1+(4-2*t)*t }
+ 
+  function step(now) {
+    const t = Math.min((now - t0) / dur, 1)
+    const e = ease(t)
+    fly.style.left = (startX + (endX - startX) * e) + 'px'
+    fly.style.top  = (startY + (endY - startY) * e) + 'px'
+    // Morph into hold-cell style in the last 40% of travel
+    if(t > 0.6) {
+      const p = (t - 0.6) / 0.4
+      fly.style.background = '#f0faf4'
+      fly.style.borderColor = 'var(--green)'
+      fly.style.borderWidth = '2px'
+      fly.style.color = 'var(--green-dark)'
+      fly.style.borderRadius = '8px'
+      fly.style.width  = (42 + 10*p) + 'px'
+      fly.style.height = (42 + 10*p) + 'px'
+      fly.style.fontSize = (19 + 3*p) + 'px'
+    }
+    if(t < 1) { requestAnimationFrame(step) }
+    else {
+      fly.remove()
+      src.classList.add('gone-final')
+      // Reveal with inline style — will be cleared before .launched is applied
+      dst.style.opacity = '1'
+      dst.style.transform = 'scale(1.15)'
+      setTimeout(() => { dst.style.transform = 'scale(1)' }, 150)
+    }
+  }
+  requestAnimationFrame(step)
 }
  
 function genCycleAndSelect(type, allWinners, slotIdx) {
@@ -1302,7 +1351,12 @@ function genCycleAndSelect(type, allWinners, slotIdx) {
  
 function genLaunchToSlot(type, n, slotIdx) {
   const hc = document.getElementById('gen-'+type+'-hc-'+n)
-  if(hc){hc.classList.remove('chosen');hc.classList.add('launched')}
+  if(hc){
+    hc.classList.remove('chosen')
+    hc.style.opacity = ''  // clear inline so .launched class opacity takes effect
+    hc.style.transform = ''
+    hc.classList.add('launched')
+  }
  
   setTimeout(()=>{
     const ov     = document.getElementById('gen-'+type+'-ov-'+slotIdx)
@@ -1318,6 +1372,7 @@ function genLaunchToSlot(type, n, slotIdx) {
       const holdEl = document.getElementById('gen-'+type+'-hold')
       holdEl.classList.remove('active')
       holdEl.classList.add('done')
+ 
     }
   }, 280)
 }
@@ -1347,13 +1402,10 @@ function genRevealAll() {
   })
   setTimeout(()=>{
     document.getElementById('gen-actions').innerHTML =
-      `<button class="gen-new-btn" onclick="genReset()">↺ Draw New Entry</button>`
+      `<button class="gen-new-btn" onclick="genResetUI()">↺ Draw New Entry</button>`
   }, order.length*500+400)
 }
  
-function genReset() {
-  genResetUI()
-}
  
 loadAll()
 </script>
