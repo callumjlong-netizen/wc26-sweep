@@ -81,7 +81,6 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .entry-name{font-weight:600;font-size:13px}
 .entry-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
 .team-tag{font-size:10px;font-weight:600;padding:2px 5px;border-radius:3px;background:#f4f2ed;color:#4a4640;border:1px solid #1a6b3c;font-family:'DM Mono',monospace}
-.team-tag.top-rank{color:#b8860b ;border-color:#f0c040 ;background:#fffbee}
 .pts-col{text-align:right;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);letter-spacing:.04em;display:flex;align-items:center;justify-content:flex-end;gap:5px}
 .chevron{font-size:11px;color:var(--grey-300);transition:transform .2s}
 .lb-row.open .chevron{transform:rotate(180deg)}
@@ -223,7 +222,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
   transition:background .08s,color .08s,border-color .08s,transform .12s,opacity .15s;
   flex-shrink:0;
 }
-.gen-num-cell.top-rank{color:#b8860b ;border-color:#f0c040 ;background:#fffbee}
+.gen-num-cell.top-rank{color:#b8860b;border-color:#f0c040;background:#fffbee}
 .gen-num-cell.zap{background:#fde8e8;color:var(--red);border-color:#fca5a5;transform:scale(0.75)}
 .gen-num-cell.gone{opacity:0;transform:scale(0.4);pointer-events:none}
 .gen-num-cell.gone-final{opacity:0!important;transform:scale(0)!important;transition:all .2s ease!important;pointer-events:none}
@@ -459,7 +458,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
   </div>
 </div>
  
-<footer>STEEL WC26 Sweep · Refresh page to update · <span id="last-updated"></span></footer>
+<footer>STEEL WC26 Sweep · Updates every 5 mins · <span id="last-updated"></span></footer>
  
 <script>
 const SHEET_ID = '1mfRVjcf4AQdTZUxkRxHSkcxLwWM5mjP_ZmJmulk3uag'
@@ -730,14 +729,54 @@ function renderLeaderboard(filter='') {
     { label:'3rd', pct:split3, idx:2, cls:'' },
     { label:'Last', pct:splitL, idx:-1, cls:'last-place' },
   ]
+  const scoringStarted = scored.some(s => s.total > 0)
+ 
+  // Build joint-position map (used for both prize header and row badges)
+  const prizePos = new Map()
+  let pp = 1
+  scored.forEach((s, i) => {
+    if (i > 0 && scored[i-1].total === s.total) prizePos.set(s, prizePos.get(scored[i-1]))
+    else prizePos.set(s, pp)
+    pp++
+  })
+ 
+  // Work out which prize slots each joint group claims, and split the pot accordingly
+  const prizePcts = [split1, split2, split3] // indices 0,1,2 = 1st,2nd,3rd
+  function calcPrizeSplit(targetTruePos) {
+    // Which sequential slots does this true position occupy?
+    const members = scored.filter(s => prizePos.get(s) === targetTruePos)
+    if (!members.length) return { names: 'TBD', amt: 0, isJoint: false }
+    const firstSeq = scored.indexOf(members[0])  // 0-based
+    const slots = members.map((_, i) => firstSeq + i).filter(i => i < prizePcts.length)
+    const totalPct = slots.reduce((sum, i) => sum + (prizePcts[i] || 0), 0)
+    const splitAmt = totalPct ? Math.round(pot * totalPct / 100 / members.length) : 0
+    const names = members.map(s => s.entry.name.split(' ')[0]).join(' / ')
+    return { names: members.length > 1 ? names : members[0].entry.name, amt: splitAmt, isJoint: members.length > 1, count: members.length, totalPct }
+  }
+ 
+  // Last place — handle ties
+  const lastTotal = scored.length ? scored[scored.length-1].total : null
+  const lastMembers = scored.filter(s => s.total === lastTotal)
+  const lastIsJoint = lastMembers.length > 1
+  const lastAmt = Math.round(pot * (splitL||0) / 100 / lastMembers.length)
+  const lastNames = lastMembers.map(s => s.entry.name.split(' ')[0]).join(' / ')
+ 
   let splitsHTML = ''
   positions.forEach(p => {
     if (!p.pct) return
-    const winner = p.idx >= 0 ? scored[p.idx] : scored[scored.length-1]
-    const amt = Math.round(pot * p.pct / 100)
+    let winnerName, amt, isJoint = false
+    if (p.idx === -1) {
+      winnerName = lastIsJoint ? lastNames : (lastMembers[0] ? lastMembers[0].entry.name : 'TBD')
+      amt = lastAmt
+      isJoint = lastIsJoint
+    } else {
+      const sp = calcPrizeSplit(p.idx + 1)
+      winnerName = sp.names; amt = sp.amt; isJoint = sp.isJoint
+    }
+    const jointLabel = isJoint ? ' <span style="font-size:8px;opacity:.7">(split)</span>' : ''
     splitsHTML += `<div class="prize-split ${p.cls}">
-      <div class="pos">${p.label}</div>
-      <div class="winner-name">${winner ? winner.entry.name : 'TBD'}</div>
+      <div class="pos">${p.label}${jointLabel}</div>
+      <div class="winner-name">${winnerName}</div>
       <div class="prize-amt">£${amt}</div>
     </div>`
   })
@@ -745,7 +784,6 @@ function renderLeaderboard(filter='') {
  
   const q = filter.toLowerCase()
   const filtered = scored.filter(s => s.entry.name.toLowerCase().includes(q))
-  const lastEntry = scored.length > 0 ? scored[scored.length-1] : null
  
   // Save which entries are currently open so refresh doesn't collapse them
   const openNames = new Set()
@@ -754,17 +792,27 @@ function renderLeaderboard(filter='') {
     if (name) openNames.add(name.textContent)
   })
  
+  // Build proper joint-position map for row badges
+  const posMap = new Map()
+  let truePos = 1
+  scored.forEach((s, i) => {
+    if (i > 0 && scored[i-1].total === s.total) posMap.set(s, posMap.get(scored[i-1]))
+    else posMap.set(s, truePos)
+    truePos++
+  })
+ 
   let html = ''
   filtered.forEach(s => {
-    const rank = scored.indexOf(s) + 1
-    const isLast = lastEntry && s.entry.name === lastEntry.entry.name && rank === scored.length
-    const rCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':isLast?'rl':''
-    const rankLabel = isLast && rank > 3 ? '↓' : rank
+    const seqRank = scored.indexOf(s) + 1
+    const rank = scoringStarted ? posMap.get(s) : seqRank
+    const isLast = lastMembers.some(l => l.entry.name === s.entry.name)
+    const rCls = rank===1&&scoringStarted?'r1':rank===2&&scoringStarted?'r2':rank===3&&scoringStarted?'r3':isLast&&scoringStarted?'rl':''
+    const rankLabel = isLast && scoringStarted && rank > 3 ? '↓' : rank
     const isOpen = openNames.has(s.entry.name) ? 'open' : ''
  
     const tags = s.slots.map(slot => {
       const t = D.teams[slot.tn]
-      return t ? `<span class="team-tag${t.rank<=10?' top-rank':''}">${slot.tn} ${t.code||t.name.substring(0,3).toUpperCase()}</span>` : ''
+      return t ? `<span class="team-tag">${slot.tn} ${t.code||t.name.substring(0,3).toUpperCase()}</span>` : ''
     }).join('')
  
     const expandSlots = s.slots.map(slot => {
