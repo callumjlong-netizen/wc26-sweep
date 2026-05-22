@@ -1224,21 +1224,29 @@ function genLandSurvivors(type, winners) {
     holdEl.appendChild(hc)
   })
  
-  // Wait two frames: first for active class to apply height, second for layout to settle
-  requestAnimationFrame(() => requestAnimationFrame(() => {
+  // Wait for the hold area height transition to finish (300ms) before flying
+  // so cells land in the right place and no layout jump mid-animation
+  setTimeout(() => {
     sorted.forEach((n, i) => {
       setTimeout(() => genFlyCell(type, n), i * 160)
     })
  
-    // After all flights done, hide grid and activate overlay
+    // Once all cells have landed, swap grid for overlay cleanly
     const allDone = sorted.length * 160 + 420
     setTimeout(() => {
       const numGrid = document.getElementById('gen-'+type+'-grid')
-      if(numGrid){ numGrid.style.visibility='hidden'; numGrid.style.height='0'; numGrid.style.overflow='hidden' }
-      const gw2 = document.getElementById('gen-'+type+'-gw')
-      if(gw2) gw2.classList.add('overlay-active')
+      if(numGrid){
+        numGrid.style.transition = 'opacity .2s ease'
+        numGrid.style.opacity = '0'
+        setTimeout(() => {
+          numGrid.style.visibility='hidden'; numGrid.style.height='0'; numGrid.style.overflow='hidden'
+          numGrid.style.opacity = ''
+          const gw2 = document.getElementById('gen-'+type+'-gw')
+          if(gw2) gw2.classList.add('overlay-active')
+        }, 220)
+      }
     }, allDone)
-  }))
+  }, 320)
 }
  
 function genFlyCell(type, n) {
