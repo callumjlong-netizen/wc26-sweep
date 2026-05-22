@@ -771,14 +771,24 @@ function renderLeaderboard(filter='') {
   let splitsHTML = ''
   positions.forEach(p => {
     if (!p.pct) return
-    let names, totalAmt, isJoint
-    if (p.idx === -1) {
-      names = lastNames; totalAmt = lastTotalAmt; isJoint = lastIsJoint
+    let displayName, totalAmt
+    if (!scoringStarted) {
+      // No goals yet — show sequential winner and full individual payout
+      const winner = p.idx >= 0 ? scored[p.idx] : scored[scored.length-1]
+      displayName = winner ? winner.entry.name : 'TBD'
+      totalAmt = Math.round(pot * p.pct / 100)
     } else {
-      const sp = calcJointPrize(p.idx + 1)
-      names = sp.names; totalAmt = sp.totalAmt; isJoint = sp.isJoint
+      // Scoring started — use joint logic
+      let isJoint
+      if (p.idx === -1) {
+        displayName = lastIsJoint ? 'Pot Split' : lastNames
+        totalAmt = lastTotalAmt; isJoint = lastIsJoint
+      } else {
+        const sp = calcJointPrize(p.idx + 1)
+        displayName = sp.isJoint ? 'Pot Split' : sp.names
+        totalAmt = sp.totalAmt; isJoint = sp.isJoint
+      }
     }
-    const displayName = isJoint ? 'Pot Split' : names
     splitsHTML += `<div class="prize-split ${p.cls}">
       <div class="pos">${p.label}</div>
       <div class="winner-name">${displayName}</div>
@@ -802,8 +812,10 @@ function renderLeaderboard(filter='') {
     const seqRank = scored.indexOf(s) + 1
     const rank = scoringStarted ? posMap.get(s) : seqRank
     const isLast = scoringStarted && lastMembersSet.has(s)
-    const rCls = rank===1&&scoringStarted?'r1':rank===2&&scoringStarted?'r2':rank===3&&scoringStarted?'r3':isLast?'rl':''
-    const rankLabel = isLast ? '↓' : rank
+    const rCls = !scoringStarted
+      ? (seqRank===1?'r1':seqRank===2?'r2':seqRank===3?'r3':seqRank===scored.length?'rl':'')
+      : (rank===1?'r1':rank===2?'r2':rank===3?'r3':isLast?'rl':'')
+    const rankLabel = (!scoringStarted && seqRank===scored.length) || isLast ? '↓' : rank
     const isOpen = openNames.has(s.entry.name) ? 'open' : ''
  
     const tags = s.slots.map(slot => {
