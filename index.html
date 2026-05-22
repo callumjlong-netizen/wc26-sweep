@@ -730,22 +730,64 @@ function renderLeaderboard(filter='') {
     { label:'3rd', pct:split3, idx:2, cls:'' },
     { label:'Last', pct:splitL, idx:-1, cls:'last-place' },
   ]
+  // Has any scoring started?
+  const scoringStarted = scored.some(s => s.total > 0)
+ 
+  // Build joint-position map (true position accounting for ties)
+  const posMap = new Map()
+  let truePos = 1
+  scored.forEach((s, i) => {
+    if (i > 0 && scored[i-1].total === s.total) posMap.set(s, posMap.get(scored[i-1]))
+    else posMap.set(s, truePos)
+    truePos++
+  })
+ 
+  // Last place = all entries sharing the lowest score
+  const lastTotal = scored.length ? scored[scored.length-1].total : null
+  const lastMembers = scored.filter(s => s.total === lastTotal)
+ 
+  // Prize splits — pool payout slots consumed by each joint group, show total pot being split
+  const prizePcts = [split1, split2, split3]
+  function calcJointPrize(targetTruePos) {
+    const members = scored.filter(s => posMap.get(s) === targetTruePos)
+    if (!members.length) return { names: 'TBD', totalAmt: 0, isJoint: false, count: 1 }
+    const firstSeq = scored.indexOf(members[0])
+    const slots = members.map((_, i) => firstSeq + i).filter(i => i < prizePcts.length)
+    const totalPct = slots.reduce((sum, i) => sum + (prizePcts[i] || 0), 0)
+    const totalAmt = totalPct ? Math.round(pot * totalPct / 100) : 0
+    const names = members.length > 1
+      ? members.map(s => s.entry.name.split(' ')[0]).join(' / ')
+      : members[0].entry.name
+    return { names, totalAmt, isJoint: members.length > 1, count: members.length }
+  }
+ 
+  const lastTotalAmt = Math.round(pot * (splitL||0) / 100)
+  const lastIsJoint = lastMembers.length > 1
+  const lastNames = lastIsJoint
+    ? lastMembers.map(s => s.entry.name.split(' ')[0]).join(' / ')
+    : (lastMembers[0] ? lastMembers[0].entry.name : 'TBD')
+ 
   let splitsHTML = ''
   positions.forEach(p => {
     if (!p.pct) return
-    const winner = p.idx >= 0 ? scored[p.idx] : scored[scored.length-1]
-    const amt = Math.round(pot * p.pct / 100)
+    let names, totalAmt, isJoint
+    if (p.idx === -1) {
+      names = lastNames; totalAmt = lastTotalAmt; isJoint = lastIsJoint
+    } else {
+      const sp = calcJointPrize(p.idx + 1)
+      names = sp.names; totalAmt = sp.totalAmt; isJoint = sp.isJoint
+    }
+    const jointLabel = isJoint ? ' <span style="font-size:8px;opacity:.7">(split)</span>' : ''
     splitsHTML += `<div class="prize-split ${p.cls}">
-      <div class="pos">${p.label}</div>
-      <div class="winner-name">${winner ? winner.entry.name : 'TBD'}</div>
-      <div class="prize-amt">£${amt}</div>
+      <div class="pos">${p.label}${jointLabel}</div>
+      <div class="winner-name">${names}</div>
+      <div class="prize-amt">£${totalAmt}</div>
     </div>`
   })
   document.getElementById('prize-splits').innerHTML = splitsHTML
  
   const q = filter.toLowerCase()
   const filtered = scored.filter(s => s.entry.name.toLowerCase().includes(q))
-  const lastEntry = scored.length > 0 ? scored[scored.length-1] : null
  
   // Save which entries are currently open so refresh doesn't collapse them
   const openNames = new Set()
@@ -756,9 +798,10 @@ function renderLeaderboard(filter='') {
  
   let html = ''
   filtered.forEach(s => {
-    const rank = scored.indexOf(s) + 1
-    const isLast = lastEntry && s.entry.name === lastEntry.entry.name && rank === scored.length
-    const rCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':isLast?'rl':''
+    const seqRank = scored.indexOf(s) + 1
+    const rank = scoringStarted ? posMap.get(s) : seqRank
+    const isLast = scoringStarted && lastMembers.some(l => l.entry.name === s.entry.name)
+    const rCls = rank===1&&scoringStarted?'r1':rank===2&&scoringStarted?'r2':rank===3&&scoringStarted?'r3':isLast?'rl':''
     const rankLabel = isLast && rank > 3 ? '↓' : rank
     const isOpen = openNames.has(s.entry.name) ? 'open' : ''
  
