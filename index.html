@@ -214,7 +214,6 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .gen-ov-card.revealed .gen-ov-name{background:transparent;color:var(--green)}
  
 /* number cells */
-.gen-num-cell .gen-num-cell.top-rank{color:#b8860b ;border-color:#f0c040 ;background:#fffbee}
 .gen-num-cell{
   width:42px;height:42px;border-radius:7px;
   display:flex;align-items:center;justify-content:center;
@@ -223,6 +222,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
   transition:background .08s,color .08s,border-color .08s,transform .12s,opacity .15s;
   flex-shrink:0;
 }
+.gen-num-cell.top-rank{color:#b8860b ;border-color:#f0c040 ;background:#fffbee}
 .gen-num-cell.zap{background:#fde8e8;color:var(--red);border-color:#fca5a5;transform:scale(0.75)}
 .gen-num-cell.gone{opacity:0;transform:scale(0.4);pointer-events:none}
 .gen-num-cell.gone-final{opacity:0!important;transform:scale(0)!important;transition:all .2s ease!important;pointer-events:none}
