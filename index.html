@@ -182,32 +182,93 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .pos-F{background:#fde8e8;color:#9f1239}
 .tbd{color:var(--grey-300);font-style:italic}
  
-/* ── ENTRY GENERATOR ── */
-.gen-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--grey-500);margin-bottom:8px;padding-left:2px}
-.gen-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px}
-.gen-slot{border:2px dashed var(--grey-200);border-radius:10px;padding:14px 6px 10px;text-align:center;transition:border-color .2s,background .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100px}
-.gen-slot.rolling{border:2px solid var(--gold);background:#fffbf0;animation:genborderpulse .45s ease-in-out infinite alternate}
-.gen-slot.done{border:2px solid var(--green-light);background:#f0faf4}
-@keyframes genborderpulse{from{border-color:var(--gold)}to{border-color:var(--gold-light)}}
-.gen-slot-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--grey-300);margin-bottom:4px}
-.gen-slot.rolling .gen-slot-label{color:var(--gold)}
-.gen-slot.done .gen-slot-label{color:var(--green)}
-.gen-slot-num{font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--grey-200);letter-spacing:.03em;line-height:1}
-.gen-slot.rolling .gen-slot-num{color:var(--gold)}
-.gen-slot.done .gen-slot-num{color:var(--green-dark)}
-.gen-slot-name{font-size:10px;font-weight:600;color:transparent;margin-top:5px;line-height:1.3;min-height:14px;background:var(--grey-200);border-radius:3px;width:80%;transition:all .4s}
-.gen-slot.rolling .gen-slot-name{background:rgba(240,180,41,.3)}
-.gen-slot.done.revealed .gen-slot-name{background:transparent;color:var(--green)}
-.gen-divider{height:1px;background:var(--grey-200);margin:14px 0}
-.gen-status{font-size:12px;color:var(--grey-500);text-align:center;min-height:18px;margin:12px 0}
-.gen-roll-btn{width:100%;padding:14px;border:none;border-radius:10px;background:var(--green-dark);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px}
+/* ── ENTRY GENERATOR (eliminator style) ── */
+.gen-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--grey-500);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.gen-divider{height:1px;background:var(--grey-200);margin:16px 0}
+.gen-status{font-size:12px;font-weight:500;color:var(--grey-500);text-align:center;min-height:18px;margin-top:8px}
+.gen-status.urgent{color:var(--red);font-weight:700}
+ 
+/* grid wrap — relative so overlay sits on top */
+.gen-grid-wrap{position:relative}
+.gen-num-grid{display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start}
+ 
+/* overlay — same bounding box as the grid */
+.gen-grid-wrap.overlay-active{min-height:107px}
+.gen-overlay-row{
+  position:absolute;top:0;left:0;right:0;
+  height:107px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  pointer-events:none;
+}
+.gen-ov-card{
+  border-radius:10px;background:#f0faf4;border:2px solid var(--green);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:16px 8px;height:107px;
+  opacity:0;transform:scale(0.2);
+  transition:opacity .4s ease, transform .45s cubic-bezier(0.22,1,0.36,1);
+}
+.gen-ov-card.show{opacity:1;transform:scale(1)}
+.gen-ov-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:2px}
+.gen-ov-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--green-dark);letter-spacing:.04em;line-height:1}
+.gen-ov-name{font-size:10px;font-weight:600;color:transparent;background:var(--grey-200);border-radius:3px;padding:2px 6px;margin-top:5px;min-height:15px;width:85%;text-align:center;transition:all .4s}
+.gen-ov-card.revealed .gen-ov-name{background:transparent;color:var(--green)}
+ 
+/* number cells */
+.gen-num-cell{
+  width:42px;height:42px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:19px;
+  background:var(--grey-100);color:var(--grey-700);border:1px solid var(--grey-200);
+  transition:background .08s,color .08s,border-color .08s,transform .12s,opacity .15s;
+  flex-shrink:0;
+}
+.gen-num-cell.zap{background:#fde8e8;color:var(--red);border-color:#fca5a5;transform:scale(0.75)}
+.gen-num-cell.gone{opacity:0;transform:scale(0.4);pointer-events:none}
+.gen-num-cell.gone-final{opacity:0!important;transform:scale(0)!important;transition:all .2s ease!important;pointer-events:none}
+ 
+/* holding area */
+.gen-holding-area{
+  display:flex;gap:8px;justify-content:center;
+  height:0;overflow:visible;
+  transition:height .3s ease, margin .3s ease;
+  margin-top:0;margin-bottom:0;
+}
+.gen-holding-area.active{height:64px;margin-top:10px;margin-bottom:2px}
+.gen-holding-area.done{height:0;margin:0;transition:height .4s ease,margin .4s ease}
+ 
+.gen-hold-cell{
+  width:52px;height:52px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:22px;
+  background:#f0faf4;color:var(--green-dark);border:2px solid var(--green);
+  opacity:0;transform:translateY(-8px) scale(0.8);
+  transition:opacity .3s ease, transform .3s cubic-bezier(0.34,1.4,0.64,1);
+  flex-shrink:0;position:relative;z-index:10;
+}
+.gen-hold-cell.landed{opacity:1;transform:translateY(0) scale(1)}
+.gen-hold-cell.scanning{
+  background:var(--gold);color:var(--dark);border-color:var(--gold-light);
+  transform:scale(1.18);
+  box-shadow:0 0 14px rgba(240,180,41,.65);
+  transition:all .06s!important;
+}
+.gen-hold-cell.chosen{
+  background:var(--gold);color:var(--dark);border-color:var(--gold);
+  transform:scale(1.28);
+  box-shadow:0 0 22px rgba(240,180,41,.8);
+  transition:all .15s!important;
+  z-index:20;
+}
+.gen-hold-cell.launched{opacity:0;transform:scale(0.5);transition:all .25s ease!important;pointer-events:none}
+ 
+/* buttons */
+.gen-roll-btn{width:100%;padding:14px;border:none;border-radius:10px;background:var(--green-dark);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
 .gen-roll-btn:hover:not(:disabled){background:var(--green);transform:translateY(-1px)}
 .gen-roll-btn:disabled{background:var(--grey-200);color:var(--grey-300);cursor:not-allowed;transform:none}
-.gen-reveal-btn{width:100%;padding:13px;border:none;border-radius:10px;background:var(--gold);color:var(--dark);font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.08em;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.gen-reveal-btn{width:100%;padding:13px;border:none;border-radius:10px;background:var(--gold);color:var(--dark);font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.08em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
 .gen-reveal-btn:hover{filter:brightness(.93)}
-.gen-new-btn{width:100%;padding:11px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;border:1px solid var(--grey-200);background:var(--white);color:var(--grey-700);cursor:pointer;transition:all .15s}
+.gen-new-btn{width:100%;padding:11px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;border:1px solid var(--grey-200);background:var(--white);color:var(--grey-700);cursor:pointer}
 .gen-new-btn:hover{background:var(--grey-100)}
-@media(max-width:640px){.gen-grid{grid-template-columns:repeat(4,1fr);gap:4px}.gen-slot-num{font-size:32px}.gen-slot{min-height:80px;padding:10px 3px 8px}}
  
 /* ── HOW TO PLAY ── */
 .how-wrap{max-width:680px}
@@ -337,23 +398,37 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
           <div class="entry-price-badge" id="entry-price">£5</div>
         </div>
         <div class="entry-card-body">
-          <div class="gen-section-label">Teams</div>
-          <div class="gen-grid">
-            <div class="gen-slot" id="gts-0"><div class="gen-slot-label">Team 1</div><div class="gen-slot-num" id="gtn-0">—</div><div class="gen-slot-name" id="gtname-0">&nbsp;</div></div>
-            <div class="gen-slot" id="gts-1"><div class="gen-slot-label">Team 2</div><div class="gen-slot-num" id="gtn-1">—</div><div class="gen-slot-name" id="gtname-1">&nbsp;</div></div>
-            <div class="gen-slot" id="gts-2"><div class="gen-slot-label">Team 3</div><div class="gen-slot-num" id="gtn-2">—</div><div class="gen-slot-name" id="gtname-2">&nbsp;</div></div>
-            <div class="gen-slot" id="gts-3"><div class="gen-slot-label">Team 4</div><div class="gen-slot-num" id="gtn-3">—</div><div class="gen-slot-name" id="gtname-3">&nbsp;</div></div>
+          <!-- TEAMS -->
+          <div class="gen-section-label">Teams <span id="gen-team-count" style="font-weight:400;color:var(--grey-300);text-transform:none;letter-spacing:0;font-size:11px"></span></div>
+          <div class="gen-grid-wrap" id="gen-team-gw">
+            <div class="gen-num-grid" id="gen-team-grid"></div>
+            <div class="gen-overlay-row" id="gen-team-ovrow">
+              <div class="gen-ov-card" id="gen-team-ov-0"><div class="gen-ov-label">Team 1</div><div class="gen-ov-num" id="gen-team-ovn-0">—</div><div class="gen-ov-name" id="gen-team-ovname-0">&nbsp;</div></div>
+              <div class="gen-ov-card" id="gen-team-ov-1"><div class="gen-ov-label">Team 2</div><div class="gen-ov-num" id="gen-team-ovn-1">—</div><div class="gen-ov-name" id="gen-team-ovname-1">&nbsp;</div></div>
+              <div class="gen-ov-card" id="gen-team-ov-2"><div class="gen-ov-label">Team 3</div><div class="gen-ov-num" id="gen-team-ovn-2">—</div><div class="gen-ov-name" id="gen-team-ovname-2">&nbsp;</div></div>
+              <div class="gen-ov-card" id="gen-team-ov-3"><div class="gen-ov-label">Team 4</div><div class="gen-ov-num" id="gen-team-ovn-3">—</div><div class="gen-ov-name" id="gen-team-ovname-3">&nbsp;</div></div>
+            </div>
           </div>
+          <div class="gen-holding-area" id="gen-team-hold"></div>
+ 
           <div class="gen-divider"></div>
-          <div class="gen-section-label">Players</div>
-          <div class="gen-grid">
-            <div class="gen-slot" id="gps-0"><div class="gen-slot-label">T1 Player</div><div class="gen-slot-num" id="gpn-0">—</div><div class="gen-slot-name" id="gpname-0">&nbsp;</div></div>
-            <div class="gen-slot" id="gps-1"><div class="gen-slot-label">T2 Player</div><div class="gen-slot-num" id="gpn-1">—</div><div class="gen-slot-name" id="gpname-1">&nbsp;</div></div>
-            <div class="gen-slot" id="gps-2"><div class="gen-slot-label">T3 Player</div><div class="gen-slot-num" id="gpn-2">—</div><div class="gen-slot-name" id="gpname-2">&nbsp;</div></div>
-            <div class="gen-slot" id="gps-3"><div class="gen-slot-label">T4 Player</div><div class="gen-slot-num" id="gpn-3">—</div><div class="gen-slot-name" id="gpname-3">&nbsp;</div></div>
+ 
+          <!-- PLAYERS -->
+          <div class="gen-section-label">Players <span id="gen-player-count" style="font-weight:400;color:var(--grey-300);text-transform:none;letter-spacing:0;font-size:11px"></span></div>
+          <div class="gen-grid-wrap" id="gen-player-gw">
+            <div class="gen-num-grid" id="gen-player-grid"></div>
+            <div class="gen-overlay-row" id="gen-player-ovrow">
+              <div class="gen-ov-card" id="gen-player-ov-0"><div class="gen-ov-label">Player 1</div><div class="gen-ov-num" id="gen-player-ovn-0">—</div><div class="gen-ov-name" id="gen-player-ovname-0">&nbsp;</div></div>
+              <div class="gen-ov-card" id="gen-player-ov-1"><div class="gen-ov-label">Player 2</div><div class="gen-ov-num" id="gen-player-ovn-1">—</div><div class="gen-ov-name" id="gen-player-ovname-1">&nbsp;</div></div>
+              <div class="gen-ov-card" id="gen-player-ov-2"><div class="gen-ov-label">Player 3</div><div class="gen-ov-num" id="gen-player-ovn-2">—</div><div class="gen-ov-name" id="gen-player-ovname-2">&nbsp;</div></div>
+              <div class="gen-ov-card" id="gen-player-ov-3"><div class="gen-ov-label">Player 4</div><div class="gen-ov-num" id="gen-player-ovn-3">—</div><div class="gen-ov-name" id="gen-player-ovname-3">&nbsp;</div></div>
+            </div>
           </div>
+          <div class="gen-holding-area" id="gen-player-hold"></div>
+ 
+          <!-- Status + actions -->
           <div class="gen-status" id="gen-status"></div>
-          <div id="gen-actions">
+          <div id="gen-actions" style="margin-top:12px">
             <button class="gen-roll-btn" id="gen-roll-btn" onclick="genStartDraw()">⚄ Draw Entry</button>
           </div>
         </div>
@@ -976,121 +1051,249 @@ function toggleSquad(tn) {
 }
  
 function renderHowToPlay() {
-  const price = D.misc.price
+  const price = (D.misc && D.misc.price) ? D.misc.price : 5
   const priceStr = '£' + (price % 1 === 0 ? price : price.toFixed(2))
   document.getElementById('entry-price').textContent = priceStr
+  genResetUI()
 }
  
- 
-// ── ENTRY GENERATOR ──────────────────────────────────────────────────────────
- 
-function genShuffle(pool) {
-  const a = [...pool]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
- 
-let genTeamNums   = []
-let genPlayerNums = []
- 
-function genRollSlot(type, i, finalVal, flickMs, onDone) {
-  const isTeam = type === 't'
-  const slotEl = document.getElementById((isTeam?'gts-':'gps-')+i)
-  const numEl  = document.getElementById((isTeam?'gtn-':'gpn-')+i)
-  const nameEl = document.getElementById((isTeam?'gtname-':'gpname-')+i)
-  const pool   = isTeam
-    ? Object.keys(D.teams).map(Number)
-    : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]
- 
-  slotEl.classList.remove('done','revealed')
-  slotEl.classList.add('rolling')
-  nameEl.textContent = '\u00a0'
- 
-  const start = Date.now()
-  const iv = setInterval(() => {
-    numEl.textContent = pool[Math.floor(Math.random()*pool.length)]
-    if (Date.now() - start >= flickMs) {
-      clearInterval(iv)
-      slotEl.classList.remove('rolling')
-      slotEl.classList.add('done')
-      numEl.textContent = isTeam ? finalVal : '#'+finalVal
-      if (isTeam) {
-        const t = D.teams[finalVal]
-        nameEl.textContent = t ? t.name : 'Team '+finalVal
-      } else {
-        // Player: look up short name for this team
-        const tn = genTeamNums[i]
-        const p  = D.players[`${tn}-${finalVal}`]
-        nameEl.textContent = p ? (p.shortName || p.name || 'TBC') : 'TBC'
-      }
-      if (onDone) onDone()
-    }
-  }, 55)
-}
- 
-function genStartDraw() {
-  document.getElementById('gen-roll-btn').disabled = true
-  document.getElementById('gen-status').textContent = 'Drawing teams…'
- 
-  const teamPool   = Object.keys(D.teams).map(Number)
-  const shirtPool  = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]
-  const chosenTeams   = genShuffle(teamPool).slice(0,4)
-  const chosenPlayers = genShuffle(shirtPool).slice(0,4)
-  genTeamNums   = chosenTeams
-  genPlayerNums = chosenPlayers
- 
-  const queue = [
-    ...chosenTeams.map((v,i)   => ({type:'t', i, val:v})),
-    ...chosenPlayers.map((v,i) => ({type:'p', i, val:v})),
-  ]
- 
-  function runNext(idx) {
-    if (idx >= queue.length) {
-      document.getElementById('gen-status').textContent = 'Draw complete — tap to reveal names'
-      document.getElementById('gen-actions').innerHTML = `
-        <button class="gen-reveal-btn" onclick="genRevealAll()">👁 Reveal Teams &amp; Players</button>
-        <button class="gen-new-btn" onclick="genReset()">↺ New Entry</button>`
-      return
-    }
-    if (idx === 4) document.getElementById('gen-status').textContent = 'Drawing players…'
-    const {type, i, val} = queue[idx]
-    genRollSlot(type, i, val, 1400, () => setTimeout(() => runNext(idx+1), 500))
-  }
- 
-  runNext(0)
-}
- 
-function genRevealAll() {
-  const order = [
-    {type:'t',i:0},{type:'t',i:1},{type:'t',i:2},{type:'t',i:3},
-    {type:'p',i:0},{type:'p',i:1},{type:'p',i:2},{type:'p',i:3},
-  ]
-  order.forEach(({type,i}, idx) => {
-    setTimeout(() => {
-      document.getElementById((type==='t'?'gts-':'gps-')+i).classList.add('revealed')
-    }, idx * 600)
-  })
-  setTimeout(() => {
-    document.getElementById('gen-status').textContent = ''
-    document.getElementById('gen-actions').innerHTML =
-      `<button class="gen-new-btn" onclick="genReset()">↺ Draw New Entry</button>`
-  }, order.length * 600)
-}
- 
-function genReset() {
-  genTeamNums = []; genPlayerNums = []
-  for (let i = 0; i < 4; i++) {
-    ;[['gts-','gtn-','gtname-'],['gps-','gpn-','gpname-']].forEach(([s,n,nm]) => {
-      const slotEl = document.getElementById(s+i)
-      if (slotEl) { slotEl.className='gen-slot'; document.getElementById(n+i).textContent='—'; document.getElementById(nm+i).textContent='\u00a0' }
-    })
-  }
+function genResetUI() {
+  genTeamWinners=[]; genPlayerWinners=[]
   document.getElementById('gen-status').textContent = ''
   document.getElementById('gen-actions').innerHTML =
     `<button class="gen-roll-btn" id="gen-roll-btn" onclick="genStartDraw()">⚄ Draw Entry</button>`
+  ;['team','player'].forEach(type => {
+    for(let i=0;i<4;i++){
+      const ov=document.getElementById('gen-'+type+'-ov-'+i)
+      if(ov){ov.classList.remove('show','revealed')}
+      const ovn=document.getElementById('gen-'+type+'-ovn-'+i)
+      if(ovn) ovn.textContent='—'
+      const ovname=document.getElementById('gen-'+type+'-ovname-'+i)
+      if(ovname) ovname.textContent='\u00a0'
+    }
+    const hold=document.getElementById('gen-'+type+'-hold')
+    if(hold){hold.classList.remove('active','done');hold.innerHTML=''}
+    // Restore num-grid visibility (hidden during selection phase)
+    const numGrid=document.getElementById('gen-'+type+'-grid')
+    if(numGrid){numGrid.style.visibility='';numGrid.style.height='';numGrid.style.overflow=''}
+    const gw2=document.getElementById('gen-'+type+'-gw')
+    if(gw2) gw2.classList.remove('overlay-active')
+  })
+  if(Object.keys(D.teams).length > 0) {
+    genBuildGrid('team')
+    genBuildGrid('player')
+  }
+}
+ 
+ 
+// ── ENTRY GENERATOR (eliminator style) ───────────────────────────────────────
+ 
+function genShuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]} return b }
+ 
+let genTeamWinners = [], genPlayerWinners = []
+ 
+function genBuildGrid(type) {
+  const pool = type==='team' ? Object.keys(D.teams).map(Number) : Array.from({length:26},(_,i)=>i+1)
+  const grid = document.getElementById('gen-'+type+'-grid')
+  grid.innerHTML = ''
+  pool.forEach(n => {
+    const el = document.createElement('div')
+    el.className='gen-num-cell'; el.id='gen-'+type+'-cell-'+n; el.textContent=n
+    grid.appendChild(el)
+  })
+  document.getElementById('gen-'+type+'-count').textContent = pool.length+' remaining'
+}
+ 
+function genBuildSchedule(count, totalMs) {
+  const timings=[]; let t=0
+  for(let i=0;i<count;i++){
+    const p=i/count
+    let gap=p<0.5?150-p*160:p<0.8?70-(p-0.5)*100:40+(p-0.8)*200
+    timings.push(Math.round(t)); t+=Math.max(25,gap)+80
+  }
+  const scale=totalMs/t
+  return timings.map(x=>Math.round(x*scale))
+}
+ 
+function genSetStatus(msg, urgent=false) {
+  const el = document.getElementById('gen-status')
+  el.textContent = msg
+  el.classList.toggle('urgent', urgent)
+}
+ 
+function genStartDraw() {
+  document.getElementById('gen-actions').innerHTML = ''
+  const tPool = Object.keys(D.teams).map(Number)
+  const pPool = Array.from({length:26},(_,i)=>i+1)
+  const tShuf = genShuffle(tPool), pShuf = genShuffle(pPool)
+  genTeamWinners   = tShuf.slice(0,4)
+  genPlayerWinners = pShuf.slice(0,4)
+ 
+  genBuildGrid('team'); genBuildGrid('player')
+ 
+  const ELIM_MS = 7000
+  genRunElim('team',   tShuf.slice(4), genBuildSchedule(tShuf.slice(4).length, ELIM_MS))
+  genRunElim('player', pShuf.slice(4), genBuildSchedule(pShuf.slice(4).length, ELIM_MS))
+ 
+  genSetStatus('Eliminating…')
+ 
+  const LAND_AT = 7300
+  setTimeout(() => genLandSurvivors('team',   genTeamWinners),   LAND_AT)
+  setTimeout(() => genLandSurvivors('player', genPlayerWinners), LAND_AT+80)
+ 
+  const PER_SLOT = 2400
+  const SELECT_START = LAND_AT + 500
+  for(let i=0;i<3;i++){
+    setTimeout(() => genCycleAndSelect('team',   genTeamWinners,   i), SELECT_START+i*PER_SLOT)
+    setTimeout(() => genCycleAndSelect('player', genPlayerWinners, i), SELECT_START+i*PER_SLOT+120)
+  }
+  const LAST_AT = SELECT_START + 2*PER_SLOT + 1500
+  setTimeout(() => genCycleAndSelect('team',   genTeamWinners,   3), LAST_AT)
+  setTimeout(() => genCycleAndSelect('player', genPlayerWinners, 3), LAST_AT+120)
+ 
+  const doneAt = LAST_AT + 900
+  setTimeout(() => {
+    genSetStatus('')
+    document.getElementById('gen-actions').innerHTML =
+      `<button class="gen-reveal-btn" onclick="genRevealAll()">👁 Reveal Teams &amp; Players</button>`
+  }, doneAt)
+}
+ 
+function genRunElim(type, elimArr, timings) {
+  const countEl = document.getElementById('gen-'+type+'-count')
+  let remaining = type==='team' ? Object.keys(D.teams).length : 26
+  elimArr.forEach((n,i) => {
+    setTimeout(() => { const c=document.getElementById('gen-'+type+'-cell-'+n); if(c) c.classList.add('zap') }, timings[i])
+    setTimeout(() => {
+      const c=document.getElementById('gen-'+type+'-cell-'+n)
+      if(c){c.classList.remove('zap');c.classList.add('gone')}
+      remaining--
+      countEl.textContent = remaining+' remaining'
+      if(remaining<=8) genSetStatus(remaining+' remaining…', true)
+      if(remaining===4){countEl.textContent='4 left';genSetStatus('Selecting…',false)}
+    }, timings[i]+80)
+  })
+}
+ 
+function genLandSurvivors(type, winners) {
+  const holdEl = document.getElementById('gen-'+type+'-hold')
+  holdEl.classList.add('active')
+  holdEl.innerHTML = ''
+  const sorted = [...winners].sort((a,b)=>a-b)
+  sorted.forEach((n,i) => {
+    const cel = document.getElementById('gen-'+type+'-cell-'+n)
+    if(cel) cel.classList.add('gone-final')
+    const hc = document.createElement('div')
+    hc.className='gen-hold-cell'; hc.id='gen-'+type+'-hc-'+n; hc.textContent=n
+    holdEl.appendChild(hc)
+    setTimeout(()=>hc.classList.add('landed'), i*70)
+  })
+  // Hide the number grid and lock wrap height so overlay cards have room
+  const numGrid = document.getElementById('gen-'+type+'-grid')
+  if(numGrid){ numGrid.style.visibility = 'hidden'; numGrid.style.height = '0'; numGrid.style.overflow = 'hidden' }
+  const gw2 = document.getElementById('gen-'+type+'-gw')
+  if(gw2) gw2.classList.add('overlay-active')
+}
+ 
+function genCycleAndSelect(type, allWinners, slotIdx) {
+  function getAvailable() {
+    return allWinners.filter(n => {
+      const hc = document.getElementById('gen-'+type+'-hc-'+n)
+      return hc && !hc.classList.contains('launched')
+    })
+  }
+  const available = getAvailable()
+  if(!available.length) return
+ 
+  if(available.length===1){
+    const n = allWinners[slotIdx]
+    const hc = document.getElementById('gen-'+type+'-hc-'+n)
+    if(hc) hc.classList.add('chosen')
+    setTimeout(()=>genLaunchToSlot(type,n,slotIdx), 350)
+    return
+  }
+ 
+  const CYCLES=3, STEP_MS=90
+  const steps = available.length*CYCLES
+  let step=0, lastIdx=-1
+ 
+  const iv = setInterval(()=>{
+    if(lastIdx>=0){
+      const prev = document.getElementById('gen-'+type+'-hc-'+available[lastIdx%available.length])
+      if(prev) prev.classList.remove('scanning')
+    }
+    const idx = step%available.length
+    const hc = document.getElementById('gen-'+type+'-hc-'+available[idx])
+    if(hc) hc.classList.add('scanning')
+    lastIdx=idx; step++
+ 
+    if(step>=steps){
+      clearInterval(iv)
+      available.forEach(n=>{
+        const hc=document.getElementById('gen-'+type+'-hc-'+n)
+        if(hc) hc.classList.remove('scanning')
+      })
+      const chosen = allWinners[slotIdx]
+      const chosenHc = document.getElementById('gen-'+type+'-hc-'+chosen)
+      if(chosenHc) chosenHc.classList.add('chosen')
+      setTimeout(()=>genLaunchToSlot(type,chosen,slotIdx), 450)
+    }
+  }, STEP_MS)
+}
+ 
+function genLaunchToSlot(type, n, slotIdx) {
+  const hc = document.getElementById('gen-'+type+'-hc-'+n)
+  if(hc){hc.classList.remove('chosen');hc.classList.add('launched')}
+ 
+  setTimeout(()=>{
+    const ov     = document.getElementById('gen-'+type+'-ov-'+slotIdx)
+    const ovnEl  = document.getElementById('gen-'+type+'-ovn-'+slotIdx)
+    const ovname = document.getElementById('gen-'+type+'-ovname-'+slotIdx)
+    ovnEl.textContent = type==='player' ? '#'+n : n
+    ovname.textContent = '\u00a0'
+    if(ov) ov.classList.add('show')
+ 
+    document.getElementById('gen-'+type+'-count').textContent = (slotIdx+1)+' of 4'
+ 
+    if(slotIdx===3){
+      const holdEl = document.getElementById('gen-'+type+'-hold')
+      holdEl.classList.remove('active')
+      holdEl.classList.add('done')
+    }
+  }, 280)
+}
+ 
+function genRevealAll() {
+  document.getElementById('gen-actions').innerHTML = ''
+  const order = [
+    {type:'team',i:0},{type:'team',i:1},{type:'team',i:2},{type:'team',i:3},
+    {type:'player',i:0},{type:'player',i:1},{type:'player',i:2},{type:'player',i:3},
+  ]
+  order.forEach(({type,i}, idx) => {
+    setTimeout(()=>{
+      const n      = parseInt(document.getElementById('gen-'+type+'-ovn-'+i).textContent)
+      const ov     = document.getElementById('gen-'+type+'-ov-'+i)
+      const oname  = document.getElementById('gen-'+type+'-ovname-'+i)
+      ov.classList.add('revealed')
+      if(type==='team'){
+        const t = D.teams[n]
+        oname.textContent = t ? t.name : 'Team '+n
+      } else {
+        // Player number: find name from the drawn team at this slot
+        const tn = genTeamWinners[i]
+        const p  = D.players[`${tn}-${n}`]
+        oname.textContent = p ? (p.shortName||p.name||'TBC') : 'TBC'
+      }
+    }, idx*500)
+  })
+  setTimeout(()=>{
+    document.getElementById('gen-actions').innerHTML =
+      `<button class="gen-new-btn" onclick="genReset()">↺ Draw New Entry</button>`
+  }, order.length*500+400)
+}
+ 
+function genReset() {
+  genResetUI()
 }
  
 loadAll()
