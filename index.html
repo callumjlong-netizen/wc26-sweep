@@ -54,10 +54,10 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .prize-box{background:var(--green-dark);border-radius:12px;padding:18px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
 .pot-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:4px}
 .pot-amount{font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--white);letter-spacing:.04em;line-height:1}
-.prize-splits{display:flex;gap:8px;flex-wrap:wrap}
-.prize-split{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 14px;text-align:center;min-width:80px}
+.prize-splits{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:0}
+.prize-split{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 14px;text-align:center;flex:1;min-width:70px}
 .prize-split .pos{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:2px}
-.prize-split .winner-name{font-size:11px;color:rgba(255,255,255,.7);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
+.prize-split .winner-name{font-size:11px;color:rgba(255,255,255,.7);margin-bottom:4px;white-space:normal;line-height:1.3;word-break:break-word}
 .prize-split .prize-amt{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--white);letter-spacing:.04em}
 .prize-split.last-place{border-color:rgba(240,180,41,.3);background:rgba(240,180,41,.06)}
  
@@ -731,7 +731,7 @@ function renderLeaderboard(filter='') {
     { label:'Last', pct:splitL, idx:-1, cls:'last-place' },
   ]
   // Has any scoring started?
-  const scoringStarted = scored.some(s => s.total > 0)
+  const scoringStarted = D.goals.filter(g => !g.isShootout).length > 0
  
   // Build joint-position map (true position accounting for ties)
   const posMap = new Map()
@@ -745,6 +745,7 @@ function renderLeaderboard(filter='') {
   // Last place = all entries sharing the lowest score
   const lastTotal = scored.length ? scored[scored.length-1].total : null
   const lastMembers = scored.filter(s => s.total === lastTotal)
+  const lastMembersSet = new Set(lastMembers)
  
   // Prize splits — pool payout slots consumed by each joint group, show total pot being split
   const prizePcts = [split1, split2, split3]
@@ -800,9 +801,9 @@ function renderLeaderboard(filter='') {
   filtered.forEach(s => {
     const seqRank = scored.indexOf(s) + 1
     const rank = scoringStarted ? posMap.get(s) : seqRank
-    const isLast = scoringStarted && lastMembers.some(l => l.entry.name === s.entry.name)
+    const isLast = scoringStarted && lastMembersSet.has(s)
     const rCls = rank===1&&scoringStarted?'r1':rank===2&&scoringStarted?'r2':rank===3&&scoringStarted?'r3':isLast?'rl':''
-    const rankLabel = isLast && rank > 3 ? '↓' : rank
+    const rankLabel = isLast ? '↓' : rank
     const isOpen = openNames.has(s.entry.name) ? 'open' : ''
  
     const tags = s.slots.map(slot => {
