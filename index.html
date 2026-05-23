@@ -224,7 +224,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .gen-num-cell.top-rank{color:#b8860b ;border-color:#f0c040 ;background:#fffbee}
 .gen-num-cell.zap{background:#fde8e8;color:var(--red);border-color:#fca5a5;transform:scale(0.75)}
 .gen-num-cell.gone{opacity:0;transform:scale(0.4);pointer-events:none}
-.gen-num-cell.gone-final{opacity:0!important;transform:scale(0)!important;transition:all .2s ease!important;pointer-events:none}
+.gen-num-cell.gone-final{opacity:0!important;transform:scale(0)!important;transition:opacity .2s ease,transform .2s ease!important;pointer-events:none}
  
 /* holding area */
 .gen-holding-area{
@@ -1212,6 +1212,11 @@ function genRunElim(type, elimArr, timings) {
  
 function genLandSurvivors(type, winners) {
   const holdEl = document.getElementById('gen-'+type+'-hold')
+  const gw = document.getElementById('gen-'+type+'-gw')
+ 
+  // Lock the grid-wrap height FIRST before anything changes layout
+  if(gw) gw.style.height = gw.offsetHeight + 'px'
+ 
   holdEl.classList.add('active')
   holdEl.innerHTML = ''
   const sorted = [...winners].sort((a,b)=>a-b)
@@ -1224,26 +1229,26 @@ function genLandSurvivors(type, winners) {
     holdEl.appendChild(hc)
   })
  
-  // Wait for hold area transition to finish before flying
+  // Wait for hold area height transition to finish (300ms) before flying
   setTimeout(() => {
-    // Lock the grid-wrap to its current rendered height before anything changes
-    // so the layout stays completely stable during the entire flight
-    const gw = document.getElementById('gen-'+type+'-gw')
-    if(gw) gw.style.height = gw.offsetHeight + 'px'
+    const numGrid = document.getElementById('gen-'+type+'-grid')
  
+    // Start flying
     sorted.forEach((n, i) => {
       setTimeout(() => genFlyCell(type, n), i * 160)
     })
  
-    // Once all landed: hide grid, then smoothly transition wrap to overlay card height
+    // Once all cells landed: hide grid content, then smoothly shrink to 107px
     const allDone = sorted.length * 160 + 420
     setTimeout(() => {
-      const numGrid = document.getElementById('gen-'+type+'-grid')
-      if(numGrid){ numGrid.style.visibility='hidden' }
-      // Smoothly shrink wrap to exactly the overlay card height
+      // Hide grid instantly (wrap is locked so no layout shift)
+      if(numGrid) numGrid.style.visibility = 'hidden'
+ 
+      // Now smoothly transition the locked wrap height down to overlay height
       if(gw){
         gw.style.transition = 'height .4s ease'
         gw.style.height = '107px'
+        // Once shrink is done, hand off to overlay-active and clear inline styles
         setTimeout(() => {
           gw.style.transition = ''
           gw.style.height = ''
