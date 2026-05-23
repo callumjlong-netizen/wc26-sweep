@@ -1235,14 +1235,21 @@ function genLandSurvivors(type, winners) {
       setTimeout(() => genFlyCell(type, n), i * 160)
     })
  
-    // Once all landed: fade grid out, then switch to overlay (wrap is already locked so no jump)
+    // Once all landed: hide grid, then smoothly transition wrap to overlay card height
     const allDone = sorted.length * 160 + 420
     setTimeout(() => {
       const numGrid = document.getElementById('gen-'+type+'-grid')
       if(numGrid){ numGrid.style.visibility='hidden' }
-      if(gw) gw.classList.add('overlay-active')
-      // Release the locked height now that overlay-active sets min-height
-      if(gw) gw.style.height = ''
+      // Smoothly shrink wrap to exactly the overlay card height
+      if(gw){
+        gw.style.transition = 'height .4s ease'
+        gw.style.height = '107px'
+        setTimeout(() => {
+          gw.style.transition = ''
+          gw.style.height = ''
+          gw.classList.add('overlay-active')
+        }, 420)
+      }
     }, allDone)
   }, 320)
 }
