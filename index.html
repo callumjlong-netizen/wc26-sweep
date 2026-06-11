@@ -1025,12 +1025,12 @@ function renderGoalLog() {
     const pts = 1 + mult
  
     html += `<div class="goal-row${g.isShootout?' shootout':''}">
-      <div><div class="goal-min">${g.minute||'—'}<small>min</small></div></div>
+      <div class="goal-match">${matchLabel}${g.isShootout?'<span class="shootout-badge">SHOOTOUT</span>':''}</div>
       <div>
-        <div class="goal-team">${tName}${g.isShootout?'<span class="shootout-badge">SHOOTOUT</span>':''}</div>
-        <div class="goal-player">${pName}${posLabel?' · '+posLabel:''}</div>
+        <div class="goal-min">${g.minute||'—'}<small>min</small></div>
+        <div class="goal-team">${tName}</div>
       </div>
-      <div class="goal-match">${matchLabel}</div>
+      <div class="goal-player">#${g.playerNum} ${pName}${posLabel?' · '+posLabel:''}</div>
       <div class="goal-pts">${g.isShootout?'<span style="font-size:11px;color:#aaa">No pts</span>':`+${pts}<small>pts to holders</small>`}</div>
     </div>`
   })
