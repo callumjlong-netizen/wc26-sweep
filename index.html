@@ -143,7 +143,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
  
 /* ── GOAL LOG ── */
 .goal-list{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;overflow:hidden}
-.goal-row{display:grid;grid-template-columns:54px 1fr 1fr 60px;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--grey-100);font-size:12px}
+.goal-row{display:grid;grid-template-columns:160px 54px 120px 1fr 60px;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--grey-100);font-size:12px}
 .goal-row:last-child{border-bottom:none}
 .goal-row.shootout{opacity:.45}
 .goal-min{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);letter-spacing:.04em;line-height:1}
@@ -300,7 +300,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
   .lb-expand{grid-template-columns:1fr}
   .prize-box{flex-direction:column;align-items:flex-start}
   .fix-row{grid-template-columns:1fr 54px 1fr 70px;font-size:11px;padding:8px 10px}
-  .goal-row{grid-template-columns:44px 1fr 1fr 48px}
+  .goal-row{grid-template-columns:1fr 40px 1fr 60px;font-size:11px}
   .groups-grid{grid-template-columns:1fr}
   .knockout-row{grid-template-columns:1fr 54px 1fr 70px;font-size:11px}
   nav button{padding:15px 10px 12px;font-size:11px}
@@ -1026,11 +1026,9 @@ function renderGoalLog() {
  
     html += `<div class="goal-row${g.isShootout?' shootout':''}">
       <div class="goal-match">${matchLabel}${g.isShootout?'<span class="shootout-badge">SHOOTOUT</span>':''}</div>
-      <div>
-        <div class="goal-min">${g.minute||'—'}<small>min</small></div>
-        <div class="goal-team">${tName}</div>
-      </div>
-      <div class="goal-player">#${g.playerNum} ${pName}${posLabel?' · '+posLabel:''}</div>
+      <div><div class="goal-min">${g.minute||'—'}<small>min</small></div></div>
+      <div class="goal-team">${tName}</div>
+      <div class="goal-player" style="font-size:13px">#${g.playerNum} ${pName}${posLabel?' · '+posLabel:''}</div>
       <div class="goal-pts">${g.isShootout?'<span style="font-size:11px;color:#aaa">No pts</span>':`+${pts}<small>pts to holders</small>`}</div>
     </div>`
   })
