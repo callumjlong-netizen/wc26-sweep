@@ -942,11 +942,7 @@ function renderFixtures() {
   const now = new Date()
   const withStatus = D.games.map(g => {
     const dt = g.dateTime ? new Date(g.dateTime) : null
-    const clock = g.clock || ''
-    const isFt = ['FT','AET','FT (Pens)'].includes(clock)
-    const isLive = !isFt && clock !== ''
-    const status = isFt ? 'completed' : clock !== '' ? 'live' : !dt ? 'upcoming' : dt > now ? 'upcoming' : 'upcoming'
-    return { ...g, dt, clock, status, score: getMatchScore(g.matchNum) }
+    return { ...g, dt, score: getMatchScore(g.matchNum) }
   })
  
   document.getElementById('fix-subtitle').textContent = `${withStatus.length} matches`
@@ -986,19 +982,22 @@ function renderFixtures() {
       const hName = home ? home.name : `Team ${g.home}`
       const aName = away ? away.name : `Team ${g.away}`
  
+      const isFin = ['FT','AET','FT (Pens)'].includes(g.clock)
+      const isLiv = !isFin && g.clock !== ''
+
       let scoreEl = ''
-      if (g.status === 'live') {
+      if (isLiv) {
         scoreEl = `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
-      } else if ((g.status === 'completed' || g.score.h > 0 || g.score.a > 0) && g.score.h !== null) {
+      } else if (isFin && g.score.h !== null) {
         scoreEl = `<div class="fix-score">${g.score.h} – ${g.score.a}</div>`
       } else {
         scoreEl = `<div class="fix-score" style="font-size:11px;color:#bbb">vs</div>`
       }
- 
+
       let statusEl = ''
-      if (g.status === 'completed') {
+      if (isFin) {
         statusEl = `<div class="fix-right"><span class="pill pill-done">${g.clock}</span></div>`
-      } else if (g.clock) {
+      } else if (isLiv) {
         statusEl = `<div class="fix-right"><span class="pill pill-live"><span class="live-pulse"></span>${g.clock}</span></div>`
       } else {
         const timeStr = g.dt ? g.dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : ''
