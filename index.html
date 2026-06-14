@@ -668,7 +668,10 @@ function calcGroupStandings() {
     const dt = game.dateTime ? new Date(game.dateTime) : null
     const isPast = dt && dt < now
     const hasGoals = (score.h && score.h > 0) || (score.a && score.a > 0)
-    if (!isPast && !hasGoals && game.status !== 'live' && game.status !== 'completed') return
+    const clock = game.clock || ''
+    const isFinished = ['FT','AET','FT (Pens)'].includes(clock)
+    const isLive = clock !== '' && !isFinished
+    if (!isPast && !hasGoals && !isLive && !isFinished) return
  
     const ht = D.teams[game.home], at = D.teams[game.away]
     if (!ht || !at) return
@@ -900,19 +903,22 @@ function renderGroups() {
       const isPast = dt && dt < now
  
       let scoreEl = ''
-      if (game.status === 'live') {
+      const clock = game.clock || ''
+      const isFinished = ['FT','AET','FT (Pens)'].includes(clock)
+      const isLive = clock !== '' && !isFinished
+      if (isLive) {
         scoreEl = `<div class="ko-score live-score">${score.h??0} – ${score.a??0}</div>`
-      } else if ((game.status === 'completed' || isPast) && score.h !== null) {
+      } else if ((isFinished || isPast) && score.h !== null) {
         scoreEl = `<div class="ko-score">${score.h} – ${score.a}</div>`
       } else {
         scoreEl = `<div class="ko-score" style="font-size:11px;color:#bbb">vs</div>`
       }
  
       let rightEl = ''
-      if (game.status === 'live') {
-        rightEl = `<div class="ko-right"><span class="pill pill-live"><span class="live-pulse"></span>Live</span></div>`
-      } else if (game.status === 'completed' || isPast) {
-        rightEl = `<div class="ko-right"><span class="pill pill-done">FT</span></div>`
+      if (isLive) {
+        rightEl = `<div class="ko-right"><span class="pill pill-live"><span class="live-pulse"></span>${clock}</span></div>`
+      } else if (isFinished || isPast) {
+        rightEl = `<div class="ko-right"><span class="pill pill-done">${clock || 'FT'}</span></div>`
       } else {
         const ts = dt ? dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : game.dateTime
         rightEl = `<div class="ko-right">${ts}</div>`
@@ -938,7 +944,7 @@ function renderFixtures() {
     const dt = g.dateTime ? new Date(g.dateTime) : null
     const clock = g.clock || ''
     const isFt = ['FT','AET','FT (Pens)'].includes(clock)
-    const isLive = !isFt && clock !== '' && clock !== 'HT' ? false : clock === 'HT' ? false : clock !== ''
+    const isLive = !isFt && clock !== ''
     const status = isFt ? 'completed' : clock !== '' ? 'live' : !dt ? 'upcoming' : dt > now ? 'upcoming' : 'upcoming'
     return { ...g, dt, clock, status, score: getMatchScore(g.matchNum) }
   })
