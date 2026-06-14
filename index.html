@@ -576,7 +576,7 @@ async function loadAll() {
       away: parseInt(r['Away Team'])||0,
       dateTime: r['Date Time']||'',
       label: r['Match Lable']||r['Match Label']||r['label']||'',
-      status: (r['Status']||'').toLowerCase(),
+      clock: (r['Status']||'').trim(),
     }))
  
     D.goals = goals.filter(r => {
@@ -936,9 +936,11 @@ function renderFixtures() {
   const now = new Date()
   const withStatus = D.games.map(g => {
     const dt = g.dateTime ? new Date(g.dateTime) : null
-    let status = g.status
-    if (!status) status = !dt ? 'upcoming' : dt > now ? 'upcoming' : 'completed'
-    return { ...g, dt, status, score: getMatchScore(g.matchNum) }
+    const clock = g.clock || ''
+    const isFt = ['FT','AET','FT (Pens)'].includes(clock)
+    const isLive = !isFt && clock !== '' && clock !== 'HT' ? false : clock === 'HT' ? false : clock !== ''
+    const status = isFt ? 'completed' : clock !== '' ? 'live' : !dt ? 'upcoming' : dt > now ? 'upcoming' : 'upcoming'
+    return { ...g, dt, clock, status, score: getMatchScore(g.matchNum) }
   })
  
   document.getElementById('fix-subtitle').textContent = `${withStatus.length} matches`
@@ -988,10 +990,10 @@ function renderFixtures() {
       }
  
       let statusEl = ''
-      if (g.status === 'live') {
-        statusEl = `<div class="fix-right"><span class="pill pill-live"><span class="live-pulse"></span>Live</span></div>`
-      } else if (g.status === 'completed') {
-        statusEl = `<div class="fix-right"><span class="pill pill-done">FT</span></div>`
+      if (g.status === 'completed') {
+        statusEl = `<div class="fix-right"><span class="pill pill-done">${g.clock}</span></div>`
+      } else if (g.clock) {
+        statusEl = `<div class="fix-right"><span class="pill pill-live"><span class="live-pulse"></span>${g.clock}</span></div>`
       } else {
         const timeStr = g.dt ? g.dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : ''
         statusEl = `<div class="fix-right" style="font-size:11px;color:var(--grey-500)">${timeStr}<br><span style="font-size:10px;color:#bbb">${g.label}</span></div>`
