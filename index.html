@@ -61,6 +61,17 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .prize-split .prize-amt{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--white);letter-spacing:.04em}
 .prize-split.last-place{border-color:rgba(240,180,41,.3);background:rgba(240,180,41,.06)}
  
+/* ── THEORETICAL MAX CARD ── */
+.tmax-card{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.tmax-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.tmax-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;color:var(--green-dark)}
+.tmax-total{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--green);letter-spacing:.04em}
+.tmax-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tmax-slot{background:var(--grey-100);border-radius:8px;padding:8px 10px}
+.tmax-team{font-weight:600;font-size:11px;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tmax-player{font-size:10px;color:var(--grey-500);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tmax-pts{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green);letter-spacing:.04em;margin-top:2px}
+ 
 /* ── SEARCH ── */
 .search-bar{width:100%;padding:9px 14px;border:1px solid var(--grey-200);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--white);color:var(--dark);margin-bottom:12px;outline:none;transition:border-color .15s}
 .search-bar:focus{border-color:var(--green)}
@@ -81,7 +92,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .entry-name{font-weight:600;font-size:13px}
 .entry-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
 .team-tag{font-size:10px;font-weight:600;padding:2px 5px;border-radius:3px;background:#f4f2ed;color:#4a4640;border:1px solid #1a6b3c;font-family:'DM Mono',monospace}
-.team-tag.top-rank{color:#b8860b ;border-color:#f0c040 ;background:#fffbee}
+.team-tag.top-rank{color:#b8860b;border-color:#f0c040;background:#fffbee}
 .pts-col{text-align:right;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);letter-spacing:.04em;display:flex;align-items:center;justify-content:flex-end;gap:5px}
 .chevron{font-size:11px;color:var(--grey-300);transition:transform .2s}
 .lb-row.open .chevron{transform:rotate(180deg)}
@@ -186,80 +197,28 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .gen-divider{height:1px;background:var(--grey-200);margin:16px 0}
 .gen-status{font-size:12px;font-weight:500;color:var(--grey-500);text-align:center;min-height:18px;margin-top:8px}
 .gen-status.urgent{color:var(--red);font-weight:700}
- 
-/* grid wrap — relative so overlay sits on top */
 .gen-grid-wrap{position:relative}
 .gen-num-grid{display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start}
- 
-/* overlay — same bounding box as the grid */
 .gen-grid-wrap.overlay-active{min-height:107px}
-.gen-overlay-row{
-  position:absolute;top:0;left:0;right:0;
-  height:107px;
-  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
-  pointer-events:none;
-}
-.gen-ov-card{
-  border-radius:10px;background:#f0faf4;border:2px solid var(--green);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:16px 8px;height:107px;
-  opacity:0;transform:scale(0.2);
-  transition:opacity .4s ease, transform .45s cubic-bezier(0.22,1,0.36,1);
-}
+.gen-overlay-row{position:absolute;top:0;left:0;right:0;height:107px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;pointer-events:none}
+.gen-ov-card{border-radius:10px;background:#f0faf4;border:2px solid var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 8px;height:107px;opacity:0;transform:scale(0.2);transition:opacity .4s ease,transform .45s cubic-bezier(0.22,1,0.36,1)}
 .gen-ov-card.show{opacity:1;transform:scale(1)}
 .gen-ov-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:2px}
 .gen-ov-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--green-dark);letter-spacing:.04em;line-height:1}
 .gen-ov-name{font-size:10px;font-weight:600;color:transparent;background:var(--grey-200);border-radius:3px;padding:2px 6px;margin-top:5px;min-height:15px;width:85%;text-align:center;transition:all .4s}
 .gen-ov-card.revealed .gen-ov-name{background:transparent;color:var(--green)}
- 
-/* number cells */
-.gen-num-cell{
-  width:42px;height:42px;border-radius:7px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Bebas Neue',sans-serif;font-size:19px;
-  background:var(--grey-100);color:var(--grey-700);border:1px solid var(--grey-200);
-  transition:background .08s,color .08s,border-color .08s,transform .12s,opacity .15s;
-  flex-shrink:0;
-}
-.gen-num-cell.top-rank{color:#b8860b ;border-color:#f0c040 ;background:#fffbee}
+.gen-num-cell{width:42px;height:42px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:19px;background:var(--grey-100);color:var(--grey-700);border:1px solid var(--grey-200);transition:background .08s,color .08s,border-color .08s,transform .12s,opacity .15s;flex-shrink:0}
+.gen-num-cell.top-rank{color:#b8860b;border-color:#f0c040;background:#fffbee}
 .gen-num-cell.zap{background:#fde8e8;color:var(--red);border-color:#fca5a5;transform:scale(0.75)}
 .gen-num-cell.gone{opacity:0;transform:scale(0.4);pointer-events:none}
 .gen-num-cell.gone-final{opacity:0!important;transform:scale(0)!important;transition:opacity .2s ease,transform .2s ease!important;pointer-events:none}
- 
-/* holding area */
-.gen-holding-area{
-  display:flex;gap:8px;justify-content:center;
-  height:0;overflow:visible;
-  transition:height .3s ease, margin .3s ease;
-  margin-top:0;margin-bottom:0;
-}
+.gen-holding-area{display:flex;gap:8px;justify-content:center;height:0;overflow:visible;transition:height .3s ease,margin .3s ease;margin-top:0;margin-bottom:0}
 .gen-holding-area.active{height:64px;margin-top:10px;margin-bottom:2px}
 .gen-holding-area.done{height:0;margin:0;transition:height .4s ease,margin .4s ease}
- 
-.gen-hold-cell{
-  width:52px;height:52px;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Bebas Neue',sans-serif;font-size:22px;
-  background:#f0faf4;color:var(--green-dark);border:2px solid var(--green);
-  opacity:0;flex-shrink:0;position:relative;z-index:10;
-  transition:opacity .2s ease, transform .2s ease;
-}
-.gen-hold-cell.scanning{
-  background:var(--gold);color:var(--dark);border-color:var(--gold-light);
-  transform:scale(1.18);
-  box-shadow:0 0 14px rgba(240,180,41,.65);
-  transition:all .06s!important;
-}
-.gen-hold-cell.chosen{
-  background:var(--gold);color:var(--dark);border-color:var(--gold);
-  transform:scale(1.28);
-  box-shadow:0 0 22px rgba(240,180,41,.8);
-  transition:all .15s!important;
-  z-index:20;
-}
+.gen-hold-cell{width:52px;height:52px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;background:#f0faf4;color:var(--green-dark);border:2px solid var(--green);opacity:0;flex-shrink:0;position:relative;z-index:10;transition:opacity .2s ease,transform .2s ease}
+.gen-hold-cell.scanning{background:var(--gold);color:var(--dark);border-color:var(--gold-light);transform:scale(1.18);box-shadow:0 0 14px rgba(240,180,41,.65);transition:all .06s!important}
+.gen-hold-cell.chosen{background:var(--gold);color:var(--dark);border-color:var(--gold);transform:scale(1.28);box-shadow:0 0 22px rgba(240,180,41,.8);transition:all .15s!important;z-index:20}
 .gen-hold-cell.launched{opacity:0;transform:scale(0.5);transition:all .25s ease!important;pointer-events:none}
- 
-/* buttons */
 .gen-roll-btn{width:100%;padding:14px;border:none;border-radius:10px;background:var(--green-dark);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
 .gen-roll-btn:hover:not(:disabled){background:var(--green);transform:translateY(-1px)}
 .gen-roll-btn:disabled{background:var(--grey-200);color:var(--grey-300);cursor:not-allowed;transform:none}
@@ -310,6 +269,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
   .groups-grid{grid-template-columns:1fr}
   .knockout-row{grid-template-columns:1fr 54px 1fr 70px;font-size:11px}
   nav button{padding:15px 10px 12px;font-size:11px}
+  .tmax-grid{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
@@ -345,6 +305,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
       <div><div class="pot-label">Total Prize Pot</div><div class="pot-amount" id="pot-amount">£0</div></div>
       <div class="prize-splits" id="prize-splits"></div>
     </div>
+    <div id="tmax-card-wrap"></div>
     <input class="search-bar" type="text" placeholder="Search entries…" oninput="filterLeaderboard(this.value)">
     <div class="lb-wrap">
       <div class="lb-head"><div>Pos</div><div>Entry</div><div style="text-align:right">Pts</div></div>
@@ -391,7 +352,6 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
   <div class="inner">
     <div class="how-wrap">
       <div class="section-head">How to Play <span>Entry generator &amp; rules</span></div>
- 
       <div class="entry-card">
         <div class="entry-card-head">
           <div>
@@ -401,7 +361,6 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
           <div class="entry-price-badge" id="entry-price">£5</div>
         </div>
         <div class="entry-card-body">
-          <!-- TEAMS -->
           <div class="gen-section-label">Teams <span id="gen-team-count" style="font-weight:400;color:var(--grey-300);text-transform:none;letter-spacing:0;font-size:11px"></span></div>
           <div class="gen-grid-wrap" id="gen-team-gw">
             <div class="gen-num-grid" id="gen-team-grid"></div>
@@ -413,10 +372,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
             </div>
           </div>
           <div class="gen-holding-area" id="gen-team-hold"></div>
- 
           <div class="gen-divider"></div>
- 
-          <!-- PLAYERS -->
           <div class="gen-section-label">Players <span id="gen-player-count" style="font-weight:400;color:var(--grey-300);text-transform:none;letter-spacing:0;font-size:11px"></span></div>
           <div class="gen-grid-wrap" id="gen-player-gw">
             <div class="gen-num-grid" id="gen-player-grid"></div>
@@ -428,15 +384,12 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
             </div>
           </div>
           <div class="gen-holding-area" id="gen-player-hold"></div>
- 
-          <!-- Status + actions -->
           <div class="gen-status" id="gen-status"></div>
           <div id="gen-actions" style="margin-top:12px">
             <button class="gen-roll-btn" id="gen-roll-btn" onclick="genStartDraw()">⚄ Draw Entry</button>
           </div>
         </div>
       </div>
- 
       <div class="rules-box">
         <h3>Rules &amp; Scoring</h3>
         <div class="rule"><span class="rule-icon">🏆</span><span>At the end of the tournament the prize pot will be split between the entries in <strong>1st, 2nd, 3rd, and last</strong> position — <strong>60%, 25%, 10%, and 5%</strong> of the total pot. Check the leaderboard for current positions and prize amounts.</span></div>
@@ -478,7 +431,6 @@ let scored = []
 let currentPage = 'leaderboard'
 let appReady = false
  
-// Keywords that identify knockout round games by their Match Label
 const KNOCKOUT_ROUNDS = [
   { key:'final',         label:'Final' },
   { key:'third',         label:'Third Place Play-off' },
@@ -564,11 +516,7 @@ async function loadAll() {
       const mult = { G: D.misc.G, D: D.misc.D, M: D.misc.M, F: D.misc.F }[pos] || 1
       const cleanName  = (r['Player Name']||'').replace(/^#.+/, '').trim()
       const cleanShort = (r['Short Name'] ||'').replace(/^#.+/, '').trim()
-      D.players[`${tn}-${pn}`] = {
-        name: cleanName,
-        shortName: cleanShort || cleanName,
-        pos, mult
-      }
+      D.players[`${tn}-${pn}`] = { name: cleanName, shortName: cleanShort || cleanName, pos, mult }
     })
  
     D.games = games.filter(r => r['Match Number']).map(r => ({
@@ -598,14 +546,8 @@ async function loadAll() {
       return name && name !== 'Place Holder' && name !== '0'
     }).map(r => ({
       name: r['Entry Name']||'',
-      teams: [
-        parseInt(r['TEAM #1'])||0, parseInt(r['TEAM #2'])||0,
-        parseInt(r['TEAM #3'])||0, parseInt(r['TEAM #4'])||0,
-      ],
-      players: [
-        parseInt(r['T1 PLAYER #'])||0, parseInt(r['T2 PLAYER #'])||0,
-        parseInt(r['T3 PLAYER #'])||0, parseInt(r['T4 PLAYER #'])||0,
-      ],
+      teams: [parseInt(r['TEAM #1'])||0, parseInt(r['TEAM #2'])||0, parseInt(r['TEAM #3'])||0, parseInt(r['TEAM #4'])||0],
+      players: [parseInt(r['T1 PLAYER #'])||0, parseInt(r['T2 PLAYER #'])||0, parseInt(r['T3 PLAYER #'])||0, parseInt(r['T4 PLAYER #'])||0],
       paid: (r['Paid?']||r['Paid']||'').toUpperCase()==='Y',
     }))
  
@@ -653,6 +595,49 @@ function getMatchScore(matchNum) {
   }
 }
  
+// ── THEORETICAL MAXIMUM ───────────────────────────────────────────────────────
+// Score each player as: team goals + (player goals × multiplier)
+// Pick top 4, skipping duplicate teams or duplicate player numbers
+ 
+function calcTheoreticalMax() {
+  const sg = D.goals.filter(g => !g.isShootout)
+ 
+  // Build team goal counts
+  const teamGoals = {}
+  Object.keys(D.teams).forEach(tn => {
+    teamGoals[parseInt(tn)] = sg.filter(g => g.teamNum === parseInt(tn)).length
+  })
+ 
+  // Score every player
+  const allPlayers = []
+  Object.entries(D.players).forEach(([key, p]) => {
+    const [tn, pn] = key.split('-').map(Number)
+    const tg = teamGoals[tn] || 0
+    const pg = sg.filter(g => g.teamNum === tn && g.playerNum === pn).length
+    const pts = tg + pg * p.mult
+    if (pts > 0) allPlayers.push({ tn, pn, pts, tg, pg, mult: p.mult, name: p.shortName || p.name, pos: p.pos })
+  })
+ 
+  // Sort descending
+  allPlayers.sort((a, b) => b.pts - a.pts)
+ 
+  // Pick top 4 skipping duplicate teams or player numbers
+  const usedTeams = new Set()
+  const usedPlayerNums = new Set()
+  const picks = []
+ 
+  for (const p of allPlayers) {
+    if (picks.length === 4) break
+    if (usedTeams.has(p.tn)) continue
+    if (usedPlayerNums.has(p.pn)) continue
+    picks.push(p)
+    usedTeams.add(p.tn)
+    usedPlayerNums.add(p.pn)
+  }
+ 
+  return picks
+}
+ 
 function calcGroupStandings() {
   const groups = {}
   Object.entries(D.teams).forEach(([num, t]) => {
@@ -678,15 +663,13 @@ function calcGroupStandings() {
     if (!ht || !at) return
     const hg = ht.group, ag = at.group
     if (hg !== ag) return
- 
     if (!groups[hg]?.[game.home] || !groups[hg]?.[game.away]) return
-    const h = groups[hg][game.home], a = groups[hg][game.away]
  
+    const h = groups[hg][game.home], a = groups[hg][game.away]
     h.mp++; a.mp++
     h.gf += score.h; h.ga += score.a
     a.gf += score.a; a.ga += score.h
     h.gd = h.gf - h.ga; a.gd = a.gf - a.ga
- 
     if (score.h > score.a)      { h.w++; h.pts+=3; a.l++ }
     else if (score.h < score.a) { a.w++; a.pts+=3; h.l++ }
     else                        { h.d++; a.d++; h.pts++; a.pts++ }
@@ -732,10 +715,8 @@ function renderLeaderboard(filter='') {
     { label:'3rd', pct:split3, idx:2, cls:'' },
     { label:'Last', pct:splitL, idx:-1, cls:'last-place' },
   ]
-  // Has any scoring started?
   const scoringStarted = D.goals.filter(g => !g.isShootout).length > 0
  
-  // Build joint-position map (true position accounting for ties)
   const posMap = new Map()
   let truePos = 1
   scored.forEach((s, i) => {
@@ -744,7 +725,6 @@ function renderLeaderboard(filter='') {
     truePos++
   })
  
-  // Last place = all entries sharing the lowest score
   const lastTotal = scored.length ? scored[scored.length-1].total : null
   const lastMembers = scored.filter(s => s.total === lastTotal)
   const lastMembersSet = new Set(lastMembers)
@@ -782,10 +762,36 @@ function renderLeaderboard(filter='') {
   })
   document.getElementById('prize-splits').innerHTML = splitsHTML
  
+  // Theoretical Max card — only shown when scoring has started
+  const tmaxWrap = document.getElementById('tmax-card-wrap')
+  if (scoringStarted) {
+    const picks = calcTheoreticalMax()
+    const tmaxTotal = picks.reduce((s, p) => s + p.pts, 0)
+    const posLabel = {G:'GK',D:'DEF',M:'MID',F:'FWD'}
+    const slotsHTML = picks.map(p => {
+      const team = D.teams[p.tn]
+      const tName = team ? team.name : `Team ${p.tn}`
+      const pLabel = `#${p.pn} ${p.name || 'TBC'} · ${posLabel[p.pos]||p.pos} ×${p.mult}`
+      return `<div class="tmax-slot">
+        <div class="tmax-team">${tName}</div>
+        <div class="tmax-player">${pLabel}</div>
+        <div class="tmax-pts">${p.pts}pts</div>
+      </div>`
+    }).join('')
+    tmaxWrap.innerHTML = `<div class="tmax-card">
+      <div class="tmax-head">
+        <div class="tmax-title">Theoretical Maximum</div>
+        <div class="tmax-total">${tmaxTotal}pts</div>
+      </div>
+      <div class="tmax-grid">${slotsHTML}</div>
+    </div>`
+  } else {
+    tmaxWrap.innerHTML = ''
+  }
+ 
   const q = filter.toLowerCase()
   const filtered = scored.filter(s => s.entry.name.toLowerCase().includes(q))
  
-  // Save which entries are currently open so refresh doesn't collapse them
   const openNames = new Set()
   document.querySelectorAll('.lb-row.open').forEach(el => {
     const name = el.querySelector('.entry-name')
@@ -839,7 +845,6 @@ function renderGroups() {
   const groups = calcGroupStandings()
   const groupNames = Object.keys(groups).sort()
  
-  // Group tables
   if (!groupNames.length) {
     document.getElementById('groups-body').innerHTML = '<div class="empty" style="grid-column:1/-1">Group data not available yet</div>'
   } else {
@@ -866,19 +871,12 @@ function renderGroups() {
     document.getElementById('groups-body').innerHTML = html
   }
  
-  // Knockout section — games whose label contains a knockout round keyword
   const now = new Date()
   const knockoutGames = D.games.filter(g => isKnockoutLabel(g.label))
+  if (!knockoutGames.length) { document.getElementById('knockout-section').innerHTML = ''; return }
  
-  if (!knockoutGames.length) {
-    document.getElementById('knockout-section').innerHTML = ''
-    return
-  }
- 
-  // Group knockout games by round label
   const rounds = {}
   KNOCKOUT_ROUNDS.forEach(r => { rounds[r.label] = [] })
- 
   knockoutGames.forEach(game => {
     const lbl = (game.label||'').toLowerCase()
     const round = KNOCKOUT_ROUNDS.find(r => lbl.includes(r.key))
@@ -886,15 +884,10 @@ function renderGroups() {
   })
  
   let koHTML = `<div class="section-head" style="margin-top:8px">Knockout Stage</div>`
- 
   KNOCKOUT_ROUNDS.forEach(r => {
     const games = rounds[r.label]
     if (!games.length) return
- 
-    koHTML += `<div class="knockout-round">
-      <div class="knockout-round-title">${r.label}</div>
-      <div class="knockout-list">`
- 
+    koHTML += `<div class="knockout-round"><div class="knockout-round-title">${r.label}</div><div class="knockout-list">`
     games.forEach(game => {
       const home = D.teams[game.home], away = D.teams[game.away]
       const hName = home ? home.name : `Team ${game.home}`
@@ -902,40 +895,26 @@ function renderGroups() {
       const score = getMatchScore(game.matchNum)
       const dt = game.dateTime ? new Date(game.dateTime) : null
       const isPast = dt && dt < now
- 
-      let scoreEl = ''
       const clock = game.clock || ''
       const isFinished = ['FT','AET','FT (Pens)'].includes(clock)
       const isLive = clock !== '' && !isFinished
-      if (isLive) {
-        scoreEl = `<div class="ko-score live-score">${score.h??0} – ${score.a??0}</div>`
-      } else if ((isFinished || isPast) && score.h !== null) {
-        scoreEl = `<div class="ko-score">${score.h} – ${score.a}</div>`
-      } else {
-        scoreEl = `<div class="ko-score" style="font-size:11px;color:#bbb">vs</div>`
-      }
  
-      let rightEl = ''
-      if (isLive) {
-        rightEl = `<div class="ko-right"><span class="pill pill-live"><span class="live-pulse"></span>${clock}</span></div>`
-      } else if (isFinished || isPast) {
-        rightEl = `<div class="ko-right"><span class="pill pill-done">${clock || 'FT'}</span></div>`
-      } else {
-        const ts = dt ? dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : game.dateTime
-        rightEl = `<div class="ko-right">${ts}</div>`
-      }
+      let scoreEl = isLive
+        ? `<div class="ko-score live-score">${score.h??0} – ${score.a??0}</div>`
+        : (isFinished || isPast) && score.h !== null
+          ? `<div class="ko-score">${score.h} – ${score.a}</div>`
+          : `<div class="ko-score" style="font-size:11px;color:#bbb">vs</div>`
  
-      koHTML += `<div class="knockout-row">
-        <div class="ko-home">${hName}</div>
-        ${scoreEl}
-        <div class="ko-away">${aName}</div>
-        ${rightEl}
-      </div>`
+      let rightEl = isLive
+        ? `<div class="ko-right"><span class="pill pill-live"><span class="live-pulse"></span>${clock}</span></div>`
+        : (isFinished || isPast)
+          ? `<div class="ko-right"><span class="pill pill-done">${clock || 'FT'}</span></div>`
+          : `<div class="ko-right">${dt ? dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : game.dateTime}</div>`
+ 
+      koHTML += `<div class="knockout-row"><div class="ko-home">${hName}</div>${scoreEl}<div class="ko-away">${aName}</div>${rightEl}</div>`
     })
- 
     koHTML += '</div></div>'
   })
- 
   document.getElementById('knockout-section').innerHTML = koHTML
 }
  
@@ -948,17 +927,13 @@ function renderFixtures() {
  
   document.getElementById('fix-subtitle').textContent = `${withStatus.length} matches`
  
-  // Group by calendar date (YYYY-MM-DD key, using the game's datetime)
   const byDate = {}
   const dateOrder = []
   withStatus.forEach(g => {
-    const key = g.dt
-      ? g.dt.toISOString().slice(0, 10)
-      : 'unknown'
+    const key = g.dt ? g.dt.toISOString().slice(0, 10) : 'unknown'
     if (!byDate[key]) { byDate[key] = []; dateOrder.push(key) }
     byDate[key].push(g)
   })
-  // Remove duplicate keys (insertion order preserved)
   const uniqueDates = [...new Set(dateOrder)]
  
   function ordinal(n) {
@@ -967,8 +942,8 @@ function renderFixtures() {
   }
   function dateHeading(key) {
     if (key === 'unknown') return 'Date TBC'
-    const d = new Date(key + 'T12:00:00Z') // noon UTC avoids DST shifts
-    const day  = d.toLocaleDateString('en-GB', { weekday:'long',  timeZone:'UTC' })
+    const d = new Date(key + 'T12:00:00Z')
+    const day  = d.toLocaleDateString('en-GB', { weekday:'long', timeZone:'UTC' })
     const date = d.toLocaleDateString('en-GB', { day:'numeric', month:'long', timeZone:'UTC' })
     const [num, ...rest] = date.split(' ')
     return `${day} ${ordinal(parseInt(num))} ${rest.join(' ')}`
@@ -982,28 +957,20 @@ function renderFixtures() {
       const home = D.teams[g.home], away = D.teams[g.away]
       const hName = home ? home.name : `Team ${g.home}`
       const aName = away ? away.name : `Team ${g.away}`
- 
       const isFin = ['FT','AET','FT (Pens)'].includes(g.clock)
       const isLiv = !isFin && g.clock !== ''
-
-      let scoreEl = ''
-      if (isLiv) {
-        scoreEl = `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
-      } else if (isFin && g.score.h !== null) {
-        scoreEl = `<div class="fix-score">${g.score.h} – ${g.score.a}</div>`
-      } else {
-        scoreEl = `<div class="fix-score" style="font-size:11px;color:#bbb">vs</div>`
-      }
-
-      let statusEl = ''
-      if (isFin) {
-        statusEl = `<div class="fix-right"><span class="pill pill-done">${g.clock}</span></div>`
-      } else if (isLiv) {
-        statusEl = `<div class="fix-right"><span class="pill pill-live"><span class="live-pulse"></span>${g.clock}</span></div>`
-      } else {
-        const timeStr = g.dt ? g.dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : ''
-        statusEl = `<div class="fix-right" style="font-size:11px;color:var(--grey-500)">${timeStr}<br><span style="font-size:10px;color:#bbb">${g.label}</span></div>`
-      }
+ 
+      let scoreEl = isLiv
+        ? `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
+        : isFin && g.score.h !== null
+          ? `<div class="fix-score">${g.score.h} – ${g.score.a}</div>`
+          : `<div class="fix-score" style="font-size:11px;color:#bbb">vs</div>`
+ 
+      let statusEl = isFin
+        ? `<div class="fix-right"><span class="pill pill-done">${g.clock}</span></div>`
+        : isLiv
+          ? `<div class="fix-right"><span class="pill pill-live"><span class="live-pulse"></span>${g.clock}</span></div>`
+          : `<div class="fix-right" style="font-size:11px;color:var(--grey-500)">${g.dt ? g.dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : ''}<br><span style="font-size:10px;color:#bbb">${g.label}</span></div>`
  
       html += `<div class="fix-row"><div class="fix-home">${hName}</div>${scoreEl}<div class="fix-away">${aName}</div>${statusEl}</div>`
     })
@@ -1051,15 +1018,12 @@ function renderGoalLog() {
 function renderSquads() {
   const teamNums = Object.keys(D.teams).map(Number).sort((a,b)=>a-b)
   let html = ''
- 
   teamNums.forEach(tn => {
     const team = D.teams[tn]
     if (!team) return
- 
     const playerEntries = Object.entries(D.players)
       .filter(([k]) => parseInt(k.split('-')[0]) === tn)
       .sort((a,b) => parseInt(a[0].split('-')[1]) - parseInt(b[0].split('-')[1]))
- 
     let rows = ''
     playerEntries.forEach(([k, p]) => {
       const pn = parseInt(k.split('-')[1])
@@ -1071,9 +1035,7 @@ function renderSquads() {
         <div class="squad-pos ${posClr}">${p.pos||'—'}</div>
       </div>`
     })
- 
     if (!rows) rows = `<div class="squad-player-row"><div class="squad-shirt"></div><div class="squad-pname tbd" style="grid-column:2/-1">Squad not yet confirmed</div></div>`
- 
     html += `<div class="squad-item" id="squad-${tn}">
       <div class="squad-item-head" onclick="toggleSquad(${tn})">
         <div class="squad-num-big">${tn}</div>
@@ -1086,7 +1048,6 @@ function renderSquads() {
       <div class="squad-players">${rows}</div>
     </div>`
   })
- 
   document.getElementById('squad-body').innerHTML = html || '<div class="empty">No team data yet</div>'
 }
  
@@ -1118,20 +1079,13 @@ function genResetUI() {
     }
     const hold=document.getElementById('gen-'+type+'-hold')
     if(hold){hold.classList.remove('active','done');hold.innerHTML=''}
-    // Restore num-grid visibility (hidden during selection phase)
     const numGrid=document.getElementById('gen-'+type+'-grid')
     if(numGrid){numGrid.style.visibility='';numGrid.style.height='';numGrid.style.overflow=''}
     const gw2=document.getElementById('gen-'+type+'-gw')
     if(gw2) gw2.classList.remove('overlay-active')
   })
-  if(Object.keys(D.teams).length > 0) {
-    genBuildGrid('team')
-    genBuildGrid('player')
-  }
+  if(Object.keys(D.teams).length > 0) { genBuildGrid('team'); genBuildGrid('player') }
 }
- 
- 
-// ── ENTRY GENERATOR (eliminator style) ───────────────────────────────────────
  
 function genShuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]} return b }
  
@@ -1174,19 +1128,14 @@ function genStartDraw() {
   const tShuf = genShuffle(tPool), pShuf = genShuffle(pPool)
   genTeamWinners   = tShuf.slice(0,4)
   genPlayerWinners = pShuf.slice(0,4)
- 
   genBuildGrid('team'); genBuildGrid('player')
- 
   const ELIM_MS = 7000
   genRunElim('team',   tShuf.slice(4), genBuildSchedule(tShuf.slice(4).length, ELIM_MS))
   genRunElim('player', pShuf.slice(4), genBuildSchedule(pShuf.slice(4).length, ELIM_MS))
- 
   genSetStatus('Eliminating…')
- 
   const LAND_AT = 7300
   setTimeout(() => genLandSurvivors('team',   genTeamWinners),   LAND_AT)
   setTimeout(() => genLandSurvivors('player', genPlayerWinners), LAND_AT+80)
- 
   const PER_SLOT = 2400
   const SELECT_START = LAND_AT + 1800
   for(let i=0;i<3;i++){
@@ -1196,7 +1145,6 @@ function genStartDraw() {
   const LAST_AT = SELECT_START + 2*PER_SLOT + 1500
   setTimeout(() => genCycleAndSelect('team',   genTeamWinners,   3), LAST_AT)
   setTimeout(() => genCycleAndSelect('player', genPlayerWinners, 3), LAST_AT+120)
- 
   const doneAt = LAST_AT + 900
   setTimeout(() => {
     genSetStatus('')
@@ -1224,50 +1172,25 @@ function genRunElim(type, elimArr, timings) {
 function genLandSurvivors(type, winners) {
   const holdEl = document.getElementById('gen-'+type+'-hold')
   const gw = document.getElementById('gen-'+type+'-gw')
- 
-  // Lock the grid-wrap height FIRST before anything changes layout
   if(gw) gw.style.height = gw.offsetHeight + 'px'
- 
   holdEl.classList.add('active')
   holdEl.innerHTML = ''
   const sorted = [...winners].sort((a,b)=>a-b)
- 
-  // Pre-create invisible hold cells
   sorted.forEach(n => {
     const hc = document.createElement('div')
     hc.className='gen-hold-cell'; hc.id='gen-'+type+'-hc-'+n; hc.textContent=n
     hc.style.opacity='0'
     holdEl.appendChild(hc)
   })
- 
-  // Wait for hold area height transition to finish (300ms) before flying
   setTimeout(() => {
     const numGrid = document.getElementById('gen-'+type+'-grid')
- 
-    // Start flying
-    sorted.forEach((n, i) => {
-      setTimeout(() => genFlyCell(type, n), i * 160)
-    })
- 
-    // Once all cells landed: collapse grid to 0 height, then smoothly shrink wrap to 107px
+    sorted.forEach((n, i) => { setTimeout(() => genFlyCell(type, n), i * 160) })
     const allDone = sorted.length * 160 + 420
     setTimeout(() => {
-      // Collapse the grid itself to 0 so it no longer pushes the wrap height
-      if(numGrid){
-        numGrid.style.visibility = 'hidden'
-        numGrid.style.height = '0'
-        numGrid.style.overflow = 'hidden'
-      }
- 
-      // Now the wrap's only content is 0-height, so it can smoothly transition to 107px
+      if(numGrid){numGrid.style.visibility='hidden';numGrid.style.height='0';numGrid.style.overflow='hidden'}
       if(gw){
-        gw.style.transition = 'height .4s ease'
-        gw.style.height = '107px'
-        setTimeout(() => {
-          gw.style.transition = ''
-          gw.style.height = ''
-          gw.classList.add('overlay-active')
-        }, 420)
+        gw.style.transition='height .4s ease';gw.style.height='107px'
+        setTimeout(() => { gw.style.transition='';gw.style.height='';gw.classList.add('overlay-active') }, 420)
       }
     }, allDone)
   }, 320)
@@ -1277,167 +1200,87 @@ function genFlyCell(type, n) {
   const src = document.getElementById('gen-'+type+'-cell-'+n)
   const dst = document.getElementById('gen-'+type+'-hc-'+n)
   if(!src || !dst) return
- 
   const srcR = src.getBoundingClientRect()
   const dstR = dst.getBoundingClientRect()
- 
-  // Hide source cell
   src.style.opacity = '0'
- 
-  // Create flying clone
   const fly = document.createElement('div')
-  fly.style.cssText = `
-    position:fixed;z-index:9999;pointer-events:none;
-    width:42px;height:42px;border-radius:7px;
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Bebas Neue',sans-serif;font-size:19px;
-    background:var(--grey-100);color:var(--grey-700);border:1px solid var(--grey-200);
-    left:${srcR.left}px;top:${srcR.top}px;
-  `
+  fly.style.cssText = `position:fixed;z-index:9999;pointer-events:none;width:42px;height:42px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:19px;background:var(--grey-100);color:var(--grey-700);border:1px solid var(--grey-200);left:${srcR.left}px;top:${srcR.top}px;`
   fly.textContent = n
   document.body.appendChild(fly)
- 
-  const startX = srcR.left, startY = srcR.top
-  const endX = dstR.left + (dstR.width - 42) / 2
-  const endY = dstR.top  + (dstR.height - 42) / 2
-  const dur = 380
-  const t0 = performance.now()
- 
-  function ease(t){ return t < .5 ? 2*t*t : -1+(4-2*t)*t }
- 
+  const startX=srcR.left,startY=srcR.top
+  const endX=dstR.left+(dstR.width-42)/2,endY=dstR.top+(dstR.height-42)/2
+  const dur=380,t0=performance.now()
+  function ease(t){ return t<.5?2*t*t:-1+(4-2*t)*t }
   function step(now) {
-    const t = Math.min((now - t0) / dur, 1)
-    const e = ease(t)
-    fly.style.left = (startX + (endX - startX) * e) + 'px'
-    fly.style.top  = (startY + (endY - startY) * e) + 'px'
-    // Morph into hold-cell style in the last 40% of travel
-    if(t > 0.6) {
-      const p = (t - 0.6) / 0.4
-      fly.style.background = '#f0faf4'
-      fly.style.borderColor = 'var(--green)'
-      fly.style.borderWidth = '2px'
-      fly.style.color = 'var(--green-dark)'
-      fly.style.borderRadius = '8px'
-      fly.style.width  = (42 + 10*p) + 'px'
-      fly.style.height = (42 + 10*p) + 'px'
-      fly.style.fontSize = (19 + 3*p) + 'px'
-    }
-    if(t < 1) { requestAnimationFrame(step) }
-    else {
-      fly.remove()
-      src.classList.add('gone-final')
-      // Reveal with inline style — will be cleared before .launched is applied
-      dst.style.opacity = '1'
-      dst.style.transform = 'scale(1.15)'
-      setTimeout(() => { dst.style.transform = 'scale(1)' }, 150)
-    }
+    const t=Math.min((now-t0)/dur,1),e=ease(t)
+    fly.style.left=(startX+(endX-startX)*e)+'px'
+    fly.style.top=(startY+(endY-startY)*e)+'px'
+    if(t>0.6){const p=(t-0.6)/0.4;fly.style.background='#f0faf4';fly.style.borderColor='var(--green)';fly.style.borderWidth='2px';fly.style.color='var(--green-dark)';fly.style.borderRadius='8px';fly.style.width=(42+10*p)+'px';fly.style.height=(42+10*p)+'px';fly.style.fontSize=(19+3*p)+'px'}
+    if(t<1){requestAnimationFrame(step)}
+    else{fly.remove();src.classList.add('gone-final');dst.style.opacity='1';dst.style.transform='scale(1.15)';setTimeout(()=>{dst.style.transform='scale(1)'},150)}
   }
   requestAnimationFrame(step)
 }
  
 function genCycleAndSelect(type, allWinners, slotIdx) {
   function getAvailable() {
-    return allWinners.filter(n => {
-      const hc = document.getElementById('gen-'+type+'-hc-'+n)
-      return hc && !hc.classList.contains('launched')
-    })
+    return allWinners.filter(n => { const hc=document.getElementById('gen-'+type+'-hc-'+n); return hc&&!hc.classList.contains('launched') })
   }
   const available = getAvailable()
   if(!available.length) return
- 
   if(available.length===1){
-    const n = allWinners[slotIdx]
-    const hc = document.getElementById('gen-'+type+'-hc-'+n)
+    const n=allWinners[slotIdx],hc=document.getElementById('gen-'+type+'-hc-'+n)
     if(hc) hc.classList.add('chosen')
-    setTimeout(()=>genLaunchToSlot(type,n,slotIdx), 350)
+    setTimeout(()=>genLaunchToSlot(type,n,slotIdx),350)
     return
   }
- 
-  const CYCLES=3, STEP_MS=90
-  const steps = available.length*CYCLES
-  let step=0, lastIdx=-1
- 
-  const iv = setInterval(()=>{
-    if(lastIdx>=0){
-      const prev = document.getElementById('gen-'+type+'-hc-'+available[lastIdx%available.length])
-      if(prev) prev.classList.remove('scanning')
-    }
-    const idx = step%available.length
-    const hc = document.getElementById('gen-'+type+'-hc-'+available[idx])
-    if(hc) hc.classList.add('scanning')
-    lastIdx=idx; step++
- 
+  const CYCLES=3,STEP_MS=90,steps=available.length*CYCLES
+  let step=0,lastIdx=-1
+  const iv=setInterval(()=>{
+    if(lastIdx>=0){const prev=document.getElementById('gen-'+type+'-hc-'+available[lastIdx%available.length]);if(prev)prev.classList.remove('scanning')}
+    const idx=step%available.length,hc=document.getElementById('gen-'+type+'-hc-'+available[idx])
+    if(hc)hc.classList.add('scanning')
+    lastIdx=idx;step++
     if(step>=steps){
       clearInterval(iv)
-      available.forEach(n=>{
-        const hc=document.getElementById('gen-'+type+'-hc-'+n)
-        if(hc) hc.classList.remove('scanning')
-      })
-      const chosen = allWinners[slotIdx]
-      const chosenHc = document.getElementById('gen-'+type+'-hc-'+chosen)
-      if(chosenHc) chosenHc.classList.add('chosen')
-      setTimeout(()=>genLaunchToSlot(type,chosen,slotIdx), 450)
+      available.forEach(n=>{const hc=document.getElementById('gen-'+type+'-hc-'+n);if(hc)hc.classList.remove('scanning')})
+      const chosen=allWinners[slotIdx],chosenHc=document.getElementById('gen-'+type+'-hc-'+chosen)
+      if(chosenHc)chosenHc.classList.add('chosen')
+      setTimeout(()=>genLaunchToSlot(type,chosen,slotIdx),450)
     }
-  }, STEP_MS)
+  },STEP_MS)
 }
  
 function genLaunchToSlot(type, n, slotIdx) {
-  const hc = document.getElementById('gen-'+type+'-hc-'+n)
-  if(hc){
-    hc.classList.remove('chosen')
-    hc.style.opacity = ''  // clear inline so .launched class opacity takes effect
-    hc.style.transform = ''
-    hc.classList.add('launched')
-  }
- 
+  const hc=document.getElementById('gen-'+type+'-hc-'+n)
+  if(hc){hc.classList.remove('chosen');hc.style.opacity='';hc.style.transform='';hc.classList.add('launched')}
   setTimeout(()=>{
-    const ov     = document.getElementById('gen-'+type+'-ov-'+slotIdx)
-    const ovnEl  = document.getElementById('gen-'+type+'-ovn-'+slotIdx)
-    const ovname = document.getElementById('gen-'+type+'-ovname-'+slotIdx)
-    ovnEl.textContent = type==='player' ? '#'+n : n
-    ovname.textContent = '\u00a0'
-    if(ov) ov.classList.add('show')
- 
-    document.getElementById('gen-'+type+'-count').textContent = (slotIdx+1)+' of 4'
- 
-    if(slotIdx===3){
-      const holdEl = document.getElementById('gen-'+type+'-hold')
-      holdEl.classList.remove('active')
-      holdEl.classList.add('done')
- 
-    }
-  }, 280)
+    const ov=document.getElementById('gen-'+type+'-ov-'+slotIdx)
+    const ovnEl=document.getElementById('gen-'+type+'-ovn-'+slotIdx)
+    const ovname=document.getElementById('gen-'+type+'-ovname-'+slotIdx)
+    ovnEl.textContent=type==='player'?'#'+n:n
+    ovname.textContent='\u00a0'
+    if(ov)ov.classList.add('show')
+    document.getElementById('gen-'+type+'-count').textContent=(slotIdx+1)+' of 4'
+    if(slotIdx===3){const holdEl=document.getElementById('gen-'+type+'-hold');holdEl.classList.remove('active');holdEl.classList.add('done')}
+  },280)
 }
  
 function genRevealAll() {
-  document.getElementById('gen-actions').innerHTML = ''
-  const order = [
-    {type:'team',i:0},{type:'team',i:1},{type:'team',i:2},{type:'team',i:3},
-    {type:'player',i:0},{type:'player',i:1},{type:'player',i:2},{type:'player',i:3},
-  ]
-  order.forEach(({type,i}, idx) => {
+  document.getElementById('gen-actions').innerHTML=''
+  const order=[{type:'team',i:0},{type:'team',i:1},{type:'team',i:2},{type:'team',i:3},{type:'player',i:0},{type:'player',i:1},{type:'player',i:2},{type:'player',i:3}]
+  order.forEach(({type,i},idx)=>{
     setTimeout(()=>{
-      const n      = parseInt(document.getElementById('gen-'+type+'-ovn-'+i).textContent)
-      const ov     = document.getElementById('gen-'+type+'-ov-'+i)
-      const oname  = document.getElementById('gen-'+type+'-ovname-'+i)
+      const n=parseInt(document.getElementById('gen-'+type+'-ovn-'+i).textContent)
+      const ov=document.getElementById('gen-'+type+'-ov-'+i)
+      const oname=document.getElementById('gen-'+type+'-ovname-'+i)
       ov.classList.add('revealed')
-      if(type==='team'){
-        const t = D.teams[n]
-        oname.textContent = t ? t.name : 'Team '+n
-      } else {
-        // Player number: find name from the drawn team at this slot
-        const tn = genTeamWinners[i]
-        const p  = D.players[`${tn}-${n}`]
-        oname.textContent = p ? (p.shortName||p.name||'TBC') : 'TBC'
-      }
-    }, idx*500)
+      if(type==='team'){const t=D.teams[n];oname.textContent=t?t.name:'Team '+n}
+      else{const tn=genTeamWinners[i],p=D.players[`${tn}-${n}`];oname.textContent=p?(p.shortName||p.name||'TBC'):'TBC'}
+    },idx*500)
   })
-  setTimeout(()=>{
-    document.getElementById('gen-actions').innerHTML =
-      `<button class="gen-new-btn" onclick="genResetUI()">↺ Draw New Entry</button>`
-  }, order.length*500+400)
+  setTimeout(()=>{document.getElementById('gen-actions').innerHTML=`<button class="gen-new-btn" onclick="genResetUI()">↺ Draw New Entry</button>`},order.length*500+400)
 }
- 
  
 loadAll()
 </script>
