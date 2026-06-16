@@ -822,7 +822,7 @@ function renderLeaderboard(filter='') {
       const posLabel = {6:'GK ×6',4:'DEF ×4',2:'MID ×2',1:'FWD ×1'}[slot.mult]||`×${slot.mult}`
       const teamMP = D.games.filter(g => (g.home === slot.tn || g.away === slot.tn) && g.clock !== '').length
       return `<div class="expand-slot">
-        <div class="slot-head"><span class="slot-team">${tName}</span><span class="slot-team">MP: ${teamMP}</span><span class="slot-pts">${slot.pts}</span><div>
+        <div class="slot-head"><span class="slot-team">${tName}</span><span class="slot-team">MP: ${teamMP}</span><span class="slot-pts">${slot.pts}</span></div>
         <div class="slot-player">${pName} · ${posLabel}</div>
         <div class="slot-breakdown"><span>Team: +${slot.tg}</span><span>Player: ${slot.pg}×${slot.mult}=+${slot.pg*slot.mult}</span></div>
       </div>`
