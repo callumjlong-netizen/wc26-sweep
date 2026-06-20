@@ -413,7 +413,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
   </div>
 </div>
  
-<footer>STEEL WC26 Sweep · Refresh page to update · <span id="last-updated"></span></footer>
+<footer>STEEL WC26 Sweep · Auto-updates every minute · <span id="last-updated"></span></footer>
  
 <script>
 const SHEET_ID = '1mfRVjcf4AQdTZUxkRxHSkcxLwWM5mjP_ZmJmulk3uag'
@@ -480,94 +480,152 @@ async function fetchSheet(gid) {
   return parseCSV(await res.text())
 }
  
+// Track which pages have ever been loaded, and when data was last fetched
+const pageFetched = {}   // page → true once data fetched on open
+let lastFetchTime  = 0   // ms timestamp of last successful fetchData()
+let autoRefreshTimer = null  // holds the current setInterval for live pages
+ 
+// Pages that auto-refresh every minute while active
+const LIVE_PAGES = new Set(['leaderboard', 'fixtures'])
+ 
+async function fetchData() {
+  const [teams, players, misc, games, goals, entries] = await Promise.all([
+    fetchSheet(GIDS.teams), fetchSheet(GIDS.players), fetchSheet(GIDS.misc),
+    fetchSheet(GIDS.games), fetchSheet(GIDS.goals),  fetchSheet(GIDS.entries),
+  ])
+ 
+  D.teams = {}
+  teams.forEach(r => {
+    const n = parseInt(r['Team Number'])
+    if (n) D.teams[n] = { name: r['Team Name']||'', code: r['Fifa Code']||'', group: r['Group']||'', rank: parseInt(r['World Ranking'])||999 }
+  })
+ 
+  const mv = {}
+  misc.forEach(r => { if (r['Name'] && r['Value']) mv[r['Name'].trim()] = r['Value'].trim() })
+  D.misc = {
+    price:  parseFloat(mv['Price']) || 5,
+    F: parseFloat(mv['F']) || 1,
+    M: parseFloat(mv['M']) || 2,
+    D: parseFloat(mv['D']) || 4,
+    G: parseFloat(mv['G']) || 6,
+    split1: parseFloat(mv['1st']) || 100,
+    split2: parseFloat(mv['2nd']) || 0,
+    split3: parseFloat(mv['3rd']) || 0,
+    splitL: parseFloat(mv['Last']) || 0,
+  }
+ 
+  D.players = {}
+  players.forEach(r => {
+    const tn = parseInt(r['Team Number'])
+    const pn = parseInt(r['Player Number'])
+    if (!tn || !pn) return
+    const pos = (r['Position']||'').trim()
+    const mult = { G: D.misc.G, D: D.misc.D, M: D.misc.M, F: D.misc.F }[pos] || 1
+    const cleanName  = (r['Player Name']||'').replace(/^#.+/, '').trim()
+    const cleanShort = (r['Short Name'] ||'').replace(/^#.+/, '').trim()
+    D.players[`${tn}-${pn}`] = { name: cleanName, shortName: cleanShort || cleanName, pos, mult }
+  })
+ 
+  D.games = games.filter(r => r['Match Number']).map(r => ({
+    matchNum: parseInt(r['Match Number'])||0,
+    home: parseInt(r['Home Team'])||0,
+    away: parseInt(r['Away Team'])||0,
+    dateTime: r['Date Time']||'',
+    label: r['Match Lable']||r['Match Label']||r['label']||'',
+    clock: (r['Status']||'').trim(),
+  }))
+ 
+  D.goals = goals.filter(r => {
+    const tn = parseInt(r['Team Number'])
+    const pn = parseInt(r['Player Number'])
+    const mn = parseInt(r['Match Number'])
+    return tn > 0 || pn > 0 || mn > 0
+  }).map(r => ({
+    matchNum: parseInt(r['Match Number'])||0,
+    teamNum:  parseInt(r['Team Number'])||0,
+    playerNum:parseInt(r['Player Number'])||0,
+    minute:   r['Minute']||'',
+    isShootout:(r['Shootout']||'').toUpperCase()==='Y',
+  }))
+ 
+  D.entries = entries.filter(r => {
+    const name = r['Entry Name']||''
+    return name && name !== 'Place Holder' && name !== '0'
+  }).map(r => ({
+    name: r['Entry Name']||'',
+    teams: [parseInt(r['TEAM #1'])||0, parseInt(r['TEAM #2'])||0, parseInt(r['TEAM #3'])||0, parseInt(r['TEAM #4'])||0],
+    players: [parseInt(r['T1 PLAYER #'])||0, parseInt(r['T2 PLAYER #'])||0, parseInt(r['T3 PLAYER #'])||0, parseInt(r['T4 PLAYER #'])||0],
+    paid: (r['Paid?']||r['Paid']||'').toUpperCase()==='Y',
+  }))
+ 
+  calcScores()
+  lastFetchTime = Date.now()
+  document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
+}
+ 
 async function loadAll() {
   try {
-    const [teams, players, misc, games, goals, entries] = await Promise.all([
-      fetchSheet(GIDS.teams), fetchSheet(GIDS.players), fetchSheet(GIDS.misc),
-      fetchSheet(GIDS.games), fetchSheet(GIDS.goals),  fetchSheet(GIDS.entries),
-    ])
- 
-    D.teams = {}
-    teams.forEach(r => {
-      const n = parseInt(r['Team Number'])
-      if (n) D.teams[n] = { name: r['Team Name']||'', code: r['Fifa Code']||'', group: r['Group']||'', rank: parseInt(r['World Ranking'])||999 }
-    })
- 
-    const mv = {}
-    misc.forEach(r => { if (r['Name'] && r['Value']) mv[r['Name'].trim()] = r['Value'].trim() })
-    D.misc = {
-      price:  parseFloat(mv['Price']) || 5,
-      F: parseFloat(mv['F']) || 1,
-      M: parseFloat(mv['M']) || 2,
-      D: parseFloat(mv['D']) || 4,
-      G: parseFloat(mv['G']) || 6,
-      split1: parseFloat(mv['1st']) || 100,
-      split2: parseFloat(mv['2nd']) || 0,
-      split3: parseFloat(mv['3rd']) || 0,
-      splitL: parseFloat(mv['Last']) || 0,
-    }
- 
-    D.players = {}
-    players.forEach(r => {
-      const tn = parseInt(r['Team Number'])
-      const pn = parseInt(r['Player Number'])
-      if (!tn || !pn) return
-      const pos = (r['Position']||'').trim()
-      const mult = { G: D.misc.G, D: D.misc.D, M: D.misc.M, F: D.misc.F }[pos] || 1
-      const cleanName  = (r['Player Name']||'').replace(/^#.+/, '').trim()
-      const cleanShort = (r['Short Name'] ||'').replace(/^#.+/, '').trim()
-      D.players[`${tn}-${pn}`] = { name: cleanName, shortName: cleanShort || cleanName, pos, mult }
-    })
- 
-    D.games = games.filter(r => r['Match Number']).map(r => ({
-      matchNum: parseInt(r['Match Number'])||0,
-      home: parseInt(r['Home Team'])||0,
-      away: parseInt(r['Away Team'])||0,
-      dateTime: r['Date Time']||'',
-      label: r['Match Lable']||r['Match Label']||r['label']||'',
-      clock: (r['Status']||'').trim(),
-    }))
- 
-    D.goals = goals.filter(r => {
-      const tn = parseInt(r['Team Number'])
-      const pn = parseInt(r['Player Number'])
-      const mn = parseInt(r['Match Number'])
-      return tn > 0 || pn > 0 || mn > 0
-    }).map(r => ({
-      matchNum: parseInt(r['Match Number'])||0,
-      teamNum:  parseInt(r['Team Number'])||0,
-      playerNum:parseInt(r['Player Number'])||0,
-      minute:   r['Minute']||'',
-      isShootout:(r['Shootout']||'').toUpperCase()==='Y',
-    }))
- 
-    D.entries = entries.filter(r => {
-      const name = r['Entry Name']||''
-      return name && name !== 'Place Holder' && name !== '0'
-    }).map(r => ({
-      name: r['Entry Name']||'',
-      teams: [parseInt(r['TEAM #1'])||0, parseInt(r['TEAM #2'])||0, parseInt(r['TEAM #3'])||0, parseInt(r['TEAM #4'])||0],
-      players: [parseInt(r['T1 PLAYER #'])||0, parseInt(r['T2 PLAYER #'])||0, parseInt(r['T3 PLAYER #'])||0, parseInt(r['T4 PLAYER #'])||0],
-      paid: (r['Paid?']||r['Paid']||'').toUpperCase()==='Y',
-    }))
- 
-    calcScores()
+    await fetchData()
  
     if (!appReady) {
       appReady = true
       document.getElementById('loading').style.display = 'none'
       document.getElementById('page-leaderboard').classList.add('active')
       currentPage = 'leaderboard'
+      pageFetched['leaderboard'] = true
     }
  
     renderPage(currentPage)
-    document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
   } catch(e) {
     document.getElementById('loading').style.display = 'none'
     document.getElementById('error-global').style.display = 'block'
     document.getElementById('error-global').innerHTML = `<div class="error-banner">Could not load data: ${e.message}. Please refresh the page.</div>`
     console.error(e)
   }
+}
+ 
+// Silent background refresh — preserves leaderboard scroll + open rows
+async function silentRefresh() {
+  try {
+    await fetchData()
+    if (currentPage === 'leaderboard') {
+      // Capture scroll position and open rows before re-render
+      const scrollY = window.scrollY
+      const openNames = new Set()
+      document.querySelectorAll('.lb-row.open').forEach(el => {
+        const name = el.querySelector('.entry-name')
+        if (name) openNames.add(name.textContent)
+      })
+      renderLeaderboard()
+      // Restore open rows
+      document.querySelectorAll('.lb-row').forEach(el => {
+        const name = el.querySelector('.entry-name')
+        if (name && openNames.has(name.textContent)) el.classList.add('open')
+      })
+      // Restore scroll position
+      window.scrollTo(0, scrollY)
+    } else if (currentPage === 'fixtures') {
+      renderFixtures()
+    }
+  } catch(e) {
+    console.error('Silent refresh failed:', e)
+  }
+}
+ 
+// Start auto-refresh timer aligned to the next minute boundary
+function startAutoRefresh() {
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer)
+  const now = new Date()
+  const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds()
+  setTimeout(() => {
+    silentRefresh()
+    autoRefreshTimer = setInterval(silentRefresh, 60000)
+  }, msUntilNextMinute)
+}
+ 
+// Stop auto-refresh timer
+function stopAutoRefresh() {
+  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null }
 }
  
 function calcScores() {
@@ -691,13 +749,39 @@ function renderPage(page) {
   else if (page === 'howtoplay') renderHowToPlay()
 }
  
-function showPage(id, btn) {
+async function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'))
   document.getElementById('page-'+id).classList.add('active')
   btn.classList.add('active')
   currentPage = id
-  renderPage(id)
+ 
+  // Stop any existing auto-refresh — will restart below if needed
+  stopAutoRefresh()
+ 
+  if (LIVE_PAGES.has(id)) {
+    // Leaderboard + Fixtures: always fetch fresh on open, then auto-refresh every minute
+    try {
+      await fetchData()
+      pageFetched[id] = true
+    } catch(e) { console.error('Fetch failed on page open:', e) }
+    renderPage(id)
+    startAutoRefresh()
+  } else if (id === 'howtoplay' || id === 'squads') {
+    // Static pages: fetch once ever, then just re-render from cached D
+    if (!pageFetched[id]) {
+      try { await fetchData(); pageFetched[id] = true } catch(e) { console.error(e) }
+    }
+    renderPage(id)
+  } else {
+    // Groups + Goal Log: fetch once per visit (re-fetches each time you navigate to them)
+    if (!pageFetched[id]) {
+      try { await fetchData(); pageFetched[id] = true } catch(e) { console.error(e) }
+    }
+    renderPage(id)
+    // Mark as stale so next visit re-fetches
+    delete pageFetched[id]
+  }
 }
  
 function renderLeaderboard(filter='') {
@@ -780,7 +864,7 @@ function renderLeaderboard(filter='') {
     }).join('')
     tmaxWrap.innerHTML = `<div class="tmax-card">
       <div class="tmax-head">
-        <div class="tmax-title">Best Possible Team </div>
+        <div class="tmax-title">Theoretical Maximum</div>
         <div class="tmax-total">${tmaxTotal}pts</div>
       </div>
       <div class="tmax-grid">${slotsHTML}</div>
@@ -820,11 +904,10 @@ function renderLeaderboard(filter='') {
       const _pLabel = slot.pl.shortName || slot.pl.name || ''
       const pName = _pLabel ? `#${slot.pn} ${_pLabel}` : `#${slot.pn} TBC`
       const posLabel = {6:'GK ×6',4:'DEF ×4',2:'MID ×2',1:'FWD ×1'}[slot.mult]||`×${slot.mult}`
-      const teamMP = D.games.filter(g => (g.home === slot.tn || g.away === slot.tn) && g.clock !== '').length
       return `<div class="expand-slot">
         <div class="slot-head"><span class="slot-team">${tName}</span><span class="slot-pts">${slot.pts}</span></div>
         <div class="slot-player">${pName} · ${posLabel}</div>
-        <div class="slot-breakdown"><span>Team: +${slot.tg}</span><span>Player: ${slot.pg}×${slot.mult}=+${slot.pg*slot.mult}</span><span style="margin-left:auto;font-weight:600;font-size:12px;color:var(--dark)">${teamMP} MP</span></div>
+        <div class="slot-breakdown"><span>Team: +${slot.tg}</span><span>Player: ${slot.pg}×${slot.mult}=+${slot.pg*slot.mult}</span></div>
       </div>`
     }).join('')
  
@@ -1272,7 +1355,8 @@ function genRevealAll() {
   const order=[{type:'team',i:0},{type:'team',i:1},{type:'team',i:2},{type:'team',i:3},{type:'player',i:0},{type:'player',i:1},{type:'player',i:2},{type:'player',i:3}]
   order.forEach(({type,i},idx)=>{
     setTimeout(()=>{
-      const n=parseInt(document.getElementById('gen-'+type+'-ovn-'+i).textContent)
+      const raw=document.getElementById('gen-'+type+'-ovn-'+i).textContent
+      const n=parseInt(raw.replace('#',''))
       const ov=document.getElementById('gen-'+type+'-ov-'+i)
       const oname=document.getElementById('gen-'+type+'-ovname-'+i)
       ov.classList.add('revealed')
@@ -1283,7 +1367,10 @@ function genRevealAll() {
   setTimeout(()=>{document.getElementById('gen-actions').innerHTML=`<button class="gen-new-btn" onclick="genResetUI()">↺ Draw New Entry</button>`},order.length*500+400)
 }
  
-loadAll()
+loadAll().then(() => {
+  // Leaderboard is the default page — start auto-refresh immediately
+  startAutoRefresh()
+})
 </script>
 </body>
 </html>
