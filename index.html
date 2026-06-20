@@ -745,31 +745,24 @@ async function showPage(id, btn) {
   btn.classList.add('active')
   currentPage = id
  
-  // Stop any existing auto-refresh — will restart below if needed
+  // Stop any existing auto-refresh
   stopAutoRefresh()
  
+  // Render immediately from cached D so the page appears instantly
+  if (appReady) renderPage(id)
+ 
   if (LIVE_PAGES.has(id)) {
-    // Leaderboard + Fixtures: always fetch fresh on open, then auto-refresh every minute
-    try {
-      await fetchData()
-      pageFetched[id] = true
-    } catch(e) { console.error('Fetch failed on page open:', e) }
-    renderPage(id)
+    // Leaderboard + Fixtures: fetch fresh in background then re-render, then auto-refresh every minute
+    fetchData().then(() => { if (currentPage === id) renderPage(id) }).catch(e => console.error(e))
     startAutoRefresh()
   } else if (id === 'howtoplay' || id === 'squads') {
-    // Static pages: fetch once ever, then just re-render from cached D
+    // Static pages: fetch once ever, silently in background
     if (!pageFetched[id]) {
-      try { await fetchData(); pageFetched[id] = true } catch(e) { console.error(e) }
+      fetchData().then(() => { pageFetched[id] = true; if (currentPage === id) renderPage(id) }).catch(e => console.error(e))
     }
-    renderPage(id)
   } else {
-    // Groups + Goal Log: fetch once per visit (re-fetches each time you navigate to them)
-    if (!pageFetched[id]) {
-      try { await fetchData(); pageFetched[id] = true } catch(e) { console.error(e) }
-    }
-    renderPage(id)
-    // Mark as stale so next visit re-fetches
-    delete pageFetched[id]
+    // Groups + Goal Log: fetch fresh each visit in background
+    fetchData().then(() => { if (currentPage === id) renderPage(id) }).catch(e => console.error(e))
   }
 }
  
@@ -1368,7 +1361,13 @@ function genRevealAll() {
 }
  
 loadAll().then(() => {
-  // Leaderboard is the default page — start auto-refresh immediately
+  // Pre-render all pages immediately so every tab is instant on first click
+  renderGroups()
+  renderFixtures()
+  renderGoalLog()
+  renderSquads()
+  renderHowToPlay()
+  // Start auto-refresh for the default leaderboard page
   startAutoRefresh()
 })
 </script>
