@@ -589,20 +589,8 @@ async function silentRefresh() {
   try {
     await fetchData()
     if (currentPage === 'leaderboard') {
-      // Capture scroll position and open rows before re-render
       const scrollY = window.scrollY
-      const openNames = new Set()
-      document.querySelectorAll('.lb-row.open').forEach(el => {
-        const name = el.querySelector('.entry-name')
-        if (name) openNames.add(name.textContent)
-      })
       renderLeaderboard()
-      // Restore open rows
-      document.querySelectorAll('.lb-row').forEach(el => {
-        const name = el.querySelector('.entry-name')
-        if (name && openNames.has(name.textContent)) el.classList.add('open')
-      })
-      // Restore scroll position
       window.scrollTo(0, scrollY)
     } else if (currentPage === 'fixtures') {
       renderFixtures()
@@ -876,10 +864,9 @@ function renderLeaderboard(filter='') {
   const q = filter.toLowerCase()
   const filtered = scored.filter(s => s.entry.name.toLowerCase().includes(q))
  
-  const openNames = new Set()
+  const openSlugs = new Set()
   document.querySelectorAll('.lb-row.open').forEach(el => {
-    const name = el.querySelector('.entry-name')
-    if (name) openNames.add(name.textContent)
+    if (el.dataset.slug) openSlugs.add(el.dataset.slug)
   })
  
   let html = ''
@@ -891,7 +878,8 @@ function renderLeaderboard(filter='') {
       ? (seqRank===1?'r1':seqRank===2?'r2':seqRank===3?'r3':seqRank===scored.length?'rl':'')
       : (rank===1?'r1':rank===2?'r2':rank===3?'r3':isLast?'rl':'')
     const rankLabel = (!scoringStarted && seqRank===scored.length) || isLast ? '↓' : rank
-    const isOpen = openNames.has(s.entry.name) ? 'open' : ''
+    const slug = s.entry.teams.join('-')
+    const isOpen = openSlugs.has(slug) ? 'open' : ''
  
     const tags = s.slots.map(slot => {
       const t = D.teams[slot.tn]
@@ -904,14 +892,15 @@ function renderLeaderboard(filter='') {
       const _pLabel = slot.pl.shortName || slot.pl.name || ''
       const pName = _pLabel ? `#${slot.pn} ${_pLabel}` : `#${slot.pn} TBC`
       const posLabel = {6:'GK ×6',4:'DEF ×4',2:'MID ×2',1:'FWD ×1'}[slot.mult]||`×${slot.mult}`
+      const teamMP = D.games.filter(g => (g.home === slot.tn || g.away === slot.tn) && g.clock !== '').length
       return `<div class="expand-slot">
         <div class="slot-head"><span class="slot-team">${tName}</span><span class="slot-pts">${slot.pts}</span></div>
         <div class="slot-player">${pName} · ${posLabel}</div>
-        <div class="slot-breakdown"><span>Team: +${slot.tg}</span><span>Player: ${slot.pg}×${slot.mult}=+${slot.pg*slot.mult}</span></div>
+        <div class="slot-breakdown"><span>Team: +${slot.tg}</span><span>Player: ${slot.pg}×${slot.mult}=+${slot.pg*slot.mult}</span><span style="margin-left:auto;font-weight:600;font-size:12px;color:var(--dark)">${teamMP} MP</span></div>
       </div>`
     }).join('')
  
-    html += `<div class="lb-row ${isOpen}" onclick="this.classList.toggle('open')">
+    html += `<div class="lb-row ${isOpen}" data-slug="${slug}" onclick="this.classList.toggle('open')">
       <div class="lb-row-main">
         <div><div class="rank-badge ${rCls}">${rankLabel}</div></div>
         <div><div class="entry-name">${s.entry.name}</div><div class="entry-tags">${tags}</div></div>
