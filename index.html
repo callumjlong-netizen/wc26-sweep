@@ -909,7 +909,7 @@ function renderLeaderboard(filter='') {
         return tg + pg * slot.mult
       })() : 0
       const slotPtsDisplay = liveGame
-        ? `<span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--green);margin-right:3px">+${slotLivePts}</span><span class="slot-pts">${slot.pts}</span>`
+        ? `<span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--red);margin-right:3px">+${slotLivePts}</span><span class="slot-pts">${slot.pts}</span>`
         : `<span class="slot-pts">${slot.pts}</span>`
       return `<div class="expand-slot${liveGame?' live-slot':''}">
         <div class="slot-head"><span class="slot-team">${tName}${liveBadge}</span><span style="display:flex;align-items:baseline;gap:2px">${slotPtsDisplay}</span></div>
@@ -924,7 +924,7 @@ function renderLeaderboard(filter='') {
     )
  
     const ptsDisplay = entryIsLive
-      ? `<span style="font-size:13px;font-family:'DM Mono',monospace;color:var(--green);margin-right:4px">+${livePts}</span>${s.total}`
+      ? `<span style="font-size:13px;font-family:'DM Mono',monospace;color:var(--red);margin-right:4px">+${livePts}</span>${s.total}`
       : `${s.total}`
  
     html += `<div class="lb-row ${isOpen}" data-slug="${slug}" onclick="this.classList.toggle('open')">
