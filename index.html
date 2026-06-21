@@ -19,7 +19,7 @@
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh}
 a{color:inherit;text-decoration:none}
 button{cursor:pointer;font-family:'DM Sans',sans-serif}
-
+ 
 /* ── HEADER ── */
 header{background:var(--green-dark);position:sticky;top:0;z-index:100;border-bottom:3px solid var(--gold)}
 .header-inner{max-width:960px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none}
@@ -30,26 +30,26 @@ nav{display:flex;gap:0}
 nav button{font-size:12px;font-weight:500;color:rgba(255,255,255,.6);background:none;border:none;border-bottom:3px solid transparent;padding:15px 13px 12px;white-space:nowrap;letter-spacing:.02em;transition:color .15s,border-color .15s}
 nav button:hover{color:var(--white)}
 nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
-
+ 
 /* ── LOADING ── */
 #loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px}
 .spinner{width:34px;height:34px;border:3px solid var(--grey-200);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #loading p{font-size:13px;color:var(--grey-500)}
-
+ 
 /* ── PAGES ── */
 .page{display:none;width:100%}
 .page.active{display:block}
 .inner{max-width:960px;margin:0 auto;padding:20px 16px 60px}
 #page-leaderboard .stats-row{display:grid;margin-bottom:16px}
 #page-leaderboard .prize-box{display:flex;margin-bottom:18px}
-
+ 
 /* ── STAT CARDS ── */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
 .stat-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:12px 10px;text-align:center}
 .stat-card .val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--green);letter-spacing:.03em;line-height:1}
 .stat-card .lbl{font-size:10px;color:var(--grey-500);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
-
+ 
 /* ── PRIZE BOX ── */
 .prize-box{background:var(--green-dark);border-radius:12px;padding:18px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
 .pot-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:4px}
@@ -60,7 +60,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .prize-split .winner-name{font-size:11px;color:rgba(255,255,255,.7);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
 .prize-split .prize-amt{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--white);letter-spacing:.04em}
 .prize-split.last-place{border-color:rgba(240,180,41,.3);background:rgba(240,180,41,.06)}
-
+ 
 /* ── THEORETICAL MAX CARD ── */
 .tmax-card{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;padding:14px 16px;margin-bottom:12px}
 .tmax-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
@@ -71,11 +71,11 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .tmax-team{font-weight:600;font-size:11px;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tmax-player{font-size:10px;color:var(--grey-500);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tmax-pts{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green);letter-spacing:.04em;margin-top:2px}
-
+ 
 /* ── SEARCH ── */
 .search-bar{width:100%;padding:9px 14px;border:1px solid var(--grey-200);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--white);color:var(--dark);margin-bottom:12px;outline:none;transition:border-color .15s}
 .search-bar:focus{border-color:var(--green)}
-
+ 
 /* ── LEADERBOARD ── */
 .lb-wrap{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;overflow:hidden}
 .lb-head{display:grid;grid-template-columns:44px 1fr 52px;gap:8px;padding:8px 16px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--grey-500);background:var(--grey-100);border-bottom:1px solid var(--grey-200)}
@@ -105,11 +105,11 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .slot-pts{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green);letter-spacing:.04em}
 .slot-player{font-size:11px;color:var(--grey-500);margin-bottom:3px}
 .slot-breakdown{font-size:10px;color:var(--grey-500);display:flex;gap:8px;font-family:'DM Mono',monospace}
-
+ 
 /* ── SECTION HEAD ── */
 .section-head{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--green-dark);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--gold);display:flex;align-items:baseline;gap:10px}
 .section-head span{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--grey-500);letter-spacing:0}
-
+ 
 /* ── GROUP TABLES ── */
 .groups-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px}
 .group-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);overflow:hidden}
@@ -122,7 +122,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .group-table tr:last-child td{border-bottom:none}
 .group-table tr.qualified td:first-child{border-left:3px solid var(--green)}
 .pts-cell{font-weight:700;color:var(--green-dark)}
-
+ 
 /* ── KNOCKOUT ── */
 .knockout-section{margin-top:8px}
 .knockout-round{margin-bottom:16px}
@@ -135,7 +135,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .ko-score{text-align:center;font-family:'DM Mono',monospace;font-weight:500;font-size:14px;background:var(--grey-100);border-radius:6px;padding:3px 8px}
 .ko-score.live-score{background:#fde8e8;color:var(--red)}
 .ko-right{text-align:right;font-size:11px;color:var(--grey-500)}
-
+ 
 /* ── FIXTURES ── */
 .fix-group{margin-bottom:18px}
 .fix-group-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--grey-500);padding:6px 14px;background:var(--grey-100);border-radius:6px 6px 0 0;border:1px solid var(--grey-200);border-bottom:none}
@@ -152,7 +152,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .pill-done{background:#dcfce7;color:#166534}
 .live-pulse{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
+ 
 /* ── GOAL LOG ── */
 .goal-list{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;overflow:hidden}
 .goal-row{display:grid;grid-template-columns:160px 54px 120px 1fr 60px;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--grey-100);font-size:12px}
@@ -166,7 +166,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .goal-pts{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--green);letter-spacing:.04em;text-align:right}
 .goal-pts small{font-family:'DM Sans',sans-serif;font-size:10px;color:var(--grey-500);display:block;line-height:1.2}
 .shootout-badge{font-size:9px;background:#fef9c3;color:#92400e;padding:1px 5px;border-radius:3px;font-weight:600;margin-left:5px}
-
+ 
 /* ── SQUAD PAGE ── */
 .squad-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--grey-200);border-radius:var(--radius);overflow:hidden;background:var(--white)}
 .squad-item{}
@@ -192,7 +192,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .pos-M{background:#fef9c3;color:#92400e}
 .pos-F{background:#fde8e8;color:#9f1239}
 .tbd{color:var(--grey-300);font-style:italic}
-
+ 
 /* ── ENTRY GENERATOR (eliminator style) ── */
 .gen-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--grey-500);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .gen-divider{height:1px;background:var(--grey-200);margin:16px 0}
@@ -227,7 +227,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .gen-reveal-btn:hover{filter:brightness(.93)}
 .gen-new-btn{width:100%;padding:11px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;border:1px solid var(--grey-200);background:var(--white);color:var(--grey-700);cursor:pointer}
 .gen-new-btn:hover{background:var(--grey-100)}
-
+ 
 /* ── HOW TO PLAY ── */
 .how-wrap{max-width:680px}
 .entry-card{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;overflow:hidden;margin-bottom:16px}
@@ -246,14 +246,14 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .mult-table td{padding:7px 10px;border-bottom:1px solid var(--grey-100)}
 .mult-table tr:last-child td{border-bottom:none}
 .mult-badge{display:inline-block;font-weight:700;padding:1px 7px;border-radius:4px;font-size:12px}
-
+ 
 /* ── EMPTY / ERROR ── */
 .empty{padding:40px;text-align:center;color:var(--grey-500);font-size:13px}
 .error-banner{background:#fde8e8;border:1px solid #fca5a5;border-radius:8px;padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:14px}
-
+ 
 /* ── FOOTER ── */
 footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);border-top:1px solid var(--grey-200)}
-
+ 
 /* ── RESPONSIVE ── */
 @media(max-width:640px){
   .stats-row{grid-template-columns:repeat(2,1fr)}
@@ -275,7 +275,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
 </style>
 </head>
 <body>
-
+ 
 <header>
   <div class="header-inner">
     <div class="logo"><span style="color:white">STEEL</span> WC<span>26</span></div>
@@ -289,10 +289,10 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
     </nav>
   </div>
 </header>
-
+ 
 <div id="loading"><div class="spinner"></div><p>Loading sweepstake data…</p></div>
 <div id="error-global" style="display:none;max-width:960px;margin:20px auto;padding:0 16px"></div>
-
+ 
 <!-- LEADERBOARD -->
 <div id="page-leaderboard" class="page">
   <div class="inner">
@@ -314,7 +314,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
     </div>
   </div>
 </div>
-
+ 
 <!-- GROUPS -->
 <div id="page-groups" class="page">
   <div class="inner">
@@ -323,7 +323,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
     <div class="knockout-section" id="knockout-section"></div>
   </div>
 </div>
-
+ 
 <!-- FIXTURES -->
 <div id="page-fixtures" class="page">
   <div class="inner">
@@ -331,7 +331,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
     <div id="fix-body"></div>
   </div>
 </div>
-
+ 
 <!-- GOAL LOG -->
 <div id="page-goallog" class="page">
   <div class="inner">
@@ -339,7 +339,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
     <div class="goal-list" id="goal-body"></div>
   </div>
 </div>
-
+ 
 <!-- SQUADS -->
 <div id="page-squads" class="page">
   <div class="inner">
@@ -347,7 +347,7 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
     <div class="squad-list" id="squad-body"></div>
   </div>
 </div>
-
+ 
 <!-- HOW TO PLAY -->
 <div id="page-howtoplay" class="page">
   <div class="inner">
@@ -413,9 +413,9 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--grey-300);borde
     </div>
   </div>
 </div>
-
+ 
 <footer>STEEL WC26 Sweep · Auto-updates every minute · <span id="last-updated"></span></footer>
-
+ 
 <script>
 const SHEET_ID = '1mfRVjcf4AQdTZUxkRxHSkcxLwWM5mjP_ZmJmulk3uag'
 const GIDS = {
@@ -426,12 +426,12 @@ const GIDS = {
   goals:   496720377,
   entries: 1323320153,
 }
-
+ 
 let D = { teams:{}, players:{}, misc:{}, games:[], goals:[], entries:[] }
 let scored = []
 let currentPage = 'leaderboard'
 let appReady = false
-
+ 
 const KNOCKOUT_ROUNDS = [
   { key:'final',         label:'Final' },
   { key:'third',         label:'Third Place Play-off' },
@@ -440,16 +440,16 @@ const KNOCKOUT_ROUNDS = [
   { key:'round of 16',   label:'Round of 16' },
   { key:'round of 32',   label:'Round of 32' },
 ]
-
+ 
 function isKnockoutLabel(label) {
   const l = (label||'').toLowerCase()
   return KNOCKOUT_ROUNDS.some(r => l.includes(r.key))
 }
-
+ 
 function csvUrl(gid) {
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`
 }
-
+ 
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/)
   if (lines.length < 2) return []
@@ -461,7 +461,7 @@ function parseCSV(text) {
     return obj
   })
 }
-
+ 
 function splitCSVLine(line) {
   const vals = []
   let cur = '', inQ = false
@@ -474,33 +474,33 @@ function splitCSVLine(line) {
   vals.push(cur)
   return vals.map(v => v.replace(/^"|"$/g, '').trim())
 }
-
+ 
 async function fetchSheet(gid) {
   const res = await fetch(csvUrl(gid))
   if (!res.ok) throw new Error(`Sheet fetch failed gid=${gid} status=${res.status}`)
   return parseCSV(await res.text())
 }
-
+ 
 // Track which pages have ever been loaded, and when data was last fetched
 const pageFetched = {}   // page → true once data fetched on open
 let lastFetchTime  = 0   // ms timestamp of last successful fetchData()
 let autoRefreshTimer = null  // holds the current setInterval for live pages
-
+ 
 // Pages that auto-refresh every minute while active
 const LIVE_PAGES = new Set(['leaderboard', 'fixtures'])
-
+ 
 async function fetchData() {
   const [teams, players, misc, games, goals, entries] = await Promise.all([
     fetchSheet(GIDS.teams), fetchSheet(GIDS.players), fetchSheet(GIDS.misc),
     fetchSheet(GIDS.games), fetchSheet(GIDS.goals),  fetchSheet(GIDS.entries),
   ])
-
+ 
   D.teams = {}
   teams.forEach(r => {
     const n = parseInt(r['Team Number'])
     if (n) D.teams[n] = { name: r['Team Name']||'', code: r['Fifa Code']||'', group: r['Group']||'', rank: parseInt(r['World Ranking'])||999 }
   })
-
+ 
   const mv = {}
   misc.forEach(r => { if (r['Name'] && r['Value']) mv[r['Name'].trim()] = r['Value'].trim() })
   D.misc = {
@@ -514,7 +514,7 @@ async function fetchData() {
     split3: parseFloat(mv['3rd']) || 0,
     splitL: parseFloat(mv['Last']) || 0,
   }
-
+ 
   D.players = {}
   players.forEach(r => {
     const tn = parseInt(r['Team Number'])
@@ -526,7 +526,7 @@ async function fetchData() {
     const cleanShort = (r['Short Name'] ||'').replace(/^#.+/, '').trim()
     D.players[`${tn}-${pn}`] = { name: cleanName, shortName: cleanShort || cleanName, pos, mult }
   })
-
+ 
   D.games = games.filter(r => r['Match Number']).map(r => ({
     matchNum: parseInt(r['Match Number'])||0,
     home: parseInt(r['Home Team'])||0,
@@ -535,7 +535,7 @@ async function fetchData() {
     label: r['Match Lable']||r['Match Label']||r['label']||'',
     clock: (r['Status']||'').trim(),
   }))
-
+ 
   D.goals = goals.filter(r => {
     const tn = parseInt(r['Team Number'])
     const pn = parseInt(r['Player Number'])
@@ -548,7 +548,7 @@ async function fetchData() {
     minute:   r['Minute']||'',
     isShootout:(r['Shootout']||'').toUpperCase()==='Y',
   }))
-
+ 
   D.entries = entries.filter(r => {
     const name = r['Entry Name']||''
     return name && name !== 'Place Holder' && name !== '0'
@@ -558,16 +558,16 @@ async function fetchData() {
     players: [parseInt(r['T1 PLAYER #'])||0, parseInt(r['T2 PLAYER #'])||0, parseInt(r['T3 PLAYER #'])||0, parseInt(r['T4 PLAYER #'])||0],
     paid: (r['Paid?']||r['Paid']||'').toUpperCase()==='Y',
   }))
-
+ 
   calcScores()
   lastFetchTime = Date.now()
   document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
 }
-
+ 
 async function loadAll() {
   try {
     await fetchData()
-
+ 
     if (!appReady) {
       appReady = true
       document.getElementById('loading').style.display = 'none'
@@ -575,7 +575,7 @@ async function loadAll() {
       currentPage = 'leaderboard'
       pageFetched['leaderboard'] = true
     }
-
+ 
     renderPage(currentPage)
   } catch(e) {
     document.getElementById('loading').style.display = 'none'
@@ -584,7 +584,7 @@ async function loadAll() {
     console.error(e)
   }
 }
-
+ 
 // Silent background refresh — preserves leaderboard scroll + open rows
 async function silentRefresh() {
   try {
@@ -600,7 +600,7 @@ async function silentRefresh() {
     console.error('Silent refresh failed:', e)
   }
 }
-
+ 
 // Start auto-refresh timer aligned to the next minute boundary
 function startAutoRefresh() {
   if (autoRefreshTimer) clearInterval(autoRefreshTimer)
@@ -611,12 +611,12 @@ function startAutoRefresh() {
     autoRefreshTimer = setInterval(silentRefresh, 60000)
   }, msUntilNextMinute)
 }
-
+ 
 // Stop auto-refresh timer
 function stopAutoRefresh() {
   if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null }
 }
-
+ 
 function calcScores() {
   const sg = D.goals.filter(g => !g.isShootout)
   scored = D.entries.map(entry => {
@@ -631,7 +631,7 @@ function calcScores() {
     return { entry, slots, total: slots.reduce((s,x) => s + x.pts, 0) }
   }).sort((a,b) => b.total - a.total)
 }
-
+ 
 function getMatchScore(matchNum) {
   const sg = D.goals.filter(g => !g.isShootout && g.matchNum === matchNum)
   const game = D.games.find(g => g.matchNum === matchNum)
@@ -641,20 +641,20 @@ function getMatchScore(matchNum) {
     a: sg.filter(g => g.teamNum === game.away).length,
   }
 }
-
+ 
 // ── THEORETICAL MAXIMUM ───────────────────────────────────────────────────────
 // Score each player as: team goals + (player goals × multiplier)
 // Pick top 4, skipping duplicate teams or duplicate player numbers
-
+ 
 function calcTheoreticalMax() {
   const sg = D.goals.filter(g => !g.isShootout)
-
+ 
   // Build team goal counts
   const teamGoals = {}
   Object.keys(D.teams).forEach(tn => {
     teamGoals[parseInt(tn)] = sg.filter(g => g.teamNum === parseInt(tn)).length
   })
-
+ 
   // Score every player
   const allPlayers = []
   Object.entries(D.players).forEach(([key, p]) => {
@@ -664,15 +664,15 @@ function calcTheoreticalMax() {
     const pts = tg + pg * p.mult
     if (pts > 0) allPlayers.push({ tn, pn, pts, tg, pg, mult: p.mult, name: p.shortName || p.name, pos: p.pos })
   })
-
+ 
   // Sort descending
   allPlayers.sort((a, b) => b.pts - a.pts)
-
+ 
   // Pick top 4 skipping duplicate teams or player numbers
   const usedTeams = new Set()
   const usedPlayerNums = new Set()
   const picks = []
-
+ 
   for (const p of allPlayers) {
     if (picks.length === 4) break
     if (usedTeams.has(p.tn)) continue
@@ -681,10 +681,10 @@ function calcTheoreticalMax() {
     usedTeams.add(p.tn)
     usedPlayerNums.add(p.pn)
   }
-
+ 
   return picks
 }
-
+ 
 function calcGroupStandings() {
   const groups = {}
   Object.entries(D.teams).forEach(([num, t]) => {
@@ -693,7 +693,7 @@ function calcGroupStandings() {
     if (!groups[g]) groups[g] = {}
     groups[g][parseInt(num)] = { name: t.name, code: t.code, mp:0, w:0, d:0, l:0, gf:0, ga:0, gd:0, pts:0 }
   })
-
+ 
   const now = new Date()
   D.games.filter(game => !isKnockoutLabel(game.label)).forEach(game => {
     const score = getMatchScore(game.matchNum)
@@ -705,13 +705,13 @@ function calcGroupStandings() {
     const isFinished = ['FT','AET','FT (Pens)'].includes(clock)
     const isLive = clock !== '' && !isFinished
     if (!isPast && !hasGoals && !isLive && !isFinished) return
-
+ 
     const ht = D.teams[game.home], at = D.teams[game.away]
     if (!ht || !at) return
     const hg = ht.group, ag = at.group
     if (hg !== ag) return
     if (!groups[hg]?.[game.home] || !groups[hg]?.[game.away]) return
-
+ 
     const h = groups[hg][game.home], a = groups[hg][game.away]
     h.mp++; a.mp++
     h.gf += score.h; h.ga += score.a
@@ -721,14 +721,14 @@ function calcGroupStandings() {
     else if (score.h < score.a) { a.w++; a.pts+=3; h.l++ }
     else                        { h.d++; a.d++; h.pts++; a.pts++ }
   })
-
+ 
   Object.values(groups).forEach(grp => {
     grp._sorted = Object.values(grp).filter(t=>t.name).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf)
   })
-
+ 
   return groups
 }
-
+ 
 function renderPage(page) {
   if (page === 'leaderboard') renderLeaderboard()
   else if (page === 'groups')   renderGroups()
@@ -737,20 +737,20 @@ function renderPage(page) {
   else if (page === 'squads')   renderSquads()
   else if (page === 'howtoplay') renderHowToPlay()
 }
-
+ 
 async function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'))
   document.getElementById('page-'+id).classList.add('active')
   btn.classList.add('active')
   currentPage = id
-
+ 
   // Stop any existing auto-refresh
   stopAutoRefresh()
-
+ 
   // Render immediately from cached D so the page appears instantly
   if (appReady) renderPage(id)
-
+ 
   if (LIVE_PAGES.has(id)) {
     // Leaderboard + Fixtures: fetch fresh in background then re-render, then auto-refresh every minute
     fetchData().then(() => { if (currentPage === id) renderPage(id) }).catch(e => console.error(e))
@@ -765,7 +765,7 @@ async function showPage(id, btn) {
     fetchData().then(() => { if (currentPage === id) renderPage(id) }).catch(e => console.error(e))
   }
 }
-
+ 
 function renderLeaderboard(filter='') {
   const pot = Math.round(D.entries.length * D.misc.price)
   document.getElementById('st-entries').textContent = D.entries.length
@@ -773,7 +773,7 @@ function renderLeaderboard(filter='') {
   document.getElementById('st-players').textContent = Object.keys(D.players).length
   document.getElementById('st-matches').textContent = 104
   document.getElementById('pot-amount').textContent = '£'+pot
-
+ 
   const { split1, split2, split3, splitL } = D.misc
   const positions = [
     { label:'1st', pct:split1, idx:0, cls:'' },
@@ -782,7 +782,7 @@ function renderLeaderboard(filter='') {
     { label:'Last', pct:splitL, idx:-1, cls:'last-place' },
   ]
   const scoringStarted = D.goals.filter(g => !g.isShootout).length > 0
-
+ 
   const posMap = new Map()
   let truePos = 1
   scored.forEach((s, i) => {
@@ -790,11 +790,11 @@ function renderLeaderboard(filter='') {
     else posMap.set(s, truePos)
     truePos++
   })
-
+ 
   const lastTotal = scored.length ? scored[scored.length-1].total : null
   const lastMembers = scored.filter(s => s.total === lastTotal)
   const lastMembersSet = new Set(lastMembers)
-
+ 
   let splitsHTML = ''
   positions.forEach(p => {
     if (!p.pct) return
@@ -827,7 +827,7 @@ function renderLeaderboard(filter='') {
     </div>`
   })
   document.getElementById('prize-splits').innerHTML = splitsHTML
-
+ 
   // Theoretical Max card — only shown when scoring has started
   const tmaxWrap = document.getElementById('tmax-card-wrap')
   if (scoringStarted) {
@@ -854,15 +854,15 @@ function renderLeaderboard(filter='') {
   } else {
     tmaxWrap.innerHTML = ''
   }
-
+ 
   const q = filter.toLowerCase()
   const filtered = scored.filter(s => s.entry.name.toLowerCase().includes(q))
-
+ 
   const openSlugs = new Set()
   document.querySelectorAll('.lb-row.open').forEach(el => {
     if (el.dataset.slug) openSlugs.add(el.dataset.slug)
   })
-
+ 
   let html = ''
   filtered.forEach(s => {
     const seqRank = scored.indexOf(s) + 1
@@ -874,25 +874,12 @@ function renderLeaderboard(filter='') {
     const rankLabel = (!scoringStarted && seqRank===scored.length) || isLast ? '↓' : rank
     const slug = s.entry.teams.join('-')
     const isOpen = openSlugs.has(slug) ? 'open' : ''
-
+ 
     const tags = s.slots.map(slot => {
       const t = D.teams[slot.tn]
       return t ? `<span class="team-tag${t.rank<=10?' top-rank':''}">${slot.tn} ${t.code||t.name.substring(0,3).toUpperCase()}</span>` : ''
     }).join('')
-
-    // Points gained from currently live matches only
-    const liveMatchNums = new Set(
-      D.games
-        .filter(g => g.clock !== '' && !['FT','AET','FT (Pens)'].includes(g.clock))
-        .map(g => g.matchNum)
-    )
-    const livePts = s.slots.reduce((sum, slot) => {
-      const sg = D.goals.filter(g => !g.isShootout && liveMatchNums.has(g.matchNum))
-      const tg = sg.filter(g => g.teamNum === slot.tn).length
-      const pg = sg.filter(g => g.teamNum === slot.tn && g.playerNum === slot.pn).length
-      return sum + tg + pg * slot.mult
-    }, 0)
-
+ 
     const expandSlots = s.slots.map(slot => {
       const t = D.teams[slot.tn]
       const tName = t ? t.name : `Team ${slot.tn}`
@@ -902,31 +889,18 @@ function renderLeaderboard(filter='') {
       const teamMP = D.games.filter(g => (g.home === slot.tn || g.away === slot.tn) && g.clock !== '').length
       const liveGame = D.games.find(g => (g.home === slot.tn || g.away === slot.tn) && g.clock !== '' && !['FT','AET','FT (Pens)'].includes(g.clock))
       const liveBadge = liveGame ? `<span class="pill pill-live" style="font-size:9px;padding:1px 6px;margin-left:6px"><span class="live-pulse"></span>${liveGame.clock}</span>` : ''
-      const slotLivePts = liveGame ? (() => {
-        const sg = D.goals.filter(g => !g.isShootout && g.matchNum === liveGame.matchNum)
-        const tg = sg.filter(g => g.teamNum === slot.tn).length
-        const pg = sg.filter(g => g.teamNum === slot.tn && g.playerNum === slot.pn).length
-        return tg + pg * slot.mult
-      })() : 0
-      const slotPtsDisplay = liveGame && slotLivePts > 0
-        ? `<span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--green);margin-right:3px">+${slotLivePts}</span><span class="slot-pts">${slot.pts}</span>`
-        : `<span class="slot-pts">${slot.pts}</span>`
       return `<div class="expand-slot${liveGame?' live-slot':''}">
-        <div class="slot-head"><span class="slot-team">${tName}${liveBadge}</span><span style="display:flex;align-items:baseline;gap:2px">${slotPtsDisplay}</span></div>
+        <div class="slot-head"><span class="slot-team">${tName}${liveBadge}</span><span class="slot-pts">${slot.pts}</span></div>
         <div class="slot-player">${pName} · ${posLabel}</div>
         <div class="slot-breakdown"><span>Team: +${slot.tg}</span><span>Player: ${slot.pg}×${slot.mult}=+${slot.pg*slot.mult}</span><span style="margin-left:auto;font-weight:600;font-size:12px;color:var(--dark)">${teamMP} MP</span></div>
       </div>`
     }).join('')
-
+ 
     // Check if any of this entry's teams are currently live
     const entryIsLive = s.slots.some(slot =>
       D.games.some(g => (g.home === slot.tn || g.away === slot.tn) && g.clock !== '' && !['FT','AET','FT (Pens)'].includes(g.clock))
     )
-
-    const ptsDisplay = entryIsLive && livePts > 0
-      ? `<span style="font-size:13px;font-family:'DM Mono',monospace;color:var(--green);margin-right:4px">+${livePts}</span>${s.total}`
-      : `${s.total}`
-
+ 
     html += `<div class="lb-row ${isOpen}" data-slug="${slug}" onclick="this.classList.toggle('open')">
       <div class="lb-row-main">
         <div><div class="rank-badge ${rCls}">${rankLabel}</div></div>
@@ -934,20 +908,20 @@ function renderLeaderboard(filter='') {
           <div class="entry-name">${s.entry.name}${entryIsLive?'<span class="pill pill-live" style="font-size:9px;padding:1px 6px;margin-left:8px;vertical-align:middle"><span class="live-pulse"></span>LIVE</span>':''}</div>
           <div class="entry-tags">${tags}</div>
         </div>
-        <div class="pts-col">${ptsDisplay}<span class="chevron">▼</span></div>
+        <div class="pts-col">${s.total}<span class="chevron">▼</span></div>
       </div>
       <div class="lb-expand">${expandSlots}</div>
     </div>`
   })
   document.getElementById('lb-body').innerHTML = html || '<div class="empty">No entries yet</div>'
 }
-
+ 
 function filterLeaderboard(val) { renderLeaderboard(val) }
-
+ 
 function renderGroups() {
   const groups = calcGroupStandings()
   const groupNames = Object.keys(groups).sort()
-
+ 
   if (!groupNames.length) {
     document.getElementById('groups-body').innerHTML = '<div class="empty" style="grid-column:1/-1">Group data not available yet</div>'
   } else {
@@ -973,11 +947,11 @@ function renderGroups() {
     })
     document.getElementById('groups-body').innerHTML = html
   }
-
+ 
   const now = new Date()
   const knockoutGames = D.games.filter(g => isKnockoutLabel(g.label))
   if (!knockoutGames.length) { document.getElementById('knockout-section').innerHTML = ''; return }
-
+ 
   const rounds = {}
   KNOCKOUT_ROUNDS.forEach(r => { rounds[r.label] = [] })
   knockoutGames.forEach(game => {
@@ -985,7 +959,7 @@ function renderGroups() {
     const round = KNOCKOUT_ROUNDS.find(r => lbl.includes(r.key))
     if (round) rounds[round.label].push(game)
   })
-
+ 
   let koHTML = `<div class="section-head" style="margin-top:8px">Knockout Stage</div>`
   KNOCKOUT_ROUNDS.forEach(r => {
     const games = rounds[r.label]
@@ -1001,35 +975,35 @@ function renderGroups() {
       const clock = game.clock || ''
       const isFinished = ['FT','AET','FT (Pens)'].includes(clock)
       const isLive = clock !== '' && !isFinished
-
+ 
       let scoreEl = isLive
         ? `<div class="ko-score live-score">${score.h??0} – ${score.a??0}</div>`
         : (isFinished || isPast) && score.h !== null
           ? `<div class="ko-score">${score.h} – ${score.a}</div>`
           : `<div class="ko-score" style="font-size:11px;color:#bbb">vs</div>`
-
+ 
       let rightEl = isLive
         ? `<div class="ko-right"><span class="pill pill-live"><span class="live-pulse"></span>${clock}</span></div>`
         : (isFinished || isPast)
           ? `<div class="ko-right"><span class="pill pill-done">${clock || 'FT'}</span></div>`
           : `<div class="ko-right">${dt ? dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : game.dateTime}</div>`
-
+ 
       koHTML += `<div class="knockout-row"><div class="ko-home">${hName}</div>${scoreEl}<div class="ko-away">${aName}</div>${rightEl}</div>`
     })
     koHTML += '</div></div>'
   })
   document.getElementById('knockout-section').innerHTML = koHTML
 }
-
+ 
 function renderFixtures() {
   const now = new Date()
   const withStatus = D.games.map(g => {
     const dt = g.dateTime ? new Date(g.dateTime) : null
     return { ...g, dt, score: getMatchScore(g.matchNum) }
   })
-
+ 
   document.getElementById('fix-subtitle').textContent = `${withStatus.length} matches`
-
+ 
   const byDate = {}
   const dateOrder = []
   withStatus.forEach(g => {
@@ -1038,7 +1012,7 @@ function renderFixtures() {
     byDate[key].push(g)
   })
   const uniqueDates = [...new Set(dateOrder)]
-
+ 
   function ordinal(n) {
     const s = ['th','st','nd','rd'], v = n % 100
     return n + (s[(v-20)%10] || s[v] || s[0])
@@ -1051,7 +1025,7 @@ function renderFixtures() {
     const [num, ...rest] = date.split(' ')
     return `${day} ${ordinal(parseInt(num))} ${rest.join(' ')}`
   }
-
+ 
   let html = ''
   uniqueDates.forEach(key => {
     const items = byDate[key]
@@ -1062,36 +1036,36 @@ function renderFixtures() {
       const aName = away ? away.name : `Team ${g.away}`
       const isFin = ['FT','AET','FT (Pens)'].includes(g.clock)
       const isLiv = !isFin && g.clock !== ''
-
+ 
       let scoreEl = isLiv
         ? `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
         : isFin && g.score.h !== null
           ? `<div class="fix-score">${g.score.h} – ${g.score.a}</div>`
           : `<div class="fix-score" style="font-size:11px;color:#bbb">vs</div>`
-
+ 
       let statusEl = isFin
         ? `<div class="fix-right"><span class="pill pill-done">${g.clock}</span></div>`
         : isLiv
           ? `<div class="fix-right"><span class="pill pill-live"><span class="live-pulse"></span>${g.clock}</span></div>`
           : `<div class="fix-right" style="font-size:11px;color:var(--grey-500)">${g.dt ? g.dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : ''}<br><span style="font-size:10px;color:#bbb">${g.label}</span></div>`
-
+ 
       html += `<div class="fix-row"><div class="fix-home">${hName}</div>${scoreEl}<div class="fix-away">${aName}</div>${statusEl}</div>`
     })
     html += '</div></div>'
   })
   document.getElementById('fix-body').innerHTML = html || '<div class="empty">No fixtures loaded</div>'
 }
-
+ 
 function renderGoalLog() {
   const goals = [...D.goals].reverse()
   const sc = goals.filter(g => !g.isShootout)
   document.getElementById('goal-subtitle').textContent = `${sc.length} goal${sc.length!==1?'s':''} scored`
-
+ 
   if (!goals.length) {
     document.getElementById('goal-body').innerHTML = '<div class="empty">No goals logged yet</div>'
     return
   }
-
+ 
   let html = ''
   goals.forEach(g => {
     const team = D.teams[g.teamNum]
@@ -1106,7 +1080,7 @@ function renderGoalLog() {
     })() : `Match ${g.matchNum}`
     const mult = (player && !g.isShootout) ? player.mult : 0
     const pts = 1 + mult
-
+ 
     html += `<div class="goal-row${g.isShootout?' shootout':''}">
       <div class="goal-match">${matchLabel}${g.isShootout?'<span class="shootout-badge">SHOOTOUT</span>':''}</div>
       <div><div class="goal-min">${g.minute||'—'}<small>min</small></div></div>
@@ -1117,7 +1091,7 @@ function renderGoalLog() {
   })
   document.getElementById('goal-body').innerHTML = html
 }
-
+ 
 function renderSquads() {
   const teamNums = Object.keys(D.teams).map(Number).sort((a,b)=>a-b)
   let html = ''
@@ -1153,19 +1127,19 @@ function renderSquads() {
   })
   document.getElementById('squad-body').innerHTML = html || '<div class="empty">No team data yet</div>'
 }
-
+ 
 function toggleSquad(tn) {
   const el = document.getElementById('squad-'+tn)
   if (el) el.classList.toggle('open')
 }
-
+ 
 function renderHowToPlay() {
   const price = (D.misc && D.misc.price) ? D.misc.price : 5
   const priceStr = '£' + (price % 1 === 0 ? price : price.toFixed(2))
   document.getElementById('entry-price').textContent = priceStr
   genResetUI()
 }
-
+ 
 function genResetUI() {
   genTeamWinners=[]; genPlayerWinners=[]
   document.getElementById('gen-status').textContent = ''
@@ -1189,11 +1163,11 @@ function genResetUI() {
   })
   if(Object.keys(D.teams).length > 0) { genBuildGrid('team'); genBuildGrid('player') }
 }
-
+ 
 function genShuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]} return b }
-
+ 
 let genTeamWinners = [], genPlayerWinners = []
-
+ 
 function genBuildGrid(type) {
   const pool = type==='team' ? Object.keys(D.teams).map(Number) : Array.from({length:26},(_,i)=>i+1)
   const grid = document.getElementById('gen-'+type+'-grid')
@@ -1206,7 +1180,7 @@ function genBuildGrid(type) {
   })
   document.getElementById('gen-'+type+'-count').textContent = pool.length+' remaining'
 }
-
+ 
 function genBuildSchedule(count, totalMs) {
   const timings=[]; let t=0
   for(let i=0;i<count;i++){
@@ -1217,13 +1191,13 @@ function genBuildSchedule(count, totalMs) {
   const scale=totalMs/t
   return timings.map(x=>Math.round(x*scale))
 }
-
+ 
 function genSetStatus(msg, urgent=false) {
   const el = document.getElementById('gen-status')
   el.textContent = msg
   el.classList.toggle('urgent', urgent)
 }
-
+ 
 function genStartDraw() {
   document.getElementById('gen-actions').innerHTML = ''
   const tPool = Object.keys(D.teams).map(Number)
@@ -1255,7 +1229,7 @@ function genStartDraw() {
       `<button class="gen-reveal-btn" onclick="genRevealAll()">👁 Reveal Teams &amp; Players</button>`
   }, doneAt)
 }
-
+ 
 function genRunElim(type, elimArr, timings) {
   const countEl = document.getElementById('gen-'+type+'-count')
   let remaining = type==='team' ? Object.keys(D.teams).length : 26
@@ -1271,7 +1245,7 @@ function genRunElim(type, elimArr, timings) {
     }, timings[i]+80)
   })
 }
-
+ 
 function genLandSurvivors(type, winners) {
   const holdEl = document.getElementById('gen-'+type+'-hold')
   const gw = document.getElementById('gen-'+type+'-gw')
@@ -1298,7 +1272,7 @@ function genLandSurvivors(type, winners) {
     }, allDone)
   }, 320)
 }
-
+ 
 function genFlyCell(type, n) {
   const src = document.getElementById('gen-'+type+'-cell-'+n)
   const dst = document.getElementById('gen-'+type+'-hc-'+n)
@@ -1324,7 +1298,7 @@ function genFlyCell(type, n) {
   }
   requestAnimationFrame(step)
 }
-
+ 
 function genCycleAndSelect(type, allWinners, slotIdx) {
   function getAvailable() {
     return allWinners.filter(n => { const hc=document.getElementById('gen-'+type+'-hc-'+n); return hc&&!hc.classList.contains('launched') })
@@ -1353,7 +1327,7 @@ function genCycleAndSelect(type, allWinners, slotIdx) {
     }
   },STEP_MS)
 }
-
+ 
 function genLaunchToSlot(type, n, slotIdx) {
   const hc=document.getElementById('gen-'+type+'-hc-'+n)
   if(hc){hc.classList.remove('chosen');hc.style.opacity='';hc.style.transform='';hc.classList.add('launched')}
@@ -1368,7 +1342,7 @@ function genLaunchToSlot(type, n, slotIdx) {
     if(slotIdx===3){const holdEl=document.getElementById('gen-'+type+'-hold');holdEl.classList.remove('active');holdEl.classList.add('done')}
   },280)
 }
-
+ 
 function genRevealAll() {
   document.getElementById('gen-actions').innerHTML=''
   const order=[{type:'team',i:0},{type:'team',i:1},{type:'team',i:2},{type:'team',i:3},{type:'player',i:0},{type:'player',i:1},{type:'player',i:2},{type:'player',i:3}]
@@ -1385,7 +1359,7 @@ function genRevealAll() {
   })
   setTimeout(()=>{document.getElementById('gen-actions').innerHTML=`<button class="gen-new-btn" onclick="genResetUI()">↺ Draw New Entry</button>`},order.length*500+400)
 }
-
+ 
 loadAll().then(() => {
   // Pre-render all pages immediately so every tab is instant on first click
   renderGroups()
