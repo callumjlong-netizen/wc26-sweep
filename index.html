@@ -846,7 +846,7 @@ function renderLeaderboard(filter='') {
     }).join('')
     tmaxWrap.innerHTML = `<div class="tmax-card">
       <div class="tmax-head">
-        <div class="tmax-title">Best Possible Team</div>
+        <div class="tmax-title">Best Team Possible</div>
         <div class="tmax-total">${tmaxTotal}pts</div>
       </div>
       <div class="tmax-grid">${slotsHTML}</div>
@@ -908,7 +908,7 @@ function renderLeaderboard(filter='') {
         const pg = sg.filter(g => g.teamNum === slot.tn && g.playerNum === slot.pn).length
         return tg + pg * slot.mult
       })() : 0
-      const slotPtsDisplay = liveGame && slotLivePts > 0
+      const slotPtsDisplay = liveGame
         ? `<span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--green);margin-right:3px">+${slotLivePts}</span><span class="slot-pts">${slot.pts}</span>`
         : `<span class="slot-pts">${slot.pts}</span>`
       return `<div class="expand-slot${liveGame?' live-slot':''}">
@@ -923,7 +923,7 @@ function renderLeaderboard(filter='') {
       D.games.some(g => (g.home === slot.tn || g.away === slot.tn) && g.clock !== '' && !['FT','AET','FT (Pens)'].includes(g.clock))
     )
  
-    const ptsDisplay = entryIsLive && livePts > 0
+    const ptsDisplay = entryIsLive
       ? `<span style="font-size:13px;font-family:'DM Mono',monospace;color:var(--green);margin-right:4px">+${livePts}</span>${s.total}`
       : `${s.total}`
  
