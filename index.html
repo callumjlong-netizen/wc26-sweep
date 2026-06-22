@@ -591,7 +591,7 @@ async function silentRefresh() {
     await fetchData()
     if (currentPage === 'leaderboard') {
       const scrollY = window.scrollY
-      renderLeaderboard()
+      renderLeaderboard(leaderboardFilter)
       window.scrollTo(0, scrollY)
     } else if (currentPage === 'fixtures') {
       renderFixtures()
@@ -730,7 +730,7 @@ function calcGroupStandings() {
 }
  
 function renderPage(page) {
-  if (page === 'leaderboard') renderLeaderboard()
+  if (page === 'leaderboard') renderLeaderboard(leaderboardFilter)
   else if (page === 'groups')   renderGroups()
   else if (page === 'fixtures') renderFixtures()
   else if (page === 'goallog')  renderGoalLog()
@@ -942,7 +942,11 @@ function renderLeaderboard(filter='') {
   document.getElementById('lb-body').innerHTML = html || '<div class="empty">No entries yet</div>'
 }
  
-function filterLeaderboard(val) { renderLeaderboard(val) }
+let leaderboardFilter = ''
+function filterLeaderboard(val) {
+  leaderboardFilter = val
+  renderLeaderboard(val)
+}
  
 function renderGroups() {
   const groups = calcGroupStandings()
