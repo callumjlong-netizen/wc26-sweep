@@ -100,6 +100,7 @@ nav button.active{color:var(--gold);border-bottom-color:var(--gold)}
 .lb-row.open .lb-expand{display:grid}
 .expand-slot{background:var(--white);border:1px solid var(--grey-200);border-radius:8px;padding:10px 12px}
 .expand-slot.live-slot{border-color:#fca5a5;background:#fff8f8}
+.expand-slot.eliminated-slot{opacity:0.35}
 .slot-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px}
 .slot-team{font-weight:600;font-size:12px}
 .slot-pts{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green);letter-spacing:.04em}
@@ -498,7 +499,7 @@ async function fetchData() {
   D.teams = {}
   teams.forEach(r => {
     const n = parseInt(r['Team Number'])
-    if (n) D.teams[n] = { name: r['Team Name']||'', code: r['Fifa Code']||'', group: r['Group']||'', rank: parseInt(r['World Ranking'])||999 }
+    if (n) D.teams[n] = { name: r['Team Name']||'', code: r['Fifa Code']||'', group: r['Group']||'', rank: parseInt(r['World Ranking'])||999 , eliminated: (r['Eliminated']||'').toUpperCase() === 'Y' }
   })
  
   const mv = {}
@@ -901,6 +902,7 @@ function renderLeaderboard(filter='') {
       const posLabel = {6:'GK ×6',4:'DEF ×4',2:'MID ×2',1:'FWD ×1'}[slot.mult]||`×${slot.mult}`
       const teamMP = D.games.filter(g => (g.home === slot.tn || g.away === slot.tn) && g.clock !== '').length
       const liveGame = D.games.find(g => (g.home === slot.tn || g.away === slot.tn) && g.clock !== '' && !['FT','AET','FT (Pens)'].includes(g.clock))
+      const isEliminated = t && t.eliminated
       const liveBadge = liveGame ? `<span class="pill pill-live" style="font-size:9px;padding:1px 6px;margin-left:6px"><span class="live-pulse"></span>${liveGame.clock}</span>` : ''
       const slotLivePts = liveGame ? (() => {
         const sg = D.goals.filter(g => !g.isShootout && g.matchNum === liveGame.matchNum)
@@ -911,7 +913,7 @@ function renderLeaderboard(filter='') {
       const slotPtsDisplay = liveGame
         ? `<span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--red);margin-right:3px">+${slotLivePts}</span><span class="slot-pts">${slot.pts}</span>`
         : `<span class="slot-pts">${slot.pts}</span>`
-      return `<div class="expand-slot${liveGame?' live-slot':''}">
+      return `<div class="expand-slot${liveGame?' live-slot':''}${isEliminated?' eliminated-slot':''}">
         <div class="slot-head"><span class="slot-team">${tName}${liveBadge}</span><span style="display:flex;align-items:baseline;gap:2px">${slotPtsDisplay}</span></div>
         <div class="slot-player">${pName} · ${posLabel}</div>
         <div class="slot-breakdown"><span>Team: +${slot.tg}</span><span>Player: ${slot.pg}×${slot.mult}=+${slot.pg*slot.mult}</span><span style="margin-left:auto;font-weight:600;font-size:12px;color:var(--dark)">${teamMP} MP</span></div>
