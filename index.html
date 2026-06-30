@@ -536,7 +536,8 @@ async function fetchData() {
     dateTime: r['Date Time']||'',
     label: r['Match Lable']||r['Match Label']||r['label']||'',
     clock: (r['Status']||'').trim(),
-  }))
+      winner: parseInt(r['Winner'])||0,
+    }))
  
   D.goals = goals.filter(r => {
     const tn = parseInt(r['Team Number'])
@@ -981,51 +982,7 @@ function renderGroups() {
     document.getElementById('groups-body').innerHTML = html
   }
  
-  const now = new Date()
-  const knockoutGames = D.games.filter(g => isKnockoutLabel(g.label))
-  if (!knockoutGames.length) { document.getElementById('knockout-section').innerHTML = ''; return }
- 
-  const rounds = {}
-  KNOCKOUT_ROUNDS.forEach(r => { rounds[r.label] = [] })
-  knockoutGames.forEach(game => {
-    const lbl = (game.label||'').toLowerCase()
-    const round = KNOCKOUT_ROUNDS.find(r => lbl.includes(r.key))
-    if (round) rounds[round.label].push(game)
-  })
- 
-  let koHTML = `<div class="section-head" style="margin-top:8px">Knockout Stage</div>`
-  KNOCKOUT_ROUNDS.forEach(r => {
-    const games = rounds[r.label]
-    if (!games.length) return
-    koHTML += `<div class="knockout-round"><div class="knockout-round-title">${r.label}</div><div class="knockout-list">`
-    games.forEach(game => {
-      const home = D.teams[game.home], away = D.teams[game.away]
-      const hName = home ? home.name : `Team ${game.home}`
-      const aName = away ? away.name : `Team ${game.away}`
-      const score = getMatchScore(game.matchNum)
-      const dt = game.dateTime ? new Date(game.dateTime) : null
-      const isPast = dt && dt < now
-      const clock = game.clock || ''
-      const isFinished = ['FT','AET','FT (Pens)'].includes(clock)
-      const isLive = clock !== '' && !isFinished
- 
-      let scoreEl = isLive
-        ? `<div class="ko-score live-score">${score.h??0} – ${score.a??0}</div>`
-        : (isFinished || isPast) && score.h !== null
-          ? `<div class="ko-score">${score.h} – ${score.a}</div>`
-          : `<div class="ko-score" style="font-size:11px;color:#bbb">vs</div>`
- 
-      let rightEl = isLive
-        ? `<div class="ko-right"><span class="pill pill-live"><span class="live-pulse"></span>${clock}</span></div>`
-        : (isFinished || isPast)
-          ? `<div class="ko-right"><span class="pill pill-done">${clock || 'FT'}</span></div>`
-          : `<div class="ko-right">${dt ? dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : game.dateTime}</div>`
- 
-      koHTML += `<div class="knockout-row"><div class="ko-home">${hName}</div>${scoreEl}<div class="ko-away">${aName}</div>${rightEl}</div>`
-    })
-    koHTML += '</div></div>'
-  })
-  document.getElementById('knockout-section').innerHTML = koHTML
+  document.getElementById('knockout-section').innerHTML = ''
 }
  
 function renderFixtures() {
@@ -1034,18 +991,21 @@ function renderFixtures() {
     const dt = g.dateTime ? new Date(g.dateTime) : null
     return { ...g, dt, score: getMatchScore(g.matchNum) }
   })
- 
+
   document.getElementById('fix-subtitle').textContent = `${withStatus.length} matches`
- 
+
+  const groupGames    = withStatus.filter(g => !isKnockoutLabel(g.label))
+  const knockoutGames = withStatus.filter(g => isKnockoutLabel(g.label))
+
   const byDate = {}
   const dateOrder = []
-  withStatus.forEach(g => {
+  groupGames.forEach(g => {
     const key = g.dt ? g.dt.toISOString().slice(0, 10) : 'unknown'
     if (!byDate[key]) { byDate[key] = []; dateOrder.push(key) }
     byDate[key].push(g)
   })
   const uniqueDates = [...new Set(dateOrder)]
- 
+
   function ordinal(n) {
     const s = ['th','st','nd','rd'], v = n % 100
     return n + (s[(v-20)%10] || s[v] || s[0])
@@ -1058,34 +1018,76 @@ function renderFixtures() {
     const [num, ...rest] = date.split(' ')
     return `${day} ${ordinal(parseInt(num))} ${rest.join(' ')}`
   }
- 
+
+  function renderFixtureRow(g) {
+    const home = D.teams[g.home], away = D.teams[g.away]
+    const hName = home ? home.name : `Team ${g.home}`
+    const aName = away ? away.name : `Team ${g.away}`
+    const isFin = ['FT','AET','FT (Pens)'].includes(g.clock)
+    const isLiv = !isFin && g.clock !== ''
+    const isPens = g.clock === 'FT (Pens)'
+    const winnerNum = g.winner || 0
+
+    const hNameDisplay = isPens && winnerNum === g.home
+      ? `<strong>${hName}</strong>` : hName
+    const aNameDisplay = isPens && winnerNum === g.away
+      ? `<strong>${aName}</strong>` : aName
+
+    let scoreEl = isLiv
+      ? `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
+      : isFin && g.score.h !== null
+        ? `<div class="fix-score">${g.score.h} – ${g.score.a}</div>`
+        : `<div class="fix-score" style="font-size:11px;color:#bbb">vs</div>`
+
+    let statusEl = isFin
+      ? `<div class="fix-right"><span class="pill pill-done">${g.clock}</span></div>`
+      : isLiv
+        ? `<div class="fix-right"><span class="pill pill-live"><span class="live-pulse"></span>${g.clock}</span></div>`
+        : `<div class="fix-right" style="font-size:11px;color:var(--grey-500)">${g.dt ? g.dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : ''}<br><span style="font-size:10px;color:#bbb">${g.label}</span></div>`
+
+    return `<div class="fix-row"><div class="fix-home">${hNameDisplay}</div>${scoreEl}<div class="fix-away">${aNameDisplay}</div>${statusEl}</div>`
+  }
+
   let html = ''
-  uniqueDates.forEach(key => {
-    const items = byDate[key]
-    html += `<div class="fix-group"><div class="fix-group-label">${dateHeading(key)}</div><div class="fix-list">`
-    items.forEach(g => {
-      const home = D.teams[g.home], away = D.teams[g.away]
-      const hName = home ? home.name : `Team ${g.home}`
-      const aName = away ? away.name : `Team ${g.away}`
-      const isFin = ['FT','AET','FT (Pens)'].includes(g.clock)
-      const isLiv = !isFin && g.clock !== ''
- 
-      let scoreEl = isLiv
-        ? `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
-        : isFin && g.score.h !== null
-          ? `<div class="fix-score">${g.score.h} – ${g.score.a}</div>`
-          : `<div class="fix-score" style="font-size:11px;color:#bbb">vs</div>`
- 
-      let statusEl = isFin
-        ? `<div class="fix-right"><span class="pill pill-done">${g.clock}</span></div>`
-        : isLiv
-          ? `<div class="fix-right"><span class="pill pill-live"><span class="live-pulse"></span>${g.clock}</span></div>`
-          : `<div class="fix-right" style="font-size:11px;color:var(--grey-500)">${g.dt ? g.dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : ''}<br><span style="font-size:10px;color:#bbb">${g.label}</span></div>`
- 
-      html += `<div class="fix-row"><div class="fix-home">${hName}</div>${scoreEl}<div class="fix-away">${aName}</div>${statusEl}</div>`
+
+  if (groupGames.length) {
+    html += `<div class="section-head" style="margin-bottom:12px">Group Stage</div>`
+    uniqueDates.forEach(key => {
+      const items = byDate[key]
+      html += `<div class="fix-group"><div class="fix-group-label">${dateHeading(key)}</div><div class="fix-list">`
+      items.forEach(g => { html += renderFixtureRow(g) })
+      html += '</div></div>'
     })
-    html += '</div></div>'
-  })
+  }
+
+  if (knockoutGames.length) {
+    html += `<div class="section-head" style="margin-top:24px;margin-bottom:12px">Knockout Stage</div>`
+    const rounds = {}
+    KNOCKOUT_ROUNDS.forEach(r => { rounds[r.label] = [] })
+    knockoutGames.forEach(game => {
+      const lbl = (game.label||'').toLowerCase()
+      const round = KNOCKOUT_ROUNDS.find(r => lbl.includes(r.key))
+      if (round) rounds[round.label].push(game)
+    })
+    KNOCKOUT_ROUNDS.forEach(r => {
+      const games = rounds[r.label]
+      if (!games.length) return
+      const rByDate = {}, rDateOrder = []
+      games.forEach(g => {
+        const key = g.dt ? g.dt.toISOString().slice(0, 10) : 'unknown'
+        if (!rByDate[key]) { rByDate[key] = []; rDateOrder.push(key) }
+        rByDate[key].push(g)
+      })
+      const rUniqueDates = [...new Set(rDateOrder)]
+      html += `<div style="margin-bottom:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--grey-500);padding:8px 0 4px">${r.label}</div>`
+      rUniqueDates.forEach(key => {
+        html += `<div class="fix-group"><div class="fix-group-label">${dateHeading(key)}</div><div class="fix-list">`
+        rByDate[key].forEach(g => { html += renderFixtureRow(g) })
+        html += '</div></div>'
+      })
+    })
+  }
+
   document.getElementById('fix-body').innerHTML = html || '<div class="empty">No fixtures loaded</div>'
 }
  
