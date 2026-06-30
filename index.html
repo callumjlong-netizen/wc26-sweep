@@ -1029,9 +1029,9 @@ function renderFixtures() {
     const winnerNum = g.winner || 0
 
     const hNameDisplay = isPens && winnerNum === g.home
-      ? `<strong>${hName}</strong>` : hName
-    const aNameDisplay = isPens && winnerNum === g.away
-      ? `<strong>${aName}</strong>` : aName
+  ? `${hName} <span style="color:var(--green)">W</span>` : hName
+const aNameDisplay = isPens && winnerNum === g.away
+  ? `${aName} <span style="color:var(--green)">W</span>` : aName
 
     let scoreEl = isLiv
       ? `<div class="fix-score live-score">${g.score.h??0} – ${g.score.a??0}</div>`
@@ -1050,15 +1050,7 @@ function renderFixtures() {
 
   let html = ''
 
-  if (groupGames.length) {
-    html += `<div class="section-head" style="margin-bottom:12px">Group Stage</div>`
-    uniqueDates.forEach(key => {
-      const items = byDate[key]
-      html += `<div class="fix-group"><div class="fix-group-label">${dateHeading(key)}</div><div class="fix-list">`
-      items.forEach(g => { html += renderFixtureRow(g) })
-      html += '</div></div>'
-    })
-  }
+  
 
   if (knockoutGames.length) {
     html += `<div class="section-head" style="margin-top:24px;margin-bottom:12px">Knockout Stage</div>`
@@ -1079,7 +1071,6 @@ function renderFixtures() {
         rByDate[key].push(g)
       })
       const rUniqueDates = [...new Set(rDateOrder)]
-      html += `<div style="margin-bottom:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--grey-500);padding:8px 0 4px">${r.label}</div>`
       rUniqueDates.forEach(key => {
         html += `<div class="fix-group"><div class="fix-group-label">${dateHeading(key)}</div><div class="fix-list">`
         rByDate[key].forEach(g => { html += renderFixtureRow(g) })
@@ -1088,6 +1079,16 @@ function renderFixtures() {
     })
   }
 
+  if (groupGames.length) {
+    html += `<div class="section-head" style="margin-bottom:12px">Group Stage</div>`
+    uniqueDates.forEach(key => {
+      const items = byDate[key]
+      html += `<div class="fix-group"><div class="fix-group-label">${dateHeading(key)}</div><div class="fix-list">`
+      items.forEach(g => { html += renderFixtureRow(g) })
+      html += '</div></div>'
+    })
+  }
+  
   document.getElementById('fix-body').innerHTML = html || '<div class="empty">No fixtures loaded</div>'
 }
  
